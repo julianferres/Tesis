@@ -1,0 +1,239 @@
+\documentclass[12pt]{book}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{multirow}
+\usepackage{listings}
+
+\usepackage{amssymb,amsmath,amsthm,amsfonts}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+%\newcommand{\sectionbreak}{\clearpage}
+\DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
+\usepackage{gensymb}
+
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setmarginsrb{2 cm}{2 cm}{2 cm}{2 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+
+\usepackage[english]{babel}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\hypersetup{
+    colorlinks=true,% make the links colored
+}
+\usepackage[nolist]{acronym}
+\usepackage[table]{xcolor}
+\definecolor{darkbrown}{HTML}{A52A2A}
+\usepackage{url}
+
+%% Biblatex
+%\usepackage[style=plain]{biblatex}
+%\addbibresource{bibliografia.bib}
+
+\begin{document}
+
+\begin{titlepage}
+
+\title{     \textbf{Thesis proposal for the degree of \\Engineering in Informatics}\\[2.5ex]
+\textit{Formal verification of financial smart contracts in Marlowe for the Cardano blockchain}}
+
+\author{
+             \textbf{Advisor:} Phd. Mariano G. Beiró \\[2.5ex]
+             \textbf{Co-Advisor:} Phd. Simon Thompson (Kent University, IOHK) \\[2.5ex]
+             \textbf{Alumno:} Julián Ferres, \textit{(Padrón \#101.483)}                                \\
+                    \texttt{ jferres@fi.uba.ar }                                    \\[2.5ex]
+            \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}        \\
+       }
+\date{\today}
+
+\end{titlepage}
+
+\maketitle
+\thispagestyle{empty}
+
+\maketitle
+
+{
+  \hypersetup{linkcolor=black}
+  \tableofcontents
+}
+
+%##########################
+% INTRODUCCION
+%##########################
+\section{Introduction}
+Blockchains are data structures in which the information is divided into sets (the blocks) that contain additional information relative to previous blocks in the chain. With this organization and some cryptographic techniques, the information inside a block can only be altered by modifying all preceding blocks. This property enables their deployment as a distributed system, in such a way that the chain of blocks can model a non-relational public database, which contains an irrefutable historical record of information. 
+In practice, blockchains enable the implementation of a distributed ledger that supports and guarantees the security of transactions and digital assets. The concept of blockchain was first applied in 2009 as a core part of Bitcoin.
+
+Another interesting feature of blockchains is their support of smart contracts.
+A contract is a legally binding agreement (loans, sales, tenancy, etc). A smart contract forces the achievement of what is agreed in it through a software-ensured guarantee, in which none of the parties involved can sabotage or modify the contract.
+This is achieved by immortalizing both the program and its results in the blockchain ledger underlying the contract, thus ensuring that all the history (including the current status of the contract) is recorded with a high degree of reliability. From the perspective of the author of the smart contract, the blockchain is a distributed ledger system, which keeps track of who owns the amount of a virtual asset (Bitcoin, Ada, etc.) and which assets are transferred from one entity to another. The owners of digital assets are identified by their public keys, and they may be people or machines.
+
+Given the relevance of smart contracts supporting a wide range of activities in every sector of industry, including supply-chains, finance, legal and medical services, there is a strong demand for verification and validation techniques over them. However, the vast majority of smart contracts lack of any kind of formal specification, which is essential to establish their correctness.
+
+\textcolor{darkbrown}{In this paper we propose the study of low-level verification of a specific group of financial contracts defined in the ACTUS standard\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, in particular for the Cardano blockchain}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
+We will use the Plutus platform, which is a software development kit (SDK) built into Haskell, so that developers can write smart contracts, including the logic that will eventually run on Cardano. The advantage behind the Plutus approach is the guarantee of security in general, and for smart contracts in particular, this is due to the usage of functional programming with advanced type systems.
+
+\textcolor{darkbrown}{This work will be co-supervised by Prof. Simon Thompson (Kent University) who is a Senior Research Fellow at IOHK and specializes in verification techniques. The properties that we will verify are defined, for each type of contract, within the ACTUS standard\footnote {\href{https://www.actusfrf.org/techspecs}{https://www.actusfrf.org/techspecs}}. The proofs will be written in the Isabelle/HOL proof assistant. The contracts developed in Marlowe will also be integrated into the Marlowe Playground developed by IOHK, allowing the automatic generation of Marlowe code from the definition of the contract conditions.}
+
+%##########################
+% ESTADO DEL ARTE
+%##########################
+
+\section{State of the art}
+Currently, smart contracts are supported by several blockchains, such as Ethereum, Steller, EOS and Cardano. Ethereum was the first platform enabled for smart contracts, and it still remains the most popular option for developers. It was publicly released in 2015 and supports the deployment of a wide range of contracts, from ``Initial Coin Offer'' to smart-contract-based insurance.
+
+As noted in ~\cite{9152791}, smart contracts --as well as other systems where security is critical, suchs as controllers in cars and airplanes--, must be formally verified before deployment. While this observation is not recent, only a handful of smarts contracts projects (e.g, MakerDAO\footnote{Formal verification of multicollateral dai, 2019, [online] Available at: \href{https://github.com/dapphub/k-dss/}{https://github.com/dapphub/k-dss/.}}) have been formally verified so far. Current verification efforts are carried out using theorem proff assintants, such as Isabelle/HOL. This requires manual effort and experience. As an example,~\cite{bhargavan:hal-01400469}, verified some simple contracts written in Solidity and compiled into EVM bytecode. In order to achieve this, the bytecode was translated into F* (a functional programming language, inspired by ML and whose main purpose is program verification).
+
+Cardano is currently integrating smart contracts functionalities into the blockchain, being at the beginning of what is called its ``Goguen Era''\footnote{\href{https://roadmap.cardano.org/en/goguen/}{https://roadmap.cardano.org/en/goguen/}}, the third of five stages in the project roadmap. The stages are:
+
+\begin{enumerate}
+    \item Byron Era: Foundation and implementation of the ledger.
+    \item Shelley Era: Multi-Asset Capability and Decentralization.
+    \item Goguen Era: Smart contracts.
+    \item Basho Era: Optimization and scalability.
+    \item Voltaire Era: Governance. 
+\end{enumerate}
+
+The Goguen era also includes work to make Cardano accessible to a wider audience via \textit{Marlowe}\footnote{\href{https://alpha.marlowe.iohkdev.io}{https: //alpha.marlowe.iohkdev.io}}, a new domain specific language (DSL) designed for writing financial smart contracts. Marlowe allows contracts to be written in a financial language, rather than using general-purpose blockchain languages, although the code it generates is Haskell code. It is currently still under development. When fully operational, it will allow organizations to write their own contracts or download the contracts already made from the repositories, and transfer assets according to agreed conditions.
+
+Currently Marlowe contracts are written directly in Haskell, Javascript, or through the syntax introduced by Marlowe, and can be visualized using the Marlowe Playground, where it is also possible to simulate and analyze them. In the next few months the implementation of Marlowe in Cardano will conclude, and 
+in this way the contracts will be executed directly on the Blockchain.
+
+
+The work up to date regarding contract verification for Marlowe is summarized in the papers ~\cite {10.1007/978-3-030-03427-6_27}, ~\cite{10.1007/978-3-030-54455-3_35} and\\ ~\cite{10.1007/978-3-030-61467-6_11}.
+
+%Marlowe: Implementing and analyzing financial contracts
+
+In ~\cite{10.1007/978-3-030-54455-3_35}, the Isabelle/HOL verifier was used to test some basic properties of the generated contracts\footnote{Marlowe github (2018). \href{https://github.com/input-output-hk/marlowe}{https://github.com/input-output-hk/marlowe}. Accessed 6 Aug 2021}:
+
+\begin{itemize}
+     \item Balance of the assets involved in the contract.
+     \item Return of unspent resources to their original owners, at the end of the contract.
+     \item Termination of the contract.
+\end{itemize}
+
+%Efficient static analysis
+In ~\cite{10.1007/978-3-030-61467-6_11} some optimizations are proposed --based on the Haskell-specific syntax of the contracts generated by Marlowe-- to make static analysis using SBV library more efficient. SBV is a tool used to express properties intended to be verified as functions in Haskell, and it also performs the conversion to symbolic language so they can be tested with an SMT solver (in this paper, Z3). To analyze the optimizations performance, the \textit{Auction}, \textit {Crowdfunding}, \textit{Rent} and \textit{Coupon Bond} financial contracts were benchmarked and a significant improvement was found in proof times.
+
+With regard to validation and verification techniques, in the survey by~\cite{10.1145/3464421} different formal models and specifications of smart contracts of the literature are analysed and classified and an extensive and systematic description is presented. Current approaches to verify specifications are also discussed. In particular, Isabelle/HOL is mentioned as one of the common theorem proving's tools for the formal semantics of low, medium and high levels smart contract languages, including domain specific languages (DSL) as is the case in ~\cite{10.1007/978-3-030-54455-3_35}. This is the proof assistant that we will use for verification.
+
+\bigskip
+
+%##########################
+% OBJETIVOS
+%##########################
+
+\section{Goals}
+\textcolor{darkbrown}
+{
+The main goal of this work is to study the incorporation of ACTUS smart contracts to the Cardano blockchain, verifying that the implementations fulfill the properties specified in the ACTUS standard for those contracts.
+}
+
+\textcolor{darkbrown}
+{
+The specific goals are:
+}
+\textcolor{darkbrown}
+{
+\begin{enumerate}
+    \item To design a translation mechanism for the selected contracts in the ACTUS formal specification into Marlowe code.
+    \item To verify the produced Marlowe contracts using the proof assistant Isabelle/HOL.
+    \item To incorporate the designed contracts into the Actus Labs website, so that the contracts can be created interactively from a simple block model.%\item Contribuir con el desarrollo de Cardano en lo que hace a la hoja de ruta, en la parte de contratos inteligentes.
+\end{enumerate}
+}
+
+\bigskip
+
+%##########################
+% METODOLOGÍA
+%##########################
+
+%\section{Metodologías propuestas}
+
+%\bigskip
+
+%##########################
+% DATOS
+%##########################
+
+%\section{Conjuntos de datos (dependiendo del área de la tesis)}
+
+%\bigskip
+
+%##########################
+% RECURSOS
+%##########################
+
+%\section{Recursos informáticos (opcional)}
+
+%\subsection{Hardware}
+%\subsection{Software}
+
+%\subsubsection{Otras herramientas}
+
+%\bigskip
+
+%##########################
+% PLANIFICACION
+%##########################
+
+\section{Work plan}
+
+We propose the following schedule for the development of this thesis:
+
+\bigskip
+
+\begin{center}
+\def\arraystretch{1.5}
+\begin{tabular}{ |l|c|c|c|c|c|c|c|c|c|c| }
+
+ \hline
+ \multirow{2}{1em}{Tasks} & \multicolumn{10}{|c|}{Months}\\  \cline{2-11} &
+     1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\  \hline
+ Bibliography exploration & \cellcolor{gray} & \cellcolor{gray} &  &  & &  &  &  &  &   \\
+ \hline
+Plutus Pioneers Program &  & \cellcolor{gray} & \cellcolor{gray} &  &  &  & & &  &  \\
+ \hline
+Development &  &  & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &  \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &  & \\
+ \hline
+Manuscript &  &  &  &  &  &  & & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray}    \\
+ \hline
+\end{tabular}
+\end{center}
+
+\bigskip
+
+This thesis has an estimated load of 750 working hours, plus 120 study hours to follow the Plutus Pioneers Program course.
+
+\begin{itemize}
+    \item Bibliography exploration [120 hours]: Reading articles, scientific publications and literature on which this study is based.
+    \item Plutus Pioneers Program [120 hours]: Course offered by Cardano Developers, 2 months long, whose aim is to train developers for the Cardano ecosystem.
+\textcolor{darkbrown}
+ {
+    \item Development [450 hours]: 
+    \begin{itemize}
+    \item Translating the formal specification of the selected Actus contracts into Marlowe. [100 hours]
+    \item Proofs writing in Isabelle/HOL, to validate the properties of each contract specified in the Actus standard. [200 hours]
+    \item Integration of the new contracts to the interactive Actus Labs platform. [150 hours]
+    \end{itemize}
+}
+\item Manuscript writing [180 hours].%: Redacción sobre el trabajo, análisis y conclusiones desarrolladas .
+\end{itemize}
+
+\bigskip
+
+
+%\clearpage
+
+\bibliographystyle{apalike}
+\bibliography{bibliografia.bib}
+
+\end{document}
