@@ -130,8 +130,10 @@ Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos –
 antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
 \begin{itemize}
-    \item \textbf{Valores}: Incluyen cantidades que cambian con el tiempo, tales como: 'el \textit{slot interval} o intervalo actual', 'el balance de cierto token en una cuenta' o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
+    \item \textbf{Valores}: Incluyen cantidades que cambian con el tiempo, tales como: el \textit{slot interval} o 'intervalo actual', el balance de cierto token en una cuenta o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
+    
     \item \textbf{Observaciones}: Valores booleanos que son obtenidos al comparar valores, y que pueden ser combinados con los operadores booleanos estándar. Además, es posible observar si alguna elección se ha realizado (para una elección en concreto). Las observaciones tendrán un valor en cada etapa de la ejecución.
+    
     \item \textbf{Acciones}: Suceden en momentos particulares durante la ejecución, por ejemplo: un depósito de dinero o elegir entre varias alternativas.
     
     % Revisar oracles, que parecen haber sido incluidos, pero no estoy seguro de si son relevantes o no para nuestro trabajo.
@@ -188,14 +190,14 @@ Las propiedades de los contratos financieros descritos anteriormente sientan las
 Adicionalmente, este estándar crea una base formidable para las máquinas de estados financieras y los \textit{smart contracts}. En la documentación técnica \cite{ACTUS_Techspecs} es posible encontrar la descripción matemática de los contratos financieros. 
 
 
-\subsection{Leyendo un contrato}
+\subsection{Notación ACTUS}
 
 Antes de adentrarnos la especificación de un contrato, es necesario poder entender algunos aspectos de la notación del mismo:
 
 \begin{itemize}
     \item \textbf{Atributos de contrato}: Representan los términos contractuales que definen el flujo de dinero en un contrato financiero. Estos atributos están definidos en \cite{ACTUS_Dictionary_Terms}.
     
-    \item \textbf{Tiempo $t_0$}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato esta siendo representado. En general, partiendo desde la lógica contractual, se podrán determinar los eventos del contrato y el estado para todo $t > t_0$, pero no para $s < t_0$
+    \item \textbf{Starting date}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato esta siendo representado. En general, partiendo desde la lógica contractual, se podrán determinar los eventos del contrato y el estado para todo $t > t_0$, pero no para $s < t_0$
     
     \item \textbf{Variables de estado}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. Algunos ejemplos de las mismas son: \textit{Notional Principal}, \textit{Nominal Interest Rate}, o \textit{Contract Performance}. 
     
@@ -226,6 +228,12 @@ Antes de adentrarnos la especificación de un contrato, es necesario poder enten
     \item \textbf{Lifetime de contrato}: La vida útil de un contrato ACTUS es el período de tiempo de su existencia, desde la perspectiva del usuario que analiza. Para cada punto en el tiempo durante su vida, se puede analizar un contrato ACTUS en términos de estado actual y flujos de efectivo futuros.
     
 \end{itemize}
+
+\subsection{Un contrato de ejemplo}
+
+Usar \href{https://github.com/actusfrf/actus-techspecs/blob/master/actus-techspecs.tex}{TeX de la especificación ACTUS} para sacar alguna captura de pantalla, o ver si es posible embeber alguna de sus tablas en este manuscrito
+
+
 
 %##########################
 % Verificación de programas
