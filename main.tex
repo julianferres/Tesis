@@ -111,9 +111,9 @@ En particular, un contrato no puede esperar indefinidamente una acción: si no s
 Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
 \subsection{Contratos en Marlowe}
-Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
+Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
-Marlowe, en sí mismo, está embebido en Haskell y se modela como una colección de tipos de datos algebraicos en Haskell, con contratos definidos por el tipo de contrato:
+Marlowe, en sí mismo, está embebido en Haskell y se modela como una colección de tipos de datos algebraicos en Haskell \textcolor{red}{(alguna referencia sobre el concepto de tipo de dato algebraico)}, con contratos definidos por el tipo de contrato:
 
 \begin{lstlisting}[language=Marlowe]
 data Contract = Close
@@ -127,7 +127,7 @@ data Contract = Close
 Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos – 
 \texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, and \texttt{Assert} - construyen un contrato complejo a partir de contratos más simples, y el ultimo método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
 
-antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
+Antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
 \begin{itemize}
     \item \textbf{Valores}: Incluyen cantidades que cambian con el tiempo, tales como: el \textit{slot interval} o 'intervalo actual', el balance de cierto token en una cuenta o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
@@ -181,7 +181,7 @@ Otro patrón popular es el de amortización de préstamos, en el que, a diferenc
 
 Al centrarse en las principales características distintivas, ACTUS describe la gran mayoría de todos los contratos financieros con un conjunto de alrededor de 32 patrones generales de flujo de efectivo, también conocidos como 'tipos de contrato'.
 
-La taxonomía ACTUS\cite{ACTUS_Taxonomy}  proporciona un sistema de clasificación que organiza los contratos financieros según sus patrones distintivos de flujo de dinero. Aparte de este sistema de clasificación, la taxonomía también incluye una descripción de los instrumentos del mundo real cubiertos por cada contrato. 
+La taxonomía ACTUS~\cite{ACTUS_Taxonomy}  proporciona un sistema de clasificación que organiza los contratos financieros según sus patrones distintivos de flujo de dinero. Aparte de este sistema de clasificación, la taxonomía también incluye una descripción de los instrumentos del mundo real cubiertos por cada contrato. 
  
 Por otro lado, los acuerdos legales en los contratos financieros representan una lógica puramente determinista. Es decir, un contrato financiero define un conjunto fijo de reglas y condiciones bajo las cuales, dado cualquier conjunto de variables externas, las obligaciones de flujo de efectivo pueden determinarse sin ambigüedades. Por ejemplo, en un préstamo de tasa fija, las obligaciones de flujo de efectivo se definen explícitamente. 
 
@@ -192,7 +192,7 @@ Adicionalmente, este estándar crea una base formidable para las máquinas de es
 
 \subsection{Notación ACTUS}
 
-Antes de adentrarnos la especificación de un contrato, es necesario poder entender algunos aspectos de la notación del mismo:
+Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos aspectos de la notación del mismo:
 
 \begin{itemize}
     \item \textbf{Atributos de contrato}: Representan los términos contractuales que definen el flujo de dinero en un contrato financiero. Estos atributos están definidos en \cite{ACTUS_Dictionary_Terms}.
@@ -231,7 +231,58 @@ Antes de adentrarnos la especificación de un contrato, es necesario poder enten
 
 \subsection{Un contrato de ejemplo}
 
-Usar \href{https://github.com/actusfrf/actus-techspecs/blob/master/actus-techspecs.tex}{TeX de la especificación ACTUS} para sacar alguna captura de pantalla, o ver si es posible embeber alguna de sus tablas en este manuscrito
+% Usar \href{https://github.com/actusfrf/actus-techspecs/blob/master/actus-techspecs.tex}{TeX de la especificación ACTUS} para sacar alguna captura de pantalla, o ver si es posible embeber alguna de sus tablas en este manuscrito. 
+% UPD: Me ha resultado imposible hacerlo (al menos con mis conocimientos de latex actuales, debido a que ellos usan un tipo especial de documento que pareciera llevarse mejor con tablas que el nuestro. Por lo pronto solo incluiré imagenes relevantes de parte de las tablas
+
+En esta sección, recorreremos brevemente la especificación técnica ofrecida por ACTUS \cite{ACTUS_Techspecs}. En particular, nos centraremos en un tipo de contrato llamado \textit{Principal at Maturity} (PAM).
+
+El propósito del contrato PAM puede ser resumido en el siguiente párrafo:
+
+\textit{'Se efectuará un pago del valor total en la fecha de intercambio inicial (simbolizada con la variable de contrato IED) y es reembolsado en la fecha de vencimiento (MD). Dependiendo de las variables de contrato, podrían aplicarse tarifas fijas o variables.'}
+
+Al describir el contrato, la especificación técnica separa al mismo en tres tablas. Las mismas expresan de forma declarativa, que acción debe ocurrir ante determinado evento. 
+
+Las filas de las tablas representan los diferentes tipos de eventos que el contrato tolera, y en las columnas se encuentra la acción correspondiente, junto con comentarios apropiados:
+
+\begin{itemize}
+    \item \textbf{Contract Schedule (Cronograma del contrato)}: Contiene información acerca de los eventos programados para dicho contrato. En general, se realiza la asignación a las variables de estado correspondiente. Dichas variables reciben fechas o vectores de fechas (en caso de que el tipo de evento pueda ocurrir en múltiples instantes de la vida del contrato). 
+    
+    Por ejemplo, para el evento de \textit{monitoring} (AD), un contrato podría definir $\vec{t}^{AD} = \left(t_0,t_1, \ldots ,t_n\right)$, siendo $t_1, \ldots, t_n$ tiempos definidos por el usuario.
+    
+    \item \textbf{State Variables Initialization (Inicialización de variables de estado)}: Esta tabla contiene información acerca del estado inicial de las variables del contrato. Muchas variables son simplemente extraídas de los términos del contrato, mientas que otras tienen estructuras condicionales en su definición.
+    
+    Dichas variables serán luego utilizadas para definir pagos y funciones de transición de estado.
+    
+    \item \textbf{State Transition Functions and Payoff Functions (Funciones de transición de estado y de pago)}:
+    Esta tabla reune las funciones de transición y de pago correspondientes a un contrato, para cada tipo de evento.
+    
+    
+\end{itemize}
+
+
+A continuación, se muestran fragmentos de las 3 tablas para el contrato, extraídos de la especificación:
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{PAM_Contract_Schedule.png}
+    \caption{Cronograma del contrato PAM para algunos eventos}
+    \label{fig:PAM_Contract_Schedule}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{PAM_State_Variables_Initialization.png}
+    \caption{Inicialización de algunas variables del contrato PAM}
+    \label{fig:PAM_State_Variables_Initialization}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{PAM_STF_POF.png}
+    \caption{Funciones de cambio de estado y pago del contrato PAM}
+    \label{fig:my_label}
+\end{figure}
+
 
 
 
