@@ -36,27 +36,27 @@
 \usepackage{url}
 
 %% Biblatex
-%\usepackage[style=plain]{biblatex}
-%\addbibresource{bibliografia.bib}
+% \usepackage[style=plain]{biblatex}
+% \addbibresource{bibliografia.bib}
 
 \begin{document}
 
 \begin{titlepage}
 
-\title{     \textbf{Tesis de Grado \\ de Ingeniería en Informática}\\[2.5ex]
-\textit{Verificación de smart contracts en Marlowe\\ para la blockchain Cardano}}
+    \title{     \textbf{Tesis de Grado \\ de Ingeniería en Informática}\\[2.5ex]
+        \textit{Verificación de smart contracts en Marlowe\\ para la blockchain Cardano}}
 
-\author{
-             \textbf{Director:} Dr. Ing. Mariano G. Beiró \\
-         \texttt{mbeiro@fi.uba.ar}\\[2.5ex]
-             \textbf{Co-director:} Phd. Simon Thompson (Kent University, IOHK) \\
-         \texttt{S.J.Thompson@kent.ac.uk}
-             \\[2.5ex]
-             \textbf{Alumno:} Julián Ferres, \textit{(Padrón \#101.483)}                                \\
-                    \texttt{ jferres@fi.uba.ar }                                    \\[2.5ex]
-            \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}        \\
-       }
-\date{\today}
+    \author{
+        \textbf{Director:} Dr. Ing. Mariano G. Beiró \\
+        \texttt{mbeiro@fi.uba.ar}\\[2.5ex]
+        \textbf{Co-director:} Phd. Simon Thompson (Kent University, IOHK) \\
+        \texttt{S.J.Thompson@kent.ac.uk}
+        \\[2.5ex]
+        \textbf{Alumno:} Julián Ferres, \textit{(Padrón \#101.483)}                                \\
+        \texttt{ jferres@fi.uba.ar }                                    \\[2.5ex]
+        \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}        \\
+    }
+    \date{\today}
 
 \end{titlepage}
 
@@ -66,8 +66,8 @@
 \maketitle
 
 {
-  \hypersetup{linkcolor=black}
-  \tableofcontents
+    \hypersetup{linkcolor=black}
+    \tableofcontents
 }
 
 %  Capitulos
@@ -98,7 +98,48 @@
 % Escritura de contratos financieros en Marlowe para Cardano
 %##########################
 
+
 \chapter{Escritura de contratos financieros en Marlowe para Cardano}
+
+\section{El modelo UTxO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
+
+Para poder entender la escturctura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
+Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
+
+La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO (Unspent transaction output, o "Salida de transacción no utilizadas").
+
+El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTxO} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
+
+Cabe aclarar que una transacción puede también contener otros datos, como veremos en la seccion \ref{Extended_UTxO}.
+
+Consideremos el grafico de flujo de dinero \ref{fig:UTXO_Funds_Flow_Example}. Las lineas negras representan outputs no gastados de las transacciones, y las lineas rojas representan dichos outputs siendo utilizados como inputs de transacciones posteriores.
+
+Las cajas sin etiquetas representan una transacción (que contiene varios inputs y outputs). Los certificados azules denotan los outputs no gastados disponibles en nuestra ilustración.
+
+Al comienzo del gráfico de flujo, Alice tiene 100 Ada en 'outputs sin utilizar' previos al comienzo de nuestro análisis - este dinero proviene de una o más transacciones pasadas, que exceden el alcance del gráfico. Simplificamos el mismo con una simple caja (etiquetada con su nombre y el dinero correspondiente).
+
+Dicha caja tiene dos lineas negras (outputs) saliendo de ella, siendo la suma del valor de las mismas 100 Ada:
+
+\begin{itemize}
+    \item Un output de 58 Ada permanece sin ser utilizado y es parte de los outputs sin utilizar al final del análisis.
+    \item Un output de 42 Ada se utiliza como parte de la nueva transacción.
+\end{itemize}
+
+Por su parte, Bob tiene 10 Ada de previos outputs sin utilizar. Los utiliza a todos en la nueva transacción. La transacción que ilustramos tiene dos inputs: 42 de Alice y 10 de Bob. La misma también tiene dos outputs: 2 para Bob y 50 para Charlie.
+
+Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestro gráfico, totalizando 102 Ada que puede utilizar en transacciones futuras. Bob termina con solo un output de 2 Ada, y Alice con un total de 58 Ada.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{UTXO_Funds_Flow_Example.png}
+    \caption{Flujo de dinero en el modelo UTxO}
+    \label{fig:UTXO_Funds_Flow_Example}
+\end{figure}
+
+\subsection{El modelo UTxO extendido} \label{Extended_UTxO}
+
+
+
 \section{Marlowe como DSL}
 Marlowe \cite{implementing_financial_contracts_on_blockchain}, \cite{standardized_crypto_loans} es un lenguaje pequeño, con pocas sentencias soportadas que, para cada contrato, describen el comportamiento que involucra un conjunto fijo y finito de roles.
 
@@ -124,19 +165,19 @@ data Contract = Close
               | Assert Observation Contract
 \end{lstlisting}
 
-Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos – 
+Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos –
 \texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, and \texttt{Assert} - construyen un contrato complejo a partir de contratos más simples, y el ultimo método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
 
 Antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
 \begin{itemize}
     \item \textbf{Valores}: Incluyen cantidades que cambian con el tiempo, tales como: el \textit{slot interval} o 'intervalo actual', el balance de cierto token en una cuenta o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
-    
+
     \item \textbf{Observaciones}: Valores booleanos que son obtenidos al comparar valores, y que pueden ser combinados con los operadores booleanos estándar. Además, es posible observar si alguna elección se ha realizado (para una elección en concreto). Las observaciones tendrán un valor en cada etapa de la ejecución.
-    
+
     \item \textbf{Acciones}: Suceden en momentos particulares durante la ejecución, por ejemplo: un depósito de dinero o elegir entre varias alternativas.
-    
-    % Revisar oracles, que parecen haber sido incluidos, pero no estoy seguro de si son relevantes o no para nuestro trabajo.
+
+          % Revisar oracles, que parecen haber sido incluidos, pero no estoy seguro de si son relevantes o no para nuestro trabajo.
 
 \end{itemize}
 
@@ -171,23 +212,23 @@ Un contrato \texttt{Assert obs cont} no tiene ningún efecto en el estado de un 
 
 
 \section{El estándar ACTUS}
-Los contratos financieros son acuerdos legales entre dos (o más) partes sobre el futuro intercambio de dinero. Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual. Como resultado, los mismos pueden describirse matemáticamente y representarse digitalmente como algoritmos. Los beneficios de representar contratos financieros de esta forma son múltiples; Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos. 
+Los contratos financieros son acuerdos legales entre dos (o más) partes sobre el futuro intercambio de dinero. Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual. Como resultado, los mismos pueden describirse matemáticamente y representarse digitalmente como algoritmos. Los beneficios de representar contratos financieros de esta forma son múltiples; Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos.
 
 Adicionalmente, el análisis financiero (por naturaleza del dominio) se basa en la disponibilidad de representaciones computables de estos acuerdos, donde a menudo se utilizan aproximaciones analíticas. Recientemente, el auge de las blockchain, de contabilidad distribuida y los diversos casos de uso de los contratos inteligentes han abierto nuevas posibilidades para los contratos financieros digitales.
 
 En general, el intercambio de flujos de efectivo entre partes sigue ciertos patrones. Un patrón típico es un contrato de préstamo de tipo \textit{bullet}, donde un monto de dinero inicial se entrega, a cambio de pagos de intereses cíclicos y la devolución del dinero inicial en el vencimiento del contrato. Si bien los pagos son fijos, existen muchas variantes que determinan cómo se programan y/o pagan los pagos de intereses cíclicos. Por ejemplo, los pagos de intereses pueden ser mensuales, anuales, mediante períodos arbitrarios. Pueden además ser de tasa fija o variable, pueden usarse diferentes métodos de cálculo de fracciones anuales o puede que no haya ningún interés.
 
-Otro patrón popular es el de amortización de préstamos, en el que, a diferencia de los préstamos \textit{bullet}, el dinero inicial prestado puede devolverse en porciones de montos fijos o variables, y de acuerdo con cronogramas cíclicos o personalizados. Otros tipos de contratos financieros a mencionar incluyen, acciones, contratos a plazo, opciones, swaps, mejoras crediticias, acuerdos de recompra, titularización, etc. 
+Otro patrón popular es el de amortización de préstamos, en el que, a diferencia de los préstamos \textit{bullet}, el dinero inicial prestado puede devolverse en porciones de montos fijos o variables, y de acuerdo con cronogramas cíclicos o personalizados. Otros tipos de contratos financieros a mencionar incluyen, acciones, contratos a plazo, opciones, swaps, mejoras crediticias, acuerdos de recompra, titularización, etc.
 
 Al centrarse en las principales características distintivas, ACTUS describe la gran mayoría de todos los contratos financieros con un conjunto de alrededor de 32 patrones generales de flujo de efectivo, también conocidos como 'tipos de contrato'.
 
-La taxonomía ACTUS~\cite{ACTUS_Taxonomy}  proporciona un sistema de clasificación que organiza los contratos financieros según sus patrones distintivos de flujo de dinero. Aparte de este sistema de clasificación, la taxonomía también incluye una descripción de los instrumentos del mundo real cubiertos por cada contrato. 
- 
-Por otro lado, los acuerdos legales en los contratos financieros representan una lógica puramente determinista. Es decir, un contrato financiero define un conjunto fijo de reglas y condiciones bajo las cuales, dado cualquier conjunto de variables externas, las obligaciones de flujo de efectivo pueden determinarse sin ambigüedades. Por ejemplo, en un préstamo de tasa fija, las obligaciones de flujo de efectivo se definen explícitamente. 
+La taxonomía ACTUS~\cite{ACTUS_Taxonomy}  proporciona un sistema de clasificación que organiza los contratos financieros según sus patrones distintivos de flujo de dinero. Aparte de este sistema de clasificación, la taxonomía también incluye una descripción de los instrumentos del mundo real cubiertos por cada contrato.
+
+Por otro lado, los acuerdos legales en los contratos financieros representan una lógica puramente determinista. Es decir, un contrato financiero define un conjunto fijo de reglas y condiciones bajo las cuales, dado cualquier conjunto de variables externas, las obligaciones de flujo de efectivo pueden determinarse sin ambigüedades. Por ejemplo, en un préstamo de tasa fija, las obligaciones de flujo de efectivo se definen explícitamente.
 
 Las propiedades de los contratos financieros descritos anteriormente sientan las bases para una descripción algorítmica estandarizada y determinista de las obligaciones de flujo de dinero que surgen de tales acuerdos. Por lo tanto, esta descripción es agnóstica de la tecnología y es compatible con todos los casos de uso necesarios para que este mismo estándar se utilice en todas las funciones financieras. Entre estas se podrían mencionar: fijación de precios, creación de acuerdos, procesamiento de transacciones, así como el análisis en general, proyecciones de liquidez, valoración, cálculos y proyecciones de pérdidas y ganancias, y medición y agregación de riesgos, etc.
 
-Adicionalmente, este estándar crea una base formidable para las máquinas de estados financieras y los \textit{smart contracts}. En la documentación técnica \cite{ACTUS_Techspecs} es posible encontrar la descripción matemática de los contratos financieros. 
+Adicionalmente, este estándar crea una base formidable para las máquinas de estados financieras y los \textit{smart contracts}. En la documentación técnica \cite{ACTUS_Techspecs} es posible encontrar la descripción matemática de los contratos financieros.
 
 
 \subsection{Notación ACTUS}
@@ -196,37 +237,36 @@ Antes de adentrarnos en la especificación de un contrato, es necesario poder en
 
 \begin{itemize}
     \item \textbf{Atributos de contrato}: Representan los términos contractuales que definen el flujo de dinero en un contrato financiero. Estos atributos están definidos en \cite{ACTUS_Dictionary_Terms}.
-    
-    \item \textbf{Starting date}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato esta siendo representado. En general, partiendo desde la lógica contractual, se podrán determinar los eventos del contrato y el estado para todo $t > t_0$, pero no para $s < t_0$
-    
-    \item \textbf{Variables de estado}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. Algunos ejemplos de las mismas son: \textit{Notional Principal}, \textit{Nominal Interest Rate}, o \textit{Contract Performance}. 
-    
-    El diccionario de ACTUS \cite{ACTUS_Dictionary_States} define todas las variables de estado y provee información adicional sobre el tipo de dato esperado por cada una, el formato, etc. 
-    
-    En general, el 'estado' representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. Las variables están escritas en su forma abreviada con la primera letra en mayúscula, en negrita e indexadas mediante el tiempo.
-    
-    \item \textbf{Eventos}: Un evento de contrato (o simplemente evento) $e^k_t$ se refiere a cualquier evento programado o no programado en un momento determinado $t$ y de un tipo determinado $k$. 
-    
-    Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos flujo de efectivo o se actualizan los estados del contrato. El diccionario de eventos \cite{ACTUS_Dictionary_Events} enumera y describe todos los tipos de eventos $k$ definidos por los estándares ACTUS.
-    
-    \item \textbf{Funciones de transición de estado} Dichas funciones, conocidas en Inglés como \textit{'State Transicion Functions'} (STF) definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. Esto provoca que el  \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
-    
-    Estas funciones son específicas para un tipo de evento y contrato. Las mismas son escritas de acuerdo al siguiente formato $\textbf{STF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la STF pertenece. 
-    
-    Por ejemplo: La STF para un evento de tipo IP en el contrato PAM se escribe como $\text{STF\_IP\_PAM()}$ y modifica (entre otras) a la variable $\textbf{Ipac}$ desde el pre-evento $\textbf{Ipac}_{t^-}$ al post-evento $\textbf{Ipac}_{t^+}$.
-    
-    \item \textbf{Funciones de pago}: Las funciones de pago, o Payoff Functions (POF) definen como el flujo de dinero $c \in \mathbb{R}$ ocurre para un determinado evento $e^k_t$. El mismo es obtenido del estado actual y los terminos del contrato. Si fuera necesario, el flujo de dinero puede ser indexado con el tiempo del evento: $c_t$. 
-    
-    Las funciones de pago (de forma analoga a las STF), son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la POF pertenece. 
 
-    Por ejemplo: La POF para un evento de tipo IP $e^{IP}_t$ en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
+    \item \textbf{Starting date}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato esta siendo representado. En general, partiendo desde la lógica contractual, se podrán determinar los eventos del contrato y el estado para todo $t > t_0$, pero no para $s < t_0$
+
+    \item \textbf{Variables de estado}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. Algunos ejemplos de las mismas son: \textit{Notional Principal}, \textit{Nominal Interest Rate}, o \textit{Contract Performance}.
+
+          El diccionario de ACTUS \cite{ACTUS_Dictionary_States} define todas las variables de estado y provee información adicional sobre el tipo de dato esperado por cada una, el formato, etc.
+
+          En general, el 'estado' representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. Las variables están escritas en su forma abreviada con la primera letra en mayúscula, en negrita e indexadas mediante el tiempo.
+    \item \textbf{Eventos}: Un evento de contrato (o simplemente evento) $e^k_t$ se refiere a cualquier evento programado o no programado en un momento determinado $t$ y de un tipo determinado $k$.
+
+          Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos flujo de efectivo o se actualizan los estados del contrato. El diccionario de eventos \cite{ACTUS_Dictionary_Events} enumera y describe todos los tipos de eventos $k$ definidos por los estándares ACTUS.
+
+    \item \textbf{Funciones de transición de estado} Dichas funciones, conocidas en Inglés como \textit{'State Transicion Functions'} (STF) definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. Esto provoca que el  \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
+
+          Estas funciones son específicas para un tipo de evento y contrato. Las mismas son escritas de acuerdo al siguiente formato $\textbf{STF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la STF pertenece.
+
+          Por ejemplo: La STF para un evento de tipo IP en el contrato PAM se escribe como $\text{STF\_IP\_PAM()}$ y modifica (entre otras) a la variable $\textbf{Ipac}$ desde el pre-evento $\textbf{Ipac}_{t^-}$ al post-evento $\textbf{Ipac}_{t^+}$.
+
+    \item \textbf{Funciones de pago}: Las funciones de pago, o Payoff Functions (POF) definen como el flujo de dinero $c \in \mathbb{R}$ ocurre para un determinado evento $e^k_t$. El mismo es obtenido del estado actual y los terminos del contrato. Si fuera necesario, el flujo de dinero puede ser indexado con el tiempo del evento: $c_t$.
+
+          Las funciones de pago (de forma analoga a las STF), son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la POF pertenece.
+
+          Por ejemplo: La POF para un evento de tipo IP $e^{IP}_t$ en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
 
     \item \textbf{Fechas/Tiempo}: Sin adentrarnos demasiado en particularidades, cabe aclarar que ACTUS utiliza el formato de fechas ISO 8601. Por lo tanto, las fechas son usualmente expresadas en el siguiente formato: [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss]. El formato no soporta husos horarios.
-    
+
     \item \textbf{Secuencia de eventos}: Los eventos (de diferentes tipos) de un contrato pueden ocurrir en el mismo instante de tiempo $t$. En este caso, la secuencia de evaluación de su $STF$ y $POF$ es crucial para los flujos de efectivo resultantes y las transiciones de estado. Por lo tanto, se utiliza un indicador de secuencia de eventos que se puede encontrar para cada evento en el diccionario de eventos. Este implica el orden de ejecución de  diferentes eventos en el mismo tiempo $t$.
-    
+
     \item \textbf{Lifetime de contrato}: La vida útil de un contrato ACTUS es el período de tiempo de su existencia, desde la perspectiva del usuario que analiza. Para cada punto en el tiempo durante su vida, se puede analizar un contrato ACTUS en términos de estado actual y flujos de efectivo futuros.
-    
+
 \end{itemize}
 
 \subsection{Un contrato de ejemplo}
@@ -240,23 +280,23 @@ El propósito del contrato PAM puede ser resumido en el siguiente párrafo:
 
 \textit{'Se efectuará un pago del valor total en la fecha de intercambio inicial (simbolizada con la variable de contrato IED) y es reembolsado en la fecha de vencimiento (MD). Dependiendo de las variables de contrato, podrían aplicarse tarifas fijas o variables.'}
 
-Al describir el contrato, la especificación técnica separa al mismo en tres tablas. Las mismas expresan de forma declarativa, que acción debe ocurrir ante determinado evento. 
+Al describir el contrato, la especificación técnica separa al mismo en tres tablas. Las mismas expresan de forma declarativa, que acción debe ocurrir ante determinado evento.
 
 Las filas de las tablas representan los diferentes tipos de eventos que el contrato tolera, y en las columnas se encuentra la acción correspondiente, junto con comentarios apropiados:
 
 \begin{itemize}
-    \item \textbf{Contract Schedule (Cronograma del contrato)}: Contiene información acerca de los eventos programados para dicho contrato. En general, se realiza la asignación a las variables de estado correspondiente. Dichas variables reciben fechas o vectores de fechas (en caso de que el tipo de evento pueda ocurrir en múltiples instantes de la vida del contrato). 
-    
-    Por ejemplo, para el evento de \textit{monitoring} (AD), un contrato podría definir $\vec{t}^{AD} = \left(t_0,t_1, \ldots ,t_n\right)$, siendo $t_1, \ldots, t_n$ tiempos definidos por el usuario.
-    
+    \item \textbf{Contract Schedule (Cronograma del contrato)}: Contiene información acerca de los eventos programados para dicho contrato. En general, se realiza la asignación a las variables de estado correspondiente. Dichas variables reciben fechas o vectores de fechas (en caso de que el tipo de evento pueda ocurrir en múltiples instantes de la vida del contrato).
+
+          Por ejemplo, para el evento de \textit{monitoring} (AD), un contrato podría definir $\vec{t}^{AD} = \left(t_0,t_1, \ldots ,t_n\right)$, siendo $t_1, \ldots, t_n$ tiempos definidos por el usuario.
+
     \item \textbf{State Variables Initialization (Inicialización de variables de estado)}: Esta tabla contiene información acerca del estado inicial de las variables del contrato. Muchas variables son simplemente extraídas de los términos del contrato, mientas que otras tienen estructuras condicionales en su definición.
-    
-    Dichas variables serán luego utilizadas para definir pagos y funciones de transición de estado.
-    
+
+          Dichas variables serán luego utilizadas para definir pagos y funciones de transición de estado.
+
     \item \textbf{State Transition Functions and Payoff Functions (Funciones de transición de estado y de pago)}:
-    Esta tabla reune las funciones de transición y de pago correspondientes a un contrato, para cada tipo de evento.
-    
-    
+          Esta tabla reune las funciones de transición y de pago correspondientes a un contrato, para cada tipo de evento.
+
+
 \end{itemize}
 
 
@@ -321,6 +361,7 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 
 \bibliographystyle{apalike}
 \bibliography{bibliografia.bib}
+
 
 
 
