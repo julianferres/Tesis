@@ -242,7 +242,7 @@ Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen
 \subsection{Contratos en Marlowe}
 Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
-Marlowe, en sí mismo, está embebido en Haskell y se modela como una colección de tipos de datos algebraicos en Haskell \textcolor{red}{(alguna referencia sobre el concepto de tipo de dato algebraico)}, con contratos definidos por el tipo de contrato:
+Marlowe, en sí mismo, está embebido en Haskell y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}, con contratos definidos por el tipo de contrato:
 
 \begin{lstlisting}[language=Marlowe]
 data Contract = Close
