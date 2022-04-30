@@ -99,16 +99,16 @@
 
 \chapter{Escritura de contratos financieros en Marlowe para Cardano}
 
-\section{El modelo UTxO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
+\section{El modelo UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
 
 Para poder entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
 
 La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO (Unspent transaction output, o `Salida de transacción no utilizadas').
 
-El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTxO} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
+El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTXO} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
 
-Cabe aclarar que una transacción puede también contener otros datos, como veremos en la sección~\ref{sec:Extended_UTxO}.
+Cabe aclarar que una transacción puede también contener otros datos, como veremos en la sección~\ref{sec:Extended_UTXO}.
 
 Consideremos el gráfico de flujo de dinero en la figura~\ref{fig:UTXO_Funds_Flow_Example}. Las lineas negras representan outputs no gastados de las transacciones, y las lineas rojas representan dichos outputs siendo utilizados como inputs de transacciones posteriores.
 
@@ -130,7 +130,7 @@ Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestr
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{UTXO_Funds_Flow_Example.png}
-    \caption{Flujo de dinero en el modelo UTxO}\label{fig:UTXO_Funds_Flow_Example}
+    \caption{Flujo de dinero en el modelo UTXO}\label{fig:UTXO_Funds_Flow_Example}
 \end{figure}
 
 El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecua mas a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
@@ -145,13 +145,13 @@ Dado que no existe una forma real de gastar parte de un `unspent output', así e
 
 Cabe destacar que este modelo contable hace que sea conveniente distribuir el flujo de efectivo de varios contribuyentes a varios destinatarios haciendo que el mismo fluya hacia un fondo común, en este caso, la transacción, antes de enviarse a los beneficiarios finales. Esto representa, en un sentido muy general, el objetivo de los `smart contracts' o contratos inteligentes.
 
-Veamos más formalmente lo que sucede durante una transacción en el modelo UTxO. Para el modelo de transacciones basico que analizaremos, podemos referirnos a las definiciones en la figura~\ref{fig:Basic_UTXO_definitions}:
+Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@Para el modelo de transacciones basico que analizaremos, podemos referirnos a las definiciones en la figura~\ref{fig:Basic_UTXO_definitions}:
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{Basic_UTXO_Definitions.png}
-    \caption{Definiciones básicas en el modelo UTxO}\label{fig:Basic_UTXO_definitions}
+    \caption{Definiciones básicas en el modelo UTXO}\label{fig:Basic_UTXO_definitions}
 \end{figure}
 
 Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transaccion y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción. 
@@ -162,16 +162,16 @@ Los valores o values en el mapa son pares formados por un `coin value' y una dir
 
 Para poder comprender la escturctura de la transacción en sí, analicemos primero los `outpus'. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los outputs, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito. 
 Las claves del mapa son indices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho indice identifica de forma global a dicho output.
-En el modelo UTxO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto. 
+En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto. 
 
 
-Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contrable tradicional y el UTxO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el `ledger' que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTxO.
+Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contrable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el `ledger' que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
 
 Procesar una transacción implica actualizar el \texttt{UtxO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UtxO}.
 
-Adicionalmente, todos los valores de \texttt{TxOut} en el mapa finito de las salidas de la transacción se agregan a la \texttt{UTxO}, con la clave del mapa finito que consiste en el id de la transacción que se procesa, y el valor del índice es el mismo que en el mapa finito de salidas de esta transacción. Es decir, si \texttt{tx} contiene un par formado por el conjunto de entrada y el mapa de salidas \texttt{(ins, outs)} con id \texttt{id}, y \texttt{ix |-> (a, c)} es una entrada de \texttt{outs}, la \texttt{UTxO} va a tener la entrada \texttt{(id, ix) |-> (a, c)} agregada. En este párrafo, utilizamos la notación \texttt{k |-> v} para referirnos a una entrada del mapa finito con clave \texttt{k} y valor \texttt{v}.
+Adicionalmente, todos los valores de \texttt{TxOut} en el mapa finito de las salidas de la transacción se agregan a la \texttt{UTXO}, con la clave del mapa finito que consiste en el id de la transacción que se procesa, y el valor del índice es el mismo que en el mapa finito de salidas de esta transacción. Es decir, si \texttt{tx} contiene un par formado por el conjunto de entrada y el mapa de salidas \texttt{(ins, outs)} con id \texttt{id}, y \texttt{ix |-> (a, c)} es una entrada de \texttt{outs}, la \texttt{UTXO} va a tener la entrada \texttt{(id, ix) |-> (a, c)} agregada. En este párrafo, utilizamos la notación \texttt{k |-> v} para referirnos a una entrada del mapa finito con clave \texttt{k} y valor \texttt{v}.
 
-Veamos como se refleja dicha actualización del ledger en terminos de notación matemática (que puede ser reflejada en código con relativa facilidad). Las siguientes son tres formas de filtrar el mapa finito de \texttt{UTxO}. El primero filtra dicho mapa mediante un subconjunto \texttt{ins} de las claves. El segundo filtro obtiene el complemento del resultado del primer filtro (en otras palabras, todas las entradas de la \texttt{UTxO} que no son indexadas por claves en la lista de inputs). El tercero filtra el mapa mediante los valores.
+Veamos como se refleja dicha actualización del ledger en terminos de notación matemática (que puede ser reflejada en código con relativa facilidad). Las siguientes son tres formas de filtrar el mapa finito de \texttt{UTXO}. El primero filtra dicho mapa mediante un subconjunto \texttt{ins} de las claves. El segundo filtro obtiene el complemento del resultado del primer filtro (en otras palabras, todas las entradas de la \texttt{UTXO} que no son indexadas por claves en la lista de inputs). El tercero filtra el mapa mediante los valores.
 
 \begin{center}
     \begin{tabular}{ r @{} c @{} l r }
@@ -181,7 +181,7 @@ Veamos como se refleja dicha actualización del ledger en terminos de notación 
     \end{tabular}
 \end{center}
 
-Utilizaremos la notación introducida para procesar una nueva transacción. En otras palabras, eliminar los ouputs no gastados correspondientes y construir un nuevo conjunto de outputs que serán agregados al \texttt{UTxO} (como se describió anteriormente). Los outputs a agregar serían computados de la siguiente manera:
+Utilizaremos la notación introducida para procesar una nueva transacción. En otras palabras, eliminar los ouputs no gastados correspondientes y construir un nuevo conjunto de outputs que serán agregados al \texttt{UTXO} (como se describió anteriormente). Los outputs a agregar serían computados de la siguiente manera:
 
 % \begin{equation}
 %     $ \text{txins} \in \mathbb{P}(\text{Tx}) \rightarrow \mathbb{P}(\text{TxIn}) $ &&
@@ -195,7 +195,7 @@ Utilizaremos la notación introducida para procesar una nueva transacción. En o
 
         $\text{txins } txs$ & = & $\bigcup \{ inputs\ |\ (inputs, \_ ) \in txs$\} \\&&\\
         
-        $\text{txouts}$ & $\in$ & $\mathbb{P}(\text{Tx}) \rightarrow \text{UTxO}$ \\&&\\
+        $\text{txouts}$ & $\in$ & $\mathbb{P}(\text{Tx}) \rightarrow \text{UTXO}$ \\&&\\
 
         $\text{txouts } txs$ & = & 
             $\left\{
@@ -209,20 +209,20 @@ Utilizaremos la notación introducida para procesar una nueva transacción. En o
     \end{tabular}
 \end{center}
 
-Usando esta notación, podemos definir la actualización del \texttt{UTxO}, debido a la transacción \texttt{tx} como:
+Usando esta notación, podemos definir la actualización del \texttt{UTXO}, debido a la transacción \texttt{tx} como:
 
 \[ (\text{txins } tx\ntriangleleft\ utxo) \cup\text{outs } tx \]
 
 Hay que tener en cuenta que se debe realizar un cálculo expícito de la cantidad total de Aca en las salidas y el total de Ada en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas. 
 
-Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTxO brinda protección integrada contra el `doble gasto' de un output determinado. 
+Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTXO brinda protección integrada contra el `doble gasto' de un output determinado. 
 
 Esta protección inherente, junto con la aplicación de la propiedad contable generalizada, asegura que no se permita que ocurra ningún gasto deshonesto. Esta es una propiedad crucial del sistema contable del ledger de Cardano, en particular porque existe una cantidad fija de Ada que nunca puede cambiar.
 
 Para finalizar, hay que tener en cuenta que una transacción incluye una gran cantidad de datos adicionales, como testigos, certificados, y scripts juntos con sus hashes. En esta sección no hemos entrado en los detalles de los tipos y cálculos específicos utilizados en la implementación del ledger de Cardano. Sin embargo, abarcamos suficiente información como para poder entender que sucede detras de escena cuando se genera una transacción en la blockchain.
 
 
-\subsection{El modelo UTxO extendido}\label{sec:Extended_UTxO}
+\subsection{El modelo UTXO extendido}\label{sec:Extended_UTXO}
 
 
 
