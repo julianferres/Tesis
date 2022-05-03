@@ -73,8 +73,9 @@
 %  Capítulos
 %  1) Introducción (concepto de blockchain, aplicaciones, IOHK, Ada, Plutus) (8 a 10 páginas)
 %  2) Escritura de contratos financieros en Marlowe para Cardano (15 a 20 páginas)
-%     a. Marlowe como DSL
-%     b. El estándar ACTUS
+%     a. El modelo UTXO
+%     b. Marlowe como DSL
+%     c. El estándar ACTUS
 %  3) Verificación de programas (12 a 15 páginas)
 %     a. Concepto general, herramientas, metodologías
 %     b. Isabelle
@@ -92,9 +93,90 @@
 
 \chapter{Introducción}
 
-%##########################
-% Escritura de contratos financieros en Marlowe para Cardano
-%##########################
+\section{Cadena de bloques o Blockchain}
+Las cadenas de bloques, conocidas en inglés como \textit{blockchains}, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
+
+Con esta organización relativa, y con ayuda de técnicas criptográficas, la información de un bloque solo puede ser alterada modificando todos los bloques posteriores.
+
+Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar una base de datos pública no relacional, que contenga un registro histórico irrefutable de información.
+
+En la práctica esta técnica ha permitido la implementación de un registro contable o \textit{ledger} distribuido que soporta y garantiza la seguridad de transacciones y dinero digital.
+El concepto de cadena de bloque fue aplicado por primera vez en 2009 como parte central de Bitcoin~\cite{nakamoto2008bitcoin}. En este trabajo, nos concentraremos en la cadena de bloques conocida como Cardano~\cite{cardano_website}~\cite{cardano_utxo_ledger}.
+
+Con respecto a como se implementa en sistemas reales, una blockchain es un tipo de base de datos o libro mayor (`ledger') que se duplica y distribuye a todos los participantes dentro de la red de esa blockchain. Está formada por un conjunto de nodos interconectados que almacenan datos o elementos de valor en bloques. Estos bloques se verifican mediante transacciones y se vinculan entre sí mediante un orden cronológico en la cadena. Los detalles de estas transacciones están escritos de forma permanentemente en el bloque y no pueden modificarse.
+
+Como una cadena de bloques almacena datos de manera descentralizada, es independiente de entidades de control centralizadas o intermediarios. Esto proporciona una mayor transparencia del almacenamiento de datos y su gestión. Una característica importante de blockchain es que almacena registros de forma inmutable, lo que significa que no se pueden cambiar, falsificar ni eliminar, ya que esto rompería la cadena de registros.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{Bloques.png}
+    \caption{Representación simple de los datos contenidos en un bloque de la cadena}\label{fig:Bloques}
+\end{figure}
+
+Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales (`smart contracts').
+
+% Tradicionalmente, un contrato se define como un acuerdo legalmente vinculante (por ejemplo, sobre un préstamo, venta, arrendamiento, etc). Un contrato inteligente permite forzar el cumplimiento de lo pactado en el mismo a través de una garantía asegurada por software, en la cual ninguna de las partes involucradas puede sabotear o alterar el contrato.
+
+% De esta forma se puede renunciar a la toma de acciones legales por parte de un individuo, empresa o gobierno, y en su lugar optar por la ejecución de un programa, o contrato inteligente, para controlar la transferencia de fondos entre los participantes.
+% Este objetivo se logra inmortalizando tanto el programa como su resultado en el ledger de la cadena de bloques subyacente al contrato, y garantizando así que todo el historial (incluido el estado actual del contrato) se registre de forma inmutable con un alto grado de fiabilidad. Desde la perspectiva del autor del contrato inteligente, la blockchain es un sistema de contabilidad distribuido, que realiza un seguimiento de quién posee una cantidad de un recurso virtual (Bitcoin, Ada, etc.) y cuándo los activos se transfieren de una entidad a otra.
+
+Los propietarios de activos digitales se identifican por sus claves públicas, y pueden ser personas o máquinas.
+
+\section{Criptomonedas}
+
+Una criptomoneda es un activo digital, que se almacena en el ledger y está diseñado para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
+
+Los ledgers de blockchain son utilizados como tecnología subyacente para la creación de criptomonedas en un entorno descentralizado. Los protocolos de blockchain utilizan técnicas criptográficas rigurosas para permitir el minting (acuñación o creación) de criptomonedas, asegurar y verificar la propiedad de las mismas y los registros de movimiento de fondos. El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada. Se define por su valor, la correlación con las cifras del mundo real y está impulsado por la oferta y la demanda del mercado.
+
+Las direcciones se utilizan al enviar pagos en criptomonedas. Son identificadores únicos y están representados por una cadena de números y letras que se obtienen de las claves públicas del usuario.
+
+\section{Cardano}
+
+Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo `proof-of-stake' (prueba de participación)
+\footnote{Definiciones sobre PoS se encuentran en los sitios web de \href{https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}{Ethereum} y \href{https://www.coinbase.com/es/learn/crypto-basics/what-is-proof-of-work-or-proof-of-stake}{Coinbase}}
+descentralizada de tercera generación y el hogar de la criptomoneda ada. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Cardano_logo.png}
+    \caption{Logo de la cadena de bloques Cardano}\label{fig:Cardano_logo}
+\end{figure}
+
+
+La plataforma Cardano ha sido diseñada desde cero y verificada por una combinación de ingenieros y expertos académicos en los campos de blockchain y criptografía.
+Tiene un fuerte enfoque en la sostenibilidad, la escalabilidad y la transparencia. 
+Es un proyecto totalmente de código abierto que tiene como objetivo ofrecer una infraestructura inclusiva, justa y resistente para aplicaciones financieras y sociales a escala global. 
+
+Uno de sus principales objetivos es brindar servicios financieros confiables y seguros a aquellas personas que actualmente no tienen acceso.
+
+Cardano ha sido diseñado con la seguridad como uno de sus principios fundamentales. 
+
+Está escrito en Haskell, un lenguaje de programación funcional. 
+En un lenguaje funcional como Haskell, se fomenta la construcción de su sistema usando funciones puras, lo que conduce a un diseño en el que los componentes se pueden probar convenientemente de forma aislada. 
+Además, las funciones avanzadas de Haskell nos permiten emplear una amplia gama de métodos potentes para garantizar la corrección del código, como basar la implementación en especificaciones formales y ejecutables, pruebas exhaustivas basadas en propiedades y ejecutar pruebas en simulación.
+
+Cardano está desarrollando una plataforma de `smart contracts' que busca ofrecer funciones más avanzadas que cualquier protocolo desarrollado anteriormente, y servirá como una plataforma estable y segura para el desarrollo de dApps de nivel empresarial.
+
+\subsection{Ada como criptomoneda de Cardano}
+
+
+Cada ledger de blockchain tiene su criptomoneda subyacente o moneda nativa. Ada es la moneda nativa o principal en Cardano. Esto significa que ada es la principal unidad de pago en Cardano; se acepta como pago de cuotas, para realizar depósitos, y también es la única moneda en la que se distribuyen las recompensas.
+
+Lovelace es la denominación más pequeña de ada. $\boxed{ 1 \text{ ada} = 1.000.000 \text{ lovelaces}}$. Ada tiene seis decimales, lo que la hace fácilmente divisible en fracciones más pequeñas.
+
+\subsection{Tokens nativos}
+
+Cardano también admite la creación de tokens nativos: activos digitales que se crean para fines específicos. Esto significa que los usuarios, desarrolladores y empresas pueden usar la cadena de bloques de Cardano para crear tokens que representen una huella de valor (ya sea definida por la comunidad, el estado del mercado o la entidad autónoma). Un token puede ser fungible (intercambiable) o no fungible\footnote{Ampliamente conocido por su acrónimo en inglés NFT} (único) y actuar como unidad de pago, recompensa, activo comercial o contenedor de información.
+
+
+% Dada la importancia de los smart contracts para respaldar actividades en todos los sectores de la industria, incluyendo cadenas de abastecimiento, finanzas, servicios legales y médicos, existe una fuerte demanda de verificación y técnicas de validación sobre los mismos. Sin embargo, la gran mayoría de los contratos inteligentes carecen de cualquier tipo de especificación formal, que es esencial para establecer que el mismo es correcto.
+
+% En este trabajo nos proponemos estudiar la verificación a bajo nivel de un grupo específico de contratos financieros definidos en el estándar ACTUS\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, en particular para la cadena de bloques \textit{Cardano}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
+
+
+%#########################################################################
+% ESCRITURA DE CONTRATOS FINANCIEROS EN MARLOWE PARA CARDANO
+%#########################################################################
 
 
 \chapter{Escritura de contratos financieros en Marlowe para Cardano}
@@ -104,11 +186,9 @@
 Para poder entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
 
-La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO (Unspent transaction output, o `Salida de transacción no utilizadas').
+La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (Unspent transaction output, o `Salida de transacción no utilizadas').
 
 El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTXO} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
-
-Cabe aclarar que una transacción puede también contener otros datos, como veremos en la sección~\ref{sec:Extended_UTXO}.
 
 Consideremos el gráfico de flujo de dinero en la figura~\ref{fig:UTXO_Funds_Flow_Example}. Las lineas negras representan outputs no gastados de las transacciones, y las lineas rojas representan dichos outputs siendo utilizados como inputs de transacciones posteriores.
 
@@ -154,15 +234,15 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
     \caption{Definiciones básicas en el modelo UTXO}\label{fig:Basic_UTXO_definitions}
 \end{figure}
 
-Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transaccion y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción. 
+Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transaccion y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
 El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de `outputs' dentro de una transacción.
 
 Los valores o values en el mapa son pares formados por un `coin value' y una direccion, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de `script' (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
 
-Para poder comprender la escturctura de la transacción en sí, analicemos primero los `outpus'. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los outputs, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito. 
+Para poder comprender la escturctura de la transacción en sí, analicemos primero los `outpus'. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los outputs, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito.
 Las claves del mapa son indices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho indice identifica de forma global a dicho output.
-En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto. 
+En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto.
 
 
 Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contrable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el `ledger' que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
@@ -177,7 +257,7 @@ Veamos como se refleja dicha actualización del ledger en terminos de notación 
     \begin{tabular}{ r @{} c @{} l r }
         \texttt{ins} $\lhd$ \texttt{utxo} &\ =\ \ & $\{ i \mapsto o\ |\ i \mapsto o \in utxo,\ i \in ins \}$ & restricción de dominio \\
         \texttt{ins} $\ntriangleleft$ \texttt{utxo} &\ =\ \ & $\{ i \mapsto o\ |\ i \mapsto o \in utxo,\ i \notin ins \}$ & exclusión de dominio \\
-        \texttt{utxo} $\rhd$ \texttt{outs} &\ =\ \ & $\{ i \mapsto o\ |\ i \mapsto o \in utxo,\ o \in outs \}$& restricción de rango 
+        \texttt{utxo} $\rhd$ \texttt{outs} &\ =\ \ & $\{ i \mapsto o\ |\ i \mapsto o \in utxo,\ o \in outs \}$& restricción de rango
     \end{tabular}
 \end{center}
 
@@ -194,10 +274,10 @@ Utilizaremos la notación introducida para procesar una nueva transacción. En o
         $\text{txins}$ & $\in$ & $\mathbb{P}(\text{Tx}) \rightarrow \mathbb{P}(\text{TxIn})$ \\&&\\
 
         $\text{txins } txs$ & = & $\bigcup \{ inputs\ |\ (inputs, \_ ) \in txs$\} \\&&\\
-        
+
         $\text{txouts}$ & $\in$ & $\mathbb{P}(\text{Tx}) \rightarrow \text{UTXO}$ \\&&\\
 
-        $\text{txouts } txs$ & = & 
+        $\text{txouts } txs$ & = &
             $\left\{
                 \begin{array}{l|lcl}
                     & tx & \in & txs \\
@@ -213,19 +293,13 @@ Usando esta notación, podemos definir la actualización del \texttt{UTXO}, debi
 
 \[ (\text{txins } tx\ntriangleleft\ utxo) \cup\text{outs } tx \]
 
-Hay que tener en cuenta que se debe realizar un cálculo expícito de la cantidad total de Aca en las salidas y el total de Ada en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas. 
+Hay que tener en cuenta que se debe realizar un cálculo expícito de la cantidad total de Aca en las salidas y el total de Ada en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas.
 
-Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTXO brinda protección integrada contra el `doble gasto' de un output determinado. 
+Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTXO brinda protección integrada contra el `doble gasto' de un output determinado.
 
 Esta protección inherente, junto con la aplicación de la propiedad contable generalizada, asegura que no se permita que ocurra ningún gasto deshonesto. Esta es una propiedad crucial del sistema contable del ledger de Cardano, en particular porque existe una cantidad fija de Ada que nunca puede cambiar.
 
 Para finalizar, hay que tener en cuenta que una transacción incluye una gran cantidad de datos adicionales, como testigos, certificados, y scripts juntos con sus hashes. En esta sección no hemos entrado en los detalles de los tipos y cálculos específicos utilizados en la implementación del ledger de Cardano. Sin embargo, abarcamos suficiente información como para poder entender que sucede detras de escena cuando se genera una transacción en la blockchain.
-
-
-\subsection{El modelo UTXO extendido}\label{sec:Extended_UTXO}
-
-
-
 
 
 \section{Marlowe como DSL}
@@ -442,6 +516,5 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 
 \bibliographystyle{apalike}
 \bibliography{bibliografia.bib}
-
 
 \end{document}

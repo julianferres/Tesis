@@ -1,21 +1,40 @@
 {
-    "cSpell.language": "en,es-ES",
-    "cSpell.ignoreWords": [
-        "Cardano",
-        "Ipac",
-        "plutus",
-        "txid",
-        "txins",
-        "txout",
-        "txouts",
-        "utxo"
-    ],
-    "cSpell.words": [
-        "ACTUS",
-        "Beiró",
-        "Biblatex",
-        "criptomonedas",
-        "Inicialización",
-        "IOHK"
-    ]
+  "cSpell.language": "en,es-ES",
+  "cSpell.ignoreWords": [
+    "Cardano",
+    "Finalización",
+    "Gobernanza",
+    "Goguen",
+    "Ipac",
+    "Margaria",
+    "Optimización",
+    "SBV",
+    "Steffen",
+    "Steller",
+    "bytecode",
+    "computacional",
+    "descentralización",
+    "escalabilidad",
+    "multicollateral",
+    "optimizaciones",
+    "plutus",
+    "tipado",
+    "txid",
+    "txins",
+    "txout",
+    "txouts",
+    "utxo"
+  ],
+  "cSpell.words": [
+    "ACTUS",
+    "Beiró",
+    "Biblatex",
+    "criptomoneda",
+    "criptomonedas",
+    "criptos",
+    "Inicialización",
+    "interconectados",
+    "IOHK",
+    "lovelaces"
+  ]
 }
