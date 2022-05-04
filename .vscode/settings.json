@@ -23,10 +23,11 @@
     "txins",
     "txout",
     "txouts",
-    "utxo"
+    "UTXO"
   ],
   "cSpell.words": [
     "ACTUS",
+    "autoejecutables",
     "Beiró",
     "Biblatex",
     "criptomoneda",
@@ -35,6 +36,10 @@
     "Inicialización",
     "interconectados",
     "IOHK",
-    "lovelaces"
+    "lovelaces",
+    "Ouroboros",
+    "síncrono",
+    "trackea",
+    "utxo"
   ]
 }

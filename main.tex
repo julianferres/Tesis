@@ -73,9 +73,9 @@
 %  Capítulos
 %  1) Introducción (concepto de blockchain, aplicaciones, IOHK, Ada, Plutus) (8 a 10 páginas)
 %  2) Escritura de contratos financieros en Marlowe para Cardano (15 a 20 páginas)
-%     a. El modelo UTXO
-%     b. Marlowe como DSL
-%     c. El estándar ACTUS
+%     DONE a. El modelo UTXO
+%     DONE b. Marlowe como DSL
+%     Done c. El estándar ACTUS
 %  3) Verificación de programas (12 a 15 páginas)
 %     a. Concepto general, herramientas, metodologías
 %     b. Isabelle
@@ -122,6 +122,25 @@ Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura
 
 Los propietarios de activos digitales se identifican por sus claves públicas, y pueden ser personas o máquinas.
 
+\section{Smart contracts}
+
+Un contrato inteligente o `smart contract' es un acuerdo digital automatizado, escrito en código, que trackea, verifica y ejecuta las transacciones vinculantes de un contrato entre varias partes. Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa corto cuyas entradas y salidas son transacciones en una cadena de bloques.
+
+Los smart contracts son autoejecutables y confiables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye a través de una red blockchain descentralizada, lo que lo hace transparente e irreversible.
+
+En resumen, los contratos inteligentes son inmutables ya que no se pueden modificar, son distribuibles y a prueba de manipulaciones, rápidos y rentables, ya que no hay intermediarios, lo que ahorra dinero y tiempo, y es seguro gracias al cifrado del mismo.
+
+Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorno funcional, Cardano apoyará el desarrollo y la implementación de contratos inteligentes utilizando lenguajes de programación como:
+
+\begin{itemize}
+    \item \textbf{Plutus}: Una plataforma de desarrollo y ejecución de smart contracts especialmente diseñada. 
+    Los contratos de Plutus consisten en partes que se ejecutan en la blockchain (`código on-chain') y partes que se ejecutan en la maquina del usuario (`código off-chain o de cliente').
+    Plutus se basa en la investigación de lenguajes modernos para proporcionar un entorno de programación completo y seguro basado en Haskell, el lenguaje de programación funcional líder.
+    
+    \item \textbf{Marlowe}: Un lenguaje de dominio específico~\cite{fowler2010dsl} para escribir y ejecutar contratos financieros que permite construir contratos visualmente, así como en código más tradicional. Las instituciones financieras pueden usarlo para desarrollar e implementar instrumentos personalizados para sus clientes y usuarios. El propio lenguaje Marlowe está integrado tanto en JavaScript como en Haskell y ofrece una selección de editores según las preferencias y el conjunto de habilidades de los desarrolladores.
+\end{itemize}
+
+
 \section{Criptomonedas}
 
 Una criptomoneda es un activo digital, que se almacena en el ledger y está diseñado para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
@@ -164,7 +183,7 @@ Cada ledger de blockchain tiene su criptomoneda subyacente o moneda nativa. Ada 
 
 Lovelace es la denominación más pequeña de ada. $\boxed{ 1 \text{ ada} = 1.000.000 \text{ lovelaces}}$. Ada tiene seis decimales, lo que la hace fácilmente divisible en fracciones más pequeñas.
 
-\subsection{Tokens nativos}
+\subsubsection{Tokens nativos}
 
 Cardano también admite la creación de tokens nativos: activos digitales que se crean para fines específicos. Esto significa que los usuarios, desarrolladores y empresas pueden usar la cadena de bloques de Cardano para crear tokens que representen una huella de valor (ya sea definida por la comunidad, el estado del mercado o la entidad autónoma). Un token puede ser fungible (intercambiable) o no fungible\footnote{Ampliamente conocido por su acrónimo en inglés NFT} (único) y actuar como unidad de pago, recompensa, activo comercial o contenedor de información.
 
@@ -172,6 +191,36 @@ Cardano también admite la creación de tokens nativos: activos digitales que se
 % Dada la importancia de los smart contracts para respaldar actividades en todos los sectores de la industria, incluyendo cadenas de abastecimiento, finanzas, servicios legales y médicos, existe una fuerte demanda de verificación y técnicas de validación sobre los mismos. Sin embargo, la gran mayoría de los contratos inteligentes carecen de cualquier tipo de especificación formal, que es esencial para establecer que el mismo es correcto.
 
 % En este trabajo nos proponemos estudiar la verificación a bajo nivel de un grupo específico de contratos financieros definidos en el estándar ACTUS\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, en particular para la cadena de bloques \textit{Cardano}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
+
+
+\subsection{Proof of stake}
+
+Proof of stake (PoS o Prueba de participación) es un tipo de protocolo de consenso que utiliza la cantidad de participación (o valor) mantenida en el sistema para determinar el consenso.
+
+En esencia, un protocolo de consenso es lo que controla las leyes y los parámetros que rigen el comportamiento de las cadenas de bloques. El consenso puede resumirse como un conjunto de reglas a las que se adhiere cada participante de la red.
+
+Dado que las blockchains no están controladas por ninguna autoridad central única, en su lugar se utiliza un protocolo de consenso para permitir que los participantes de la red distribuida acuerden el historial de la red reflejada en la cadena de bloques, para llegar a un consenso sobre lo que ha sucedido y continuar desde una sola fuente de `verdad'.
+
+Cardano se basa en el protocolo de consenso PoS llamado Ouroboros~\cite{pof_ouroboros}, el primer protocolo de consenso de blockchain que se desarrolla a través de una investigación revisada por pares. En el corazón del protocolo se encuentran los `stake pools' (grupos de participación), nodos servidores confiables administrados por un operador de `stake pools' en los que los titulares de ada pueden delegar su participación. Los `stake pools' se utilizan para garantizar que todos puedan participar en el protocolo, independientemente de la experiencia técnica o la disponibilidad para mantener un nodo en funcionamiento.
+
+\subsubsection{Proof of stake vs. Proof of work}
+
+Por el contrario, el protocolo conocido como `Proof of work' (PoW) o prueba de trabajo es un mecanismo síncrono que anima a los mineros a competir para ser los primeros en resolver cualquier problema dentro del bloque. Se utiliza un sistema de recompensas para incentivar esta resolución de problemas. Sin embargo, este enfoque acarrea una gran desventaja, con un mayor uso de electricidad y períodos de tiempo más largos para resolver problemas dentro de la cadena. Estos factores pueden ralentizar la red significativamente y significativamente más costosa de mantener.
+
+\subsubsection{Características del protocolo proof of stake}
+
+Una de las características clave de PoS es que a medida que aumenta el valor del usuario, también aumenta la oportunidad de mantener el ledger.
+
+Esto significa una mayor probabilidad de producir nuevos bloques que se pueden agregar a la cadena de bloques. El creador de un nuevo bloque se elige en función de una combinación de selección aleatoria y una medida de su participación o riqueza. Dentro de la cadena se produce una especie de elección de líder. Cabe aclarar que dentro de un protocolo de prueba de participación, los participantes acumulan las tarifas de transacción, lo que aumenta su riqueza a medida que avanzan. Este enfoque fomenta el crecimiento constante y estable de la blockchain y reduce los casos de transacciones estancadas que pueden impedir el crecimiento de la misma.
+
+\subsubsection{Principales ventajas de Proof of Stake por sobre Proof of Work}
+
+\begin{itemize}
+    \item Se incorporan rigurosos protocolos de seguridad en un protocolo PoS.
+    \item Centralización reducida: el riesgo de centralización se reduce al emitir sanciones por prácticas egoístas dentro de la red
+    \item Eficiencia energética: el consumo de energía es extremadamente eficiente ya que se necesita una cantidad menor de electricidad, así como recursos de hardware, para producir y ejecutar la cadena de bloques.
+    \item Eficiencia de costos: las monedas PoS son mucho más rentables que las que operan en los protocolos PoW.
+\end{itemize}
 
 
 %#########################################################################
@@ -188,7 +237,7 @@ Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas ban
 
 La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (Unspent transaction output, o `Salida de transacción no utilizadas').
 
-El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTXO} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
+El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTxO_Lars} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
 
 Consideremos el gráfico de flujo de dinero en la figura~\ref{fig:UTXO_Funds_Flow_Example}. Las lineas negras representan outputs no gastados de las transacciones, y las lineas rojas representan dichos outputs siendo utilizados como inputs de transacciones posteriores.
 
@@ -247,7 +296,7 @@ En el modelo UTXO, se relaciona a los valores de salida con las entradas de las 
 
 Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contrable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el `ledger' que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
 
-Procesar una transacción implica actualizar el \texttt{UtxO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UtxO}.
+Procesar una transacción implica actualizar el \texttt{UTXO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UTXO}.
 
 Adicionalmente, todos los valores de \texttt{TxOut} en el mapa finito de las salidas de la transacción se agregan a la \texttt{UTXO}, con la clave del mapa finito que consiste en el id de la transacción que se procesa, y el valor del índice es el mismo que en el mapa finito de salidas de esta transacción. Es decir, si \texttt{tx} contiene un par formado por el conjunto de entrada y el mapa de salidas \texttt{(ins, outs)} con id \texttt{id}, y \texttt{ix |-> (a, c)} es una entrada de \texttt{outs}, la \texttt{UTXO} va a tener la entrada \texttt{(id, ix) |-> (a, c)} agregada. En este párrafo, utilizamos la notación \texttt{k |-> v} para referirnos a una entrada del mapa finito con clave \texttt{k} y valor \texttt{v}.
 
