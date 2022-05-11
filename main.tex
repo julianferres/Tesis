@@ -93,6 +93,10 @@
 
 \chapter{Introducción}
 
+En este capítulo, presentaremos al lector algunos conceptos generales que fueron utilizados a lo largo del desarrollo de esta tesis. Se presentarán temas tales como cadenas de bloques, contratos inteligentes y Cardano (la cadena de bloques en la cual se centra la escritura de dichos contratos y verificación de propiedades).
+
+Luego de este capítulo, el lector contará con las herramientas necesarias para adentrarse en cuestiones teóricas especificas a este tesis.
+
 \section{Cadena de bloques o Blockchain}
 Las cadenas de bloques, conocidas en inglés como \textit{blockchains}, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
 
@@ -110,7 +114,7 @@ Como una cadena de bloques almacena datos de manera descentralizada, es independ
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{Bloques.png}
-    \caption{Representación simple de los datos contenidos en un bloque de la cadena}\label{fig:Bloques}
+    \caption{Representación simplificada de los datos en un bloque de la cadena. Extraída de \href{https://docs.cardano.org/new-to-cardano/what-is-a-blockchain}{https://docs.cardano.org/new-to-cardano/what-is-a-blockchain}}\label{fig:Bloques}
 \end{figure}
 
 Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales (`smart contracts').
@@ -162,7 +166,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-    \caption{Logo de la cadena de bloques Cardano}\label{fig:Cardano_logo}
+    \caption{Logo de la cadena de bloques Cardano. Extraído de \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{https://en.wikipedia.org/wiki/Cardano\_(blockchain\_platform)}}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -234,14 +238,19 @@ Esto significa una mayor probabilidad de producir nuevos bloques que se pueden a
 
 
 
-\chapter{Escritura de contratos financieros en Marlowe para Cardano}
+\chapter[Escritura de contratos financieros en
+Marlowe]{Escritura de contratos financieros en Marlowe para Cardano}
+
+Durante este capítulo, nos adentraremos en la escritura de contratos financieros en Marlowe, para esto, será necesario describir el modelo contable de preferencia de dichas plataformas descentralizadas, el estándar involucrado en la clasificación de los contratos financieros y el lenguaje propiamente dicho.
+
+Al final del mismo, el lector estará familiarizado con la notación correspondiente y expondremos brevemente la especificación para un tipo de contrato.
 
 \section{El modelo UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
 
 Para poder entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
 
-La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (Unspent transaction output, o `Salida de transacción no utilizadas').
+La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (Unspent transaction output, o `Salidas de transacción no utilizadas').
 
 El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTxO_Lars} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
 
@@ -265,10 +274,10 @@ Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestr
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{UTXO_Funds_Flow_Example.png}
-    \caption{Flujo de dinero en el modelo UTXO}\label{fig:UTXO_Funds_Flow_Example}
+    \caption{Flujo de dinero en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:UTXO_Funds_Flow_Example}
 \end{figure}
 
-El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecua mas a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
+El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecúa a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
 
 Para mantener la integridad de la contabilidad, las nuevas transacciones debe tener todas las outputs no gastados (totalizando la cantidad correcta de outputs no gastados) utilizados como entrada.
 
@@ -286,7 +295,7 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{Basic_UTXO_Definitions.png}
-    \caption{Definiciones básicas en el modelo UTXO}\label{fig:Basic_UTXO_definitions}
+    \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
 \end{figure}
 
 Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transaccion y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
@@ -520,19 +529,19 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{PAM_Contract_Schedule.png}
-    \caption{Cronograma del contrato PAM para algunos eventos}\label{fig:PAM_Contract_Schedule}
+    \caption{Cronograma del contrato PAM para algunos eventos. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_Contract_Schedule}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{PAM_State_Variables_Initialization.png}
-    \caption{Inicialización de algunas variables del contrato PAM}\label{fig:PAM_State_Variables_Initialization}
+    \caption{Inicialización de algunas variables del contrato PAM. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_State_Variables_Initialization}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{PAM_STF_POF.png}
-    \caption{Funciones de cambio de estado y pago del contrato PAM}\label{fig:PAM_STF_POF}
+    \caption{Funciones de cambio de estado y pago del contrato PAM. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_STF_POF}
 \end{figure}
 
 
@@ -541,6 +550,11 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 %##########################
 
 \chapter{Verificación de programas}
+
+En este capítulo abordaremos los conceptos teóricos en los cuales se basan los distintos sistemas automáticos de `Demostración de teoremas'.
+
+En particular, nos centraremos en Isabelle, uno de los más reconocidos y utilizados en la industria. 
+
 \section{Concepto general, herramientas, metodologías}
 \section{Isabelle}
 
@@ -548,7 +562,7 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 % Desarrollo: verificación de contratos financieros usando Isabelle
 %##########################
 
-\chapter{Desarrollo: verificación de contratos financieros usando Isabelle}
+\chapter[Verificación de contratos financieros en Isabelle]{Desarrollo: Verificación de contratos financieros usando Isabelle}
 \section{Escritura de contratos ACTUS para Cardano}
 \section{sss}
 \section{sss}
