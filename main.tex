@@ -166,7 +166,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-    \caption{Logo de la cadena de bloques Cardano. Extraído de \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{https://en.wikipedia.org/wiki/Cardano\_(blockchain\_platform)}}\label{fig:Cardano_logo}
+    \caption{Logo de la cadena de bloques Cardano. Extraído de \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{su página de Wikipedia}}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -289,14 +289,55 @@ Dado que no existe una forma real de gastar parte de un `unspent output', así e
 
 Cabe destacar que este modelo contable hace que sea conveniente distribuir el flujo de efectivo de varios contribuyentes a varios destinatarios haciendo que el mismo fluya hacia un fondo común, en este caso, la transacción, antes de enviarse a los beneficiarios finales. Esto representa, en un sentido muy general, el objetivo de los `smart contracts' o contratos inteligentes.
 
-Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@Para el modelo de transacciones basico que analizaremos, podemos referirnos a las definiciones en la figura~\ref{fig:Basic_UTXO_definitions}:
+Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@Para el modelo de transacciones básico que analizaremos, podemos referirnos a las siguientes definiciones:
 
+\textbf{Datos primitivos}:
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{Basic_UTXO_Definitions.png}
-    \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
-\end{figure}
+\begin{center}
+    \begin{tabular}{ r @{} c @{} l r }
+        txid &\ $\in$\ \ & TxId & id de transacción \\
+        ix &\ $\in$\ \ & Ix & índice \\
+        addr &\ $\in$\ \ & Addr & dirección \\
+        c &\ $\in$\ \ & Coin & valor de la divisa \\
+    \end{tabular}
+\end{center}
+
+\textbf{Datos derivados}:
+
+\begin{center}
+    \begin{tabular}{ r @{} c @{} l c r @{} c @{} l r}
+        tx &\ $\in$\ \ & Tx           & = & (inputs, outputs) &\ $\in$\ \ & $\mathbb{P}(\text{TxIn}) \times$ (Ix $\mapsto$ TxOut) & transacción \\
+        txin &\ $\in$\ \ & TxIn       & = & (txid, ix) &\ $\in$\ \ & TxId $\times$ Ix & entrada de la transacción \\
+        txout &\ $\in$\ \ & TxOut     & = & (addr, c) &\ $\in$\ \ & Addr $\times$ Coin & salida de la transacción \\
+        utxo &\ $\in$\ \ & UTxO       & = & txin $\mapsto$ txout &\ $\in$\ \ & TxIn $\mapsto$ TxOut & salidas sin gastar \\
+        b &\ $\in$\ \ & Block         & = & tx &\ $\in$\ \ & $\mathbb{P}(\text{Tx})$ & bloque \\
+        pending &\ $\in$\ \ & Pending & = & tx &\ $\in$\ \ & $\mathbb{P}(\text{Tx})$ & transacciones pendientes
+    \end{tabular}
+\end{center}
+
+\textbf{Funciones:}
+
+\begin{center}
+    \begin{tabular}{ r @{} c @{} l r }
+        txid &\ $\in$\ \ & TxId $\mapsto$ TxId & computar id de la transacción \\
+        ours &\ $\in$\ \ & Addr $\mapsto \mathbb{B}$ & direcciones que corresponden a la billetera \\
+    \end{tabular}
+\end{center}
+
+\textbf{Filtros sobre Conjuntos}:
+
+\begin{center}
+    \begin{tabular}{ r @{} c @{} l}
+        $\text{Addr}_{ours}$ &\ =\ \ & $\{a\ |\ a \in \text{Addr},\ \text{ours}\ a\}$ \\
+        $\text{TxOut}_{ours}$ &\ =\ \ & $\text{Addr}_{ours}$ $\times$ Coin \\
+    \end{tabular}
+\end{center}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{Basic_UTXO_Definitions.png}
+%     \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
+% \end{figure}
 
 Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transaccion y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
