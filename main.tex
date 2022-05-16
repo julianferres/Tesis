@@ -576,13 +576,13 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{PAM_State_Variables_Initialization.png}
-    \caption{Inicialización de algunas variables del contrato PAM. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_State_Variables_Initialization}
+    \caption{Inicialización de algunas variables del contrato PAM.\@Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_State_Variables_Initialization}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{PAM_STF_POF.png}
-    \caption{Funciones de cambio de estado y pago del contrato PAM. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_STF_POF}
+    \caption{Funciones de cambio de estado y pago del contrato PAM.\@Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_STF_POF}
 \end{figure}
 
 
@@ -597,7 +597,142 @@ En este capítulo abordaremos los conceptos teóricos en los cuales se basan los
 En particular, nos centraremos en Isabelle, uno de los más reconocidos y utilizados en la industria. 
 
 \section{Concepto general, herramientas, metodologías}
+
+\section{Verificación formal}
+
+Los asistentes de pruebas formales son herramientas de software diseñadas para ayudar a sus usuarios a realizar pruebas, especialmente en cálculo lógico. Por lo general, los llamamos asistentes de demostración o demostradores interactivos de teoremas.
+
+\subsubsection{Pruebas rigurosas y formales}
+
+La prueba interactiva de teoremas tiene su propia terminología, comenzando con la noción de `prueba'. Una prueba formal es un argumento lógico expresado dentro un formalismo lógico. En este contexto, `formal' significa `lógico' o `basado en la lógica'. Los matemáticos realizaron pruebas formales en papel décadas antes de la llegada de las computadoras, pero hoy en día las pruebas formales se llevan a cabo utilizando un asistente de prueba.
+
+Por el contrario, una prueba informal es lo que un matemático normalmente llamaría una prueba. A menudo se llevan a cabo en \LaTeX\ o en una pizarra. El nivel de detalle puede variar mucho, y frases como `es obvio que', `claramente' y `sin pérdida de generalidad' delegan parte de la carga de la prueba al lector. Una prueba rigurosa es una prueba informal muy detallada.
+
+La principal fortaleza de los asistentes de prueba es que ayudan a desarrollar pruebas altamente confiables e inequívocas de enunciados matemáticos, usando lógica precisa. Se pueden usar para probar resultados arbitrariamente avanzados, y no solo ejemplos simples.
+
+Las pruebas formales también ayudan a los estudiantes a comprender lo que constituye una definición válida o una prueba válida.
+
+Cuando desarrollamos una nueva teoría, las pruebas formales pueden ayudarnos a explorarla. Son útiles cuando generalizamos o modificamos una prueba existente, de la misma manera que un compilador nos ayuda a desarrollar programas correctos. Brindan un alto nivel de confiabilidad que facilita que otros revisen la prueba.
+Además, las pruebas formales pueden formar la base de herramientas computacionales verificadas (por ejemplo,
+sistemas de álgebra computacional verificados).
+
+La mayoría de los usuarios de asistentes de pruebas en la actualidad provienen de las ciencias de la Computación. Algunas empresas, incluidas AMD~\cite{Hitchhiker_amd} e Intel~\cite{Hitchhiker_intel}, han utilizado asistentes de prueba para verificar sus diseños. 
+
+\subsection{Algunos asistentes de pruebas}
+Hay una gran cantidad de asistentes de prueba en desarrollo o uso alrededor del mundo. A continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
+
+\begin{itemize}
+    \item \textbf{Teoría de conjuntos}: Isabelle/ZF, Metamath, Mizar 
+    \item \textbf{Teoría simple de tipos}: HOL4, HOL Light, Isabelle/HOL
+    \item \textbf{Teoría dependiente de tipos}: Agda, Coq, Lean, Matita, PVS
+    \item \textbf{Lógica de primer orden, de tipo Lisp}: ACL2 
+\end{itemize}
+
+Para una historia de los asistentes de demostración y la demostración interactiva de teoremas, es altamente recomendable referirse a~\cite{history_of_Interactive_Theorem_Proving}.
+
+
+
 \section{Isabelle}
+
+Isabelle es un sistema genérico para implementar formalismos lógicos, e Isabelle/HOL es la especialización de Isabelle para HOL, abreviatura de `Higher-Order Logic'. 
+
+En resumidas palabras, HOL puede ser definido como:
+
+\[ \boxed{\text{HOL = Programación Funcional + Lógica}} \]
+
+Isabelle permite expresar fórmulas matemáticas en un lenguaje formal y proporciona herramientas para probar dichas fórmulas. Entre otras, las aplicaciones principales son la formalización de pruebas matemáticas y, en particular, la verificación formal.
+
+Isabelle/HOL acuñó su éxito debido a su facilidad de uso y potente automatización. Gran parte de la misma la realizan herramientas externas: el meta-probador Sledgehammer se basa en probadores de resolución y el solver SMT para su búsqueda de pruebas, el generador de contra-ejemplos Quickcheck usa el compilador ML como un rápido evaluador para fórmulas básicas. Junto coon el formato de prueba estructurada de Isar y una nueva interfaz de usuario asincrónica, estas herramientas han transformado radicalmente la experiencia del usuario de Isabelle.
+
+\subsection{Métodos de prueba en Isabelle}
+
+Isabelle proporciona una serie de métodos de prueba (de propósito general) que realizan la búsqueda de las mismas~\cite{proof_and_disproof}. En esta sección, discutiremos los más importantes.
+
+\subsubsection{Simplificación}
+
+La simplificación es el principal caballo de batalla en Isabelle. El sistema puede reescribir y simplificar fácil y eficientemente expresiones. También tolera hooks para personalizar las mismas:
+
+\begin{itemize}
+    \item \textit{Procedimientos de simplificación basados en patrones} que derivan y aplican reglas de reescritura de forma dinámica. Muchos de estos procedimientos están pre-instalados, en particular los de simplificación aritmética para números y términos simbólicos.
+    \item \textit{Solvers especiales para reglas de reescritura condicional}. Los ejemplos típicos son: fragmentos de aritmética lineal y un prover de clausuras para relaciones transitivas arbitrarias.
+    \item \textit{`Loopers' especiales} que advierten el objetivo luego de cada ronda de simplificación. Los separadores de casos se proveen de esta manera.
+\end{itemize}
+
+El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
+
+
+\subsubsection{Auto}
+
+Desde el lado del usuario, invocado con la keyword \textit{auto}, podemos mencionar a un método de prueba que intercala la simplificación con una pequeña cantidad de búsqueda dentro del espacio de pruebas.
+
+Es imposible describir sucintamente al método \textit{auto} debido a su naturaleza heurística, de tipo ad-hoc.
+
+Su gran fortaleza es la capacidad para resolver las partes simples de un objetivo y dejar al usuario las más difíciles. Esto ayuda a concentrarse rápidamente en el núcleo de un problema.
+
+Versiones mejoradas de \textit{auto} realizan búsquedas de pruebas más sofisticadas, al mismo tiempo que intercalan simplificación. Estos métodos suelen ser útiles, pero dado que cierto tipo de búsqueda está involucrada, no solo son más lentos que el
+simplificador y \textit{auto}, los mismos no brindan ninguna pista cuando no logran demostrar el objetivo.
+
+
+\subsubsection{Blast y Metis}
+Las versiones más sofisticadas de \textit{auto} mencionadas anteriormente pueden ser lentas debido a que cada paso de inferencia es ejecutado directamente en el estado de la prueba, mediante el kernel de Isabelle.
+Para mayor performance, los usuarios pueden usar blast, un prover de tipo tableau~\cite{tableau_provers} escrito directamente en ML~\cite{ML_programming_language} que evita el kernel.
+
+Una vez que la prueba fue encontrada, es ejecutada nuevamente en el kernel para validarla. El método blast supera a la implementación de tableau basado en el kernel por un amplio margen, pero no es rival de los mejores probadores automáticos. Tampoco explota el concepto de simplificación, lo cual es una gran pérdida.
+
+Yendo un paso más allá, Metis es un probador de teoremas de resolución escrito en ML, con muy buenos resultados en competiciones de prueba de teoremas~\cite{CASC_competition}.
+
+Ha sido portado a Isabelle y sigue la misma filosofía que blast: la búsqueda de la prueba se realiza directamente en ML, y en caso de ser encontrada, se verifica en el kernel de Isabelle.
+El método blast se basa en una base de datos extensible de lemas que impulsa la búsqueda y que está pre-configurada para `razonar' sobre conjuntos, funciones y relaciones, lo que lo hace bastante fácil de usar. Por otro lado, la versión de Metis de Isabelle solo conoce la lógica pura y deriva su conocimiento sobre otros operadores de lemas proporcionados explícitamente.
+
+Aunque Metis se puede invocar directamente, en la práctica las llamadas a Metis casi siempre son generadas por Sledgehammer~\ref{sec:Sledgehammer}.
+
+
+\subsection{Sledgehammer: Descubriendo pruebas con la ayuda de otros provers}\label{sec:Sledgehammer}
+
+Sledgehammer es el subsistema de Isabelle que concentra el poder de los probadores automáticos de teoremas de primer orden.
+
+Dada una conjetura, selecciona de forma heurística unos cientos de hitos relevantes (lemas, definiciones o axiomas) de las bibliotecas de Isabelle, los traduce a lógica de primer orden junto con la conjetura y delega la búsqueda de pruebas a probadores de resolución externos (E, SPASS, y Vampire) y solvers SMT (CVC3, Yices y Z3~\cite{Z3}).
+
+Sledgehammer es muy eficaz y ha alcanzado una gran popularidad entre usuarios, novatos (entre los que me incluyo) y expertos por igual.
+
+\subsubsection{Filtros por relevancia}
+
+La mayoría de los probadores automáticos funcionan mal en presencia de miles de axiomas. Sledgehammer emplea un filtro de relevancia simple para extraer unos pocos cientos de datos de las bibliotecas de Isabelle que podrían ser relevantes para el problema en cuestión. 
+
+A pesar de su sencillez, este filtro mejora en gran medida la tasa de éxito de Sledgehammer. El filtro funciona de forma iterativa. La primera iteración selecciona hechos que comparten todas, o casi todas, sus constantes (símbolos) con la conjetura. Las iteraciones posteriores incluyen hechos que comparten constantes con hechos previos, hasta alcanzar el número deseado de hechos. Al observar que algunos provers manejan mejor las bases de axiomas grandes que otros, ese número se optimizó de forma independiente para cada prover.
+
+\subsubsection{Traducción a lógica de primer orden}
+
+El formalismo de Isabelle, con lógica polimórfica de orden superior (polymorphic HOL) y clases tipadas~\cite{proof_processing_Isabelle}, es mucho más complejo que la lógica de primer orden soportada por los provers automáticos. 
+
+Sledgehammer se basa en diferentes traducciones dependiendo de la clase de probador.
+
+Para los probadores de resolución, se emplean técnicas estándar para traducir fórmulas HOL a lógica clásica de primer orden: las abstracciones $\lambda$ se reescriben a combinadores y las funciones currificadas son traducidas variando el número de argumentos, mediante operador de \texttt{apply} explícito. 
+
+Hasta hace poco, la traducción de tipos no era sólida: proporcionaba suficiente información de tipos para hacer cumplir el razonamiento de clase de tipos correcto, pero no para especificar el tipo de cada término. (Esto se debía a que el kernel de inferencia de Isabelle vuelve a verificar las demostraciones, pero la solidez no era crucial). La implementación actual soluciona de forma segura la mayoría de la problemas de información de tipos infiriendo la monotonicidad de los mismos~\cite{monotonicity_inference_for_hol}, la cual brinda una codificación sólida y eficiente.
+
+Para los solvers de SMT, la traducción asigna operadores aritméticos y de igualdad a conceptos correspondientes en SMT-LIB~\cite{SMT-LIB}. La lógica de SMT-LIB está ordenada de forma múltiple, lo que la hace más apropiada para codificar información de escritura HOL que la lógica clásica de primer orden, pero no admite polimorfismo. La solución para este inconveniente es monomorfizar las fórmulas: las fórmulas polimórficas se instancian iterativamente con `instancias fundamentales' de sus constantes polimórficas. Este proceso se itera para obtener el problema monomorfizado. Las aplicaciones parciales se traducen usando un operador de `apply', pero en contraste con el enfoque combinador que se usa cuando se comunica con probadores de resolución, las abstracciones $\lambda$ se elevan a nuevas reglas, introduciendo así nuevas constantes.
+
+\subsubsection{Invocación de probadores externos}
+
+Sledgehammer permite que los probadores externos se ejecuten en paralelo, tanto de forma local como remota. En una instalación habitual de Isabelle\footnote{\href{https://isabelle.in.tum.de/}{https://isabelle.in.tum.de/}}, E, SPASS, y Z3 son ejecutados localmente, mientras que Vampire y el metaprover SInE son utilizados mediante SystemOnTPTP remoto. Los usuarios pueden también habilitar CVC3 y Yices.
+
+La siguiente figura representa la arquitectura, omitiendo la reconstrucción y minimización de la prueba. En la misma, se puede apreciar que se ejecutan dos instancias del filtro de relevancia para tener en cuenta diferentes conjuntos de constantes integradas. Los hechos relevantes y la conjetura se traducen a la versión TPTP o SMT (lógica de primer orden), y los problemas resultantes se delegan a los probadores. La traducción de Z3 se realiza de forma ligeramente diferente a la de CVC3 e Yices, para beneficiarse del soporte de Z3 en aritmética no lineal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
+    \caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}}\label{fig:Sledgehammer_arquitecture}
+\end{figure}
+
+Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
+
+
+Los servidores remotos son ideales para la búsqueda de pruebas, al menos cuando están funcionando y el usuario tiene acceso a Internet. También ayudan a distribuir la carga: a menos que la máquina del usuario posea un procesador de ocho núcleos procesador, sería imprudente lanzar cuatro probadores de resolución y tres solvers SMT y esperar que la interfaz de usuario de Isabelle siga respondiendo. La invocación paralela de probadores es invaluable: ejecutar E, SPASS y Vampire juntos durante cinco segundos resuelve tantos problemas como ejecutar un solo probador durante dos minutos~\cite{sledgehammer_judgement_day}.
+
+
+
+
 
 %##########################
 % Desarrollo: verificación de contratos financieros usando Isabelle
