@@ -727,11 +727,31 @@ La siguiente figura representa la arquitectura, omitiendo la reconstrucción y m
 
 Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
 
-
 Los servidores remotos son ideales para la búsqueda de pruebas, al menos cuando están funcionando y el usuario tiene acceso a Internet. También ayudan a distribuir la carga: a menos que la máquina del usuario posea un procesador de ocho núcleos procesador, sería imprudente lanzar cuatro probadores de resolución y tres solvers SMT y esperar que la interfaz de usuario de Isabelle siga respondiendo. La invocación paralela de probadores es invaluable: ejecutar E, SPASS y Vampire juntos durante cinco segundos resuelve tantos problemas como ejecutar un solo probador durante dos minutos~\cite{sledgehammer_judgement_day}.
 
+\subsubsection{Reconstruyendo la prueba}
 
+Para probadores de resolución, Sledgehammer realiza una reconstrucción de prueba ejecutando el probador de resolución integrado de Isabelle, Metis, brindando la breve lista de hechos utilizados en la prueba encontrada por el prover. Dado solo unos pocos hechos, Metis generalmente tiene éxito en milisegundos. Dado que Metis tiene que volver a encontrar la prueba, los provers externos se utilizan esencialmente como filtros de relevancia de gran precisión.
 
+Las pruebas generadas usualmente requieren una edición a posteriori para volverlas sintácticamente correctas. Las nuevas actualizaciones siempre realizan esfuerzos para hacer que el resultado generado sea más robusto y conciso.
+
+Con respecto a SMT, las pruebas que no involucran razonamiento aritmético generalmente pueden ser reproducidas por Metis; de lo contrario, se admite la reproducción de la prueba, paso a paso, para Z3. Mientras que CVC3 e Yices se pueden invocar como oráculos. La repetición de la prueba Z3 se basa en gran medida en los procedimientos de decisión aritmética, simplificador y probador de tipo tableau de Isabelle.
+
+\subsubsection{Minizando la prueba}
+
+Los probadores externos usualmente usan muchos más hechos de los necesarios. La herramienta de minimización de Sledgehammer toma el conjunto de hechos usados retornados por un prover e invoca repetidamente al mismo con subconjuntos de los hechos para encontrar un conjunto mínimo.
+
+Dependiendo del número de hechos iniciales, se basa en un algoritmo lineal `naive' que intenta eliminar un hecho a la vez o en un algoritmo binario que biseca recursivamente los hechos~\cite{sledgehammer_judgement_day}.
+
+La minimización frecuentemente mejora el rendimiento y la tasa de éxito de Metis, y al mismo tiempo elimina el desorden de las formalizaciones de Isabelle. Para algunos provers, es difícil o imposible extraer la lista de hechos usados de la prueba; la minimización es entonces la única opción. Por ejemplo, las pruebas detalladas devueltas por CVC3 siempre se refieren a todos los hechos, sean realmente necesarios o no, y no existe un criterio fácil para aislar los hechos necesarios.
+
+\subsection{Quickcheck: Generación de contraejemplos}
+
+Los métodos de prueba de Isabelle y Sledgehammer son efectivos frente a conjeturas válidas, pero dada una conjetura inválida, normalmente no detectan la invalidez de la misma, y mucho menos producen un contraejemplo relevante.
+
+Aquí es donde entra en escena Quickcheck. Quickcheck se modeló originalmente a partir de la herramienta QuickCheck para Haskell~\cite{quickcheck_haskell}, que prueba las propiedades proporcionadas por el usuario de un programa Haskell para valores generados aleatoriamente. Recientemente Quickcheck se ha ampliado con pruebas exhaustivas y basadas en restricciones como complemento a las pruebas aleatorias.
+
+Las pruebas exhaustivas verifican la fórmula para cada posible conjunto de valores hasta un límite dado, y por lo tanto encuentran contraejemplos que las pruebas aleatorias podrían pasar por alto. La reducción puede ser más precisa y eficiente que los otros dos enfoques porque considera la fórmula simbólicamente, en lugar de probar un conjunto finito de valores fundamentales. Gracias a un análisis de flujo de datos estáticos, inspirado en la programación lógica, Quickcheck deriva generadores de datos de prueba que tienen en cuenta las premisas para ayudar a evitar los casos de prueba vacíos que afectan a la mayoría de las herramientas de prueba de especificaciones.
 
 
 %##########################
