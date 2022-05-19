@@ -1,0 +1,125 @@
+% \documentclass[9pt,oneside]{amsart}
+\usepackage{multicol}
+% \usepackage[a4paper,
+%             width=170mm,
+%             top=18mm,
+%             bottom=22mm,
+%             includeheadfoot]{geometry}
+% \usepackage[bookmarks=true,
+%             unicode=true,
+%             pdftitle={ACTUS Technical Specification},
+%             pdfauthor={ACTUS Financial Research Foundation},
+%             pdfkeywords={ACTUS, Financial Contracts, Algorithmic Contracts, Technical Specification},
+%             pdfborder={0 0 0.5 [1 3]}]{hyperref}
+
+% ---------------------- floats ----------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}
+
+% ---------------------- math ----------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\newtheorem{example}{Example}
+
+% ---------------------- custom tables ----------------------
+\newenvironment{states}[1]{
+	\hfill % force subsection before longtable
+	\begin{longtable}{| p{0.05\textwidth} | p{0.48\textwidth} |  p{0.43\textwidth} |}
+	\multicolumn{3}{c}{\textbf{#1: State Variables Initialization}}\\ \hline
+	\textbf{State} & \textbf{Initialization per $t_0$} & \textbf{Comments} \\
+	\hline
+	\endfirsthead
+	\multicolumn{3}{c}{\textit{Continua desde la página anterior}} \\
+	\hline
+	\textbf{State} & \textbf{Initialization per $t_0$} & \textbf{Comments} \\
+	\hline
+	\endhead
+	\hline \multicolumn{3}{r}{\textit{Continua en la siguiente página}} \\
+	\endfoot
+	\endlastfoot
+}{%
+	\hline
+	\end{longtable}
+}
+
+\newenvironment{schedule}[1]{
+	\hfill % force subsection before longtable
+	\begin{longtable}{| p{0.05\textwidth} | p{0.5\textwidth} |  p{0.4\textwidth} |}
+	\multicolumn{3}{c}{\textbf{#1: Contract Schedule}}\\
+	\hline
+	\textbf{Event} & \textbf{Schedule} & \textbf{Comments} \\
+	\hline
+	\endfirsthead
+	\multicolumn{2}{c}{\textit{Continua desde la página anterior}} \\
+	\hline
+	\textbf{Event} & \textbf{Schedule} & \textbf{Comments} \\
+	\hline
+	\endhead
+	\hline \multicolumn{2}{r}{\textit{Continua en la siguiente página}} \\
+	\endfoot
+	\endlastfoot
+}{%
+	\hline 
+	\end{longtable}
+}
+
+\newenvironment{functions}[1]{
+	\hfill % force subsection before longtable
+    	\begin{longtable}{| p{0.05\textwidth} | p{0.42\textwidth} |  p{0.48\textwidth} |}
+	\multicolumn{3}{c}{\textbf{#1: State Transition Functions and Payoff Functions}}\\
+	\hline
+	\textbf{Event} & \textbf{Payoff Function} & \textbf{State Transition Function}\\
+	\hline
+	\endfirsthead
+	\multicolumn{2}{c}{\textit{Continua desde la página anterior}} \\
+	\hline
+	\textbf{Event} & \textbf{Payoff Function} & \textbf{State Transition Function}\\
+	\hline
+	\endhead
+	\hline \multicolumn{2}{r}{\textit{Continua en la siguiente página}} \\
+	\endfoot
+	\endlastfoot
+}{%
+	\hline
+        \end{longtable}
+}
+
+
+% ---------------------- custom notation ----------------------
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\svar}[2]{\textbf{#1}_{#2}}
+\newcommand{\attr}[1]{\texttt{#1}}
+\newcommand{\stf}[2]{STF\_#1\_#2()}
+\newcommand{\pof}[2]{POF\_#1\_#2()}
+\newcommand{\dfl}[1]{D (\textbf{Prf}_{#1})}
+\newcommand{\sgn}{R (\attr{CNTRL})}
+\newcommand{\sdl}[3]{S (#1,#2,#3)}
+\newcommand{\sdll}[4]{S (#1,#2,#3,#4)}
+\newcommand{\vsdl}[3]{\vec{S} (#1,#2,#3)}
+\newcommand{\yfr}[2]{Y (#1,#2)}
+\newcommand{\yfrfunc}{Y}
+\newcommand{\ann}[5]{A (#1,#2,#3,#4,#5)}
+\newcommand{\annfunc}{A}
+\newcommand{\obs}[3]{O^{#1} (#2,#3)}
+\newcommand{\obsfull}[5]{O^{#1} (#2,#3,#4,#5)}
+\newcommand{\obsfunc}[1]{O^{#1}}
+\newcommand{\cldev}[3]{U^{ev} (#1,#2 \mid\{#3\})}
+\newcommand{\cldsv}[4]{U^{sv} (#1,#2,\svar{#3}{} \mid\{#4\})}
+\newcommand{\cldsvs}[3]{U^{sv} (#1,#2,\svar{#3}{})}
+\newcommand{\cldca}[2]{U^{ca} (#1,#2)}
+\newcommand{\cldfunc}[1]{U^{#1}}
+% \newcommand{\undef}{\varnothing}
+\newcommand{\tmax}{t^{max}}
+\newcommand{\tev}[1]{\tau(#1)}
+\newcommand{\fev}[1]{f (#1)}
+\newcommand{\payoff}[2]{F (#1,#2)}
+
+
+% ---------------------- misc ----------------------
+\usepackage{verbatim}
+% \usepackage{natbib}
+\setlength\parindent{0pt}
+
