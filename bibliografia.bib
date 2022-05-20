@@ -133,18 +133,20 @@
   howpublished = {\url{https://docs.cardano.org/}}
 }
 
-@article{cardano_utxo_ledger,
-  author = {Jared Corduan and Polina Vinogradova and Matthias Gudemann},
-  title  = {A {Formal} {Specification} of the {Cardano} {Ledger}},
+@misc{cardano_utxo_ledger,
+  title  = {A Formal Specification of the Cardano Ledger},
+  author = {Corduan, Jared and Vinogradova, Polina and Gudemann, Matthias},
   url    = {http://cardano-universe.com/wp-content/uploads/2019/02/ledger-spec.pdf},
   year   = {2019}
 }
+
 @misc{cardano_website,
   author       = {Cardano},
   title        = {Cardano Official Website},
   year         = {2019},
   howpublished = {\url{https://cardano.org/}}
 }
+
 @article{CASC_competition,
   author     = {Sutcliffe, Geoff},
   title      = {The CADE-21 Automated Theorem Proving System Competition},
@@ -163,6 +165,7 @@
   numpages   = {11},
   keywords   = {Competition, automated theorem proving}
 }
+
 @book{concrete_semantics,
   author    = {Nipkow, Tobias and Klein, Gerwin},
   title     = {Concrete Semantics: With Isabelle/HOL},
@@ -171,22 +174,24 @@
   publisher = {Springer Publishing Company, Incorporated},
   abstract  = {Part I of this book is a practical introduction to working with the Isabelle proof assistant. It teaches you how to write functional programs and inductive definitions and how to prove properties about them in Isabelles structured proof language. Part II is an introduction to the semantics of imperative languages with an emphasis on applications like compilers and program analysers. The distinguishing feature is that all the mathematics has been formalised in Isabelle and much of it is executable. Part I focusses on the details of proofs in Isabelle; Part II can be read even without familiarity with Isabelles proof language, all proofs are described in detail but informally. The book teaches the reader the art of precise logical reasoning and the practical use of a proof assistant as a surgical tool for formal proofs about computer science artefacts. In this sense it represents a formal approach to computer science, not just semantics. The Isabelle formalisation, including the proofs and accompanying slides, are freely available online, and the book is suitable for graduate students, advanced undergraduate students, and researchers in theoretical computer science and logic.}
 }
+
 @book{fowler2010dsl,
   title     = {Domain-specific languages},
   author    = {Fowler, Martin},
   year      = {2010},
   publisher = {Pearson Education}
 }
-@inbook{history_of_Interactive_Theorem_Proving,
-  author  = {Harrison, John and Urban, Josef and Wiedijk, Freek},
-  year    = {2014},
-  month   = {12},
-  pages   = {135-214},
-  title   = {History of Interactive Theorem Proving},
-  volume  = {9},
-  isbn    = {9780444516244},
-  journal = {Handbook of the History of Logic},
-  doi     = {10.1016/B978-0-444-51624-4.50004-6}
+
+@inproceedings{history_of_Interactive_Theorem_Proving,
+  title     = {History of Interactive Theorem Proving.},
+  author    = {Harrison, John and Urban, Josef and Wiedijk, Freek},
+  booktitle = {Computational Logic},
+  volume    = {9},
+  pages     = {135--214},
+  year      = {2014},
+  isbn      = {9780444516244},
+  journal   = {Handbook of the History of Logic},
+  doi       = {10.1016/B978-0-444-51624-4.50004-6}
 }
 
 @article{Hitchhiker_amd,
@@ -210,6 +215,7 @@
   pages     = {45-54},
   doi       = {10.1109/LICS.2003.1210044}
 }
+
 @inproceedings{implementing_financial_contracts_on_blockchain,
   author    = {Lamela Seijas, Pablo
                and Nemish, Alexander
@@ -231,6 +237,7 @@
   abstract  = {Marlowe is a DSL for financial contracts. We describe the implementation of Marlowe on the Cardano blockchain, and the Marlowe Playground web-based development and simulation environment.},
   isbn      = {978-3-030-54455-3}
 }
+
 @book{ML_programming_language,
   author    = {Ullman, Jeffrey D.},
   title     = {Elements of ML Programming},
@@ -240,6 +247,7 @@
   publisher = {Prentice-Hall, Inc.},
   address   = {USA}
 }
+
 @article{monotonicity_inference_for_hol,
   author   = {Blanchette, Jasmin Christian
               and Krauss, Alexander},
@@ -256,6 +264,7 @@
   doi      = {10.1007/s10817-011-9234-1},
   url      = {https://doi.org/10.1007/s10817-011-9234-1}
 }
+
 @misc{nakamoto2008bitcoin,
   author = {Satoshi Nakamoto},
   title  = {Bitcoin: A Peer-to-Peer Electronic Cash System},
@@ -264,6 +273,7 @@
   note   = {Accessed: 2015-07-01},
   url    = {https://bitcoin.org/bitcoin.pdf}
 }
+
 @book{plutus-smart-contracts,
   title        = {Plutus: Writing reliable smart contracts},
   author       = {Br{\"{u}}njes, Lars and  Vinogradova, Polina},
@@ -275,6 +285,7 @@
                   The ebook will help you get to grips with using smart contracts on a blockchain by providing real-life examples and functional sample code. Plutus: Writing Reliable Smart Contracts is the first ebook about this new and exciting language and is written by experts from IOHK, the developers of Cardano and ada.               
                   This ebook is concise and focused and uses sample scenarios to help the reader grasp the concepts of this new language. The pitch and flow of this book makes it appealing and is it easy to navigate through the samples which get progressively more complex.}
 }
+
 @incollection{pof_ouroboros,
   author     = {Aggelos Kiayias and Alexander Russell and Bernardo David and Roman Oliynykov},
   address    = {Cham},
@@ -293,15 +304,26 @@
   note       = {Series Title: Lecture Notes in Computer Science},
   pages      = {357--388}
 }
-@inproceedings{proof_and_disproof,
-  author = {Blanchette, Jasmin and Bulwahn, Lukas and Nipkow, Tobias},
-  year   = {2011},
-  month  = {10},
-  pages  = {12-27},
-  title  = {Automatic Proof and Disproof in Isabelle/HOL},
-  isbn   = {978-3-642-24363-9},
-  doi    = {10.1007/978-3-642-24364-6_2}
+
+@incollection{prog-prove-isabelle,
+  title     = {Programming and proving in Isabelle/HOL},
+  author    = {Nipkow, Tobias},
+  booktitle = {Technical report, University of Cambridge},
+  year      = {2013}
 }
+
+@inproceedings{proof_and_disproof,
+  title        = {Automatic proof and disproof in Isabelle/HOL},
+  author       = {Blanchette, Jasmin Christian and Bulwahn, Lukas and Nipkow, Tobias},
+  booktitle    = {International Symposium on Frontiers of Combining Systems},
+  pages        = {12--27},
+  year         = {2011},
+  month        = {10},
+  organization = {Springer},
+  isbn         = {978-3-642-24363-9},
+  doi          = {10.1007/978-3-642-24364-6_2}
+}
+
 @article{proof_processing_Isabelle,
   author  = {Wenzel, Makarius},
   year    = {2012},
@@ -359,6 +381,7 @@
   year      = {2021}
 }
 
+
 @article{tableau_provers,
   author    = {Lawrence C. Paulson},
   title     = {Generic automatic proof tools},
@@ -367,10 +390,10 @@
   year      = {1997},
   isbn      = {0-262-22055-5},
   pages     = {23--47},
+  journal   = {arXiv preprint cs/9711106},
   publisher = {MIT Press},
   address   = {Cambridge, MA, USA}
 }
-
 
 @inbook{The_Extended_UTXO_Model,
   author = {Chakravarty, Manuel and Chapman, James and MacKenzie, Kenneth and Melkonian, Orestis and Jones, Michael and Wadler, Philip},

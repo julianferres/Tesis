@@ -24,7 +24,7 @@
 \setmarginsrb{2 cm}{2 cm}{2 cm}{2 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
 
 \input{languages.tex}
-\input{actus-techspecs.tex}
+\input{actus-techspecs-format.tex}
 
 
 \usepackage[spanish]{babel}
@@ -384,13 +384,13 @@ Utilizaremos la notación introducida para procesar una nueva transacción. En o
 		$\text{txouts}$      & $\in$ & $\mathbb{P}(\text{Tx}) \rightarrow \text{UTXO}$             \\&&\\
 
 		$\text{txouts } txs$ & =     &
-		$\left\{
+		$\left \{
 			\begin{array}{l|lcl}
 				                                    & tx               & \in & txs     \\
 				(\text{txid } tx, ix) \mapsto txout & (\_, outputs)    & =   & tx      \\
 				                                    & ix \mapsto txout & \in & outputs \\
 			\end{array}
-		\right\} $                                                                                 \\&&\\
+		\right \} $                                                                                 \\&&\\
 		\hline
 	\end{tabular}
 \end{center}
@@ -861,9 +861,7 @@ En este capítulo abordaremos los conceptos teóricos en los cuales se basan los
 
 En particular, nos centraremos en Isabelle, uno de los más reconocidos y utilizados en la industria.
 
-\section{Concepto general, herramientas, metodologías}
-
-\section{Verificación formal}
+\section{Concepto general, herramientas y metodologías}
 
 Los asistentes de pruebas formales son herramientas de software diseñadas para ayudar a sus usuarios a realizar pruebas, especialmente en cálculo lógico. Por lo general, los llamamos asistentes de demostración o demostradores interactivos de teoremas.
 
@@ -1018,6 +1016,8 @@ Aquí es donde entra en escena Quickcheck. Quickcheck se modeló originalmente a
 
 Las pruebas exhaustivas verifican la fórmula para cada posible conjunto de valores hasta un límite dado, y por lo tanto encuentran contraejemplos que las pruebas aleatorias podrían pasar por alto. La reducción puede ser más precisa y eficiente que los otros dos enfoques porque considera la fórmula simbólicamente, en lugar de probar un conjunto finito de valores fundamentales. Gracias a un análisis de flujo de datos estáticos, inspirado en la programación lógica, Quickcheck deriva generadores de datos de prueba que tienen en cuenta las premisas para ayudar a evitar los casos de prueba vacíos que afectan a la mayoría de las herramientas de prueba de especificaciones.
 
+
+\subsection{Programando y probando en Isabelle}
 
 %##########################
 % Desarrollo: verificación de contratos financieros usando Isabelle
