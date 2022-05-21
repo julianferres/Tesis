@@ -1017,7 +1017,45 @@ Aquí es donde entra en escena Quickcheck. Quickcheck se modeló originalmente a
 Las pruebas exhaustivas verifican la fórmula para cada posible conjunto de valores hasta un límite dado, y por lo tanto encuentran contraejemplos que las pruebas aleatorias podrían pasar por alto. La reducción puede ser más precisa y eficiente que los otros dos enfoques porque considera la fórmula simbólicamente, en lugar de probar un conjunto finito de valores fundamentales. Gracias a un análisis de flujo de datos estáticos, inspirado en la programación lógica, Quickcheck deriva generadores de datos de prueba que tienen en cuenta las premisas para ayudar a evitar los casos de prueba vacíos que afectan a la mayoría de las herramientas de prueba de especificaciones.
 
 
-\subsection{Programando y probando en Isabelle}
+\section{Programando y probando en Isabelle/HOL}
+
+Esta sección introduce a HOL como un lenguaje de programación funcional y muestra como probar propiedades de programas funcionales mediante inducción~\cite{prog-prove-isabelle}.
+
+\subsection{Definiciones básicas}
+
+\subsubsection{Tipos, términos y fórmulas}
+
+HOL es considerado una lógica tipada, cuyo sistema de tipos se asemeja al de los lenguajes de programación funcional. Esto implica la existencia de:
+
+\begin{itemize}
+	\item \textbf{Tipos base}: Los cuales están conformados por \texttt{bool}, el tipo de valor de verdad, \texttt{nat}, el tipo de los números naturales ($\mathbb{N}$), e \texttt{int}, el tipo de los números enteros ($\mathbb{Z}$).
+ 	\item \textbf{Constructores de tipo}: En particular \texttt{list}, el tipo de listas y \texttt{set}, el tipo de conjuntos. Los constructores de tipos se escriben como posfijos, es decir, después de sus argumentos. Por ejemplo, \texttt{nat list} es el tipo de listas cuyos elementos son números naturales.
+  	\item \textbf{Funciones}: Denotadas con $\Rightarrow$.
+  	\item \textbf{Variables de tipo}: Denotadas por $'a$, $'b$, etc., como en ML~\cite{ML_programming_language}.
+\end{itemize}
+
+Los \textbf{términos} se forman como en la programación funcional, aplicando funciones a los argumentos. Si $f$ es una función de tipo $\tau_1 \Rightarrow \tau_2$ y $t$ es un término de tipo $\tau_1$ entonces $f\ t$ es un término de tipo $\tau_2$. Escribimos $t :: \tau$ para indicar que el término $t$ tiene tipo $\tau$. Los términos abarcan también abstracciones lambda. Por ejemplo $\lambda x.\ x$ es la función identidad.
+
+Las \textbf{fórmulas} son términos de tipo \textit{bool}. Entre ellas se encuentran las constantes básicas \texttt{True} y \texttt{False} y los conectores lógicos usuales (en orden decreciente de precedencia): $\neg,\ \vee,\ \wedge,\ \rightarrow$.
+
+La \textbf{igualdad} está disponible en la forma de la función infijo \textbf{=}, del tipo $'a \Rightarrow 'b \Rightarrow  bool$. También funciona para formulas, donde significa `si o solo si'.
+
+Los \textbf{cuantificadores} se escriben como $\forall\ x.\ P$ y $\exists\ x.\ P$.
+
+Isabelle automáticamente computa el tipo de cada variable en un término. Esto se conoce popularmente como inferencia de tipos. A pesar de la inferencia de tipos, en ocasiones es necesario agregar el tipo explícito a una variable o término. La sintaxis es $t :: \tau$ como en $m + (n::nat)$. Las anotaciones explicitas de tipos son especialmente necesarias para desambiguar términos que incluyen funciones sobrecargadas como $+$.
+
+Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implicación $\Longrightarrow$. Estos son partes del framework Isabelle, no de HOL.
+
+
+\subsection{Teorías}
+
+Una teoría es una colección de tipos, funciones y teoremas, similar a un módulo en un lenguaje de programación. Todo el contenido que escribamos en Isabelle debe pertenecer a una teoría. El formato general de una teoría T es:
+
+\textbf{\texttt{theory}} $T$\\
+\textbf{\texttt{imports}} $T_1 \ldots T_n$\\
+\textbf{\texttt{begin}}\\
+\textit{definitions, theorems and proofs}\\
+\textbf{\texttt{end}}
 
 %##########################
 % Desarrollo: verificación de contratos financieros usando Isabelle
