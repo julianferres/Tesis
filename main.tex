@@ -10,7 +10,7 @@
 \usepackage{subfigure}
 \usepackage{indentfirst}
 \usepackage{titlesec}
-%\newcommand{\sectionbreak}{\clearpage}
+\newcommand{\sectionbreak}{\clearpage} % TODO - Consultar si se deja o saca 
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
 \usepackage{gensymb}
 
@@ -35,6 +35,9 @@
 \usepackage[nolist]{acronym}
 \usepackage[table]{xcolor}
 \usepackage{url}
+
+% \boxed destruye los endline
+\newcommand\mybox[2][l]{\fbox{\begin{tabular}{@{}#1@{}}#2\end{tabular}}}
 
 %% Biblatex
 % \usepackage[style=plain]{biblatex}
@@ -157,7 +160,7 @@ Las direcciones se utilizan al enviar pagos en criptomonedas. Son identificadore
 \section{Cardano}
 
 Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo `proof-of-stake' (prueba de participación)
-\footnote{Definiciones sobre PoS se encuentran en los sitios web de \href{https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}{Ethereum} y \href{https://www.coinbase.com/es/learn/crypto-basics/what-is-proof-of-work-or-proof-of-stake}{Coinbase}}
+\footnote{Definiciones más extensas sobre PoS se encuentran en los sitios web de \href{https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}{Ethereum} y \href{https://www.coinbase.com/es/learn/crypto-basics/what-is-proof-of-work-or-proof-of-stake}{Coinbase}}
 descentralizada de tercera generación y el hogar de la criptomoneda ada. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
 
 La primera generación de blockchains (con Bitcoin como gran representante) ofrecía ledgers descentralizados para la transferencia segura de criptomonedas. Sin embargo, tales cadenas de bloques no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (DApps). A medida que la tecnología blockchain maduró, la segunda generación (por ejemplo Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
@@ -167,7 +170,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-	\caption{Logo de la cadena de bloques Cardano. Extraído de \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{su página de Wikipedia}}\label{fig:Cardano_logo}
+	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardanof}}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -275,7 +278,7 @@ Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestr
 \begin{figure}
 	\centering
 	\includegraphics[width=0.7\textwidth]{UTXO_Funds_Flow_Example.png}
-	\caption{Flujo de dinero en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:UTXO_Funds_Flow_Example}
+	\caption{Flujo de dinero en el modelo UTXO.\@ Extraído de~\cite{plutus-smart-contracts}.}\label{fig:UTXO_Funds_Flow_Example}
 \end{figure}
 
 El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecúa a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
@@ -832,24 +835,6 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 \end{functions}
 \endgroup
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{PAM_Contract_Schedule.png}
-%     \caption{Cronograma del contrato PAM para algunos eventos. Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_Contract_Schedule}
-% \end{figure}
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{PAM_State_Variables_Initialization.png}
-%     \caption{Inicialización de algunas variables del contrato PAM.\@Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_State_Variables_Initialization}
-% \end{figure}
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{PAM_STF_POF.png}
-%     \caption{Funciones de cambio de estado y pago del contrato PAM.\@Extraído de~\cite{ACTUS_Techspecs}}\label{fig:PAM_STF_POF}
-% \end{figure}
-
 
 %##########################
 % Verificación de programas
@@ -924,7 +909,7 @@ La simplificación es el principal caballo de batalla en Isabelle. El sistema pu
 El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
 
 
-\subsubsection{Auto}
+\subsubsection{Auto}\label{sec:auto}
 
 Desde el lado del usuario, invocado con la keyword \textit{auto}, podemos mencionar a un método de prueba que intercala la simplificación con una pequeña cantidad de búsqueda dentro del espacio de pruebas.
 
@@ -1044,18 +1029,102 @@ Los \textbf{cuantificadores} se escriben como $\forall\ x.\ P$ y $\exists\ x.\ P
 
 Isabelle automáticamente computa el tipo de cada variable en un término. Esto se conoce popularmente como inferencia de tipos. A pesar de la inferencia de tipos, en ocasiones es necesario agregar el tipo explícito a una variable o término. La sintaxis es $t :: \tau$ como en $m + (n::nat)$. Las anotaciones explicitas de tipos son especialmente necesarias para desambiguar términos que incluyen funciones sobrecargadas como $+$.
 
-Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implicación $\Longrightarrow$. Estos son partes del framework Isabelle, no de HOL.
-
+Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implicación $\Longrightarrow$. Estos son parte del framework Isabelle, no de HOL.\@
 
 \subsection{Teorías}
 
 Una teoría es una colección de tipos, funciones y teoremas, similar a un módulo en un lenguaje de programación. Todo el contenido que escribamos en Isabelle debe pertenecer a una teoría. El formato general de una teoría T es:
 
-\textbf{\texttt{theory}} $T$\\
-\textbf{\texttt{imports}} $T_1 \ldots T_n$\\
-\textbf{\texttt{begin}}\\
-\textit{definitions, theorems and proofs}\\
-\textbf{\texttt{end}}
+\mybox{
+	\textbf{\texttt{theory}}\ $T$\\
+	\textbf{\texttt{imports}}\ $T_1 \ldots T_n$\\
+	\textbf{\texttt{begin}}\\
+	\textit{definitions, theorems and proofs}\\
+	\textbf{\texttt{end}}
+}
+
+donde $T_1 \ldots T_n$ son los nombres de teorías existentes en las que $T$ está basado. Se dice que $T_i$ son las teorías padre de $T$. Todo lo definido en los padres de $T$ (y los padres de sus padres, recursivamente) es visible automáticamente. Cada teoría $T$ debe estar guardada en un archivo llamado \texttt{T.thy}.
+
+Ademas de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\href{https://isabelle.in.tum.de/library/HOL}{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\href{https://isa-afp.org}{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
+
+
+\subsubsection{Comillas}
+La definición textual de una teoría sigue una sintaxis especifica incluyendo keywords como \textbf{begin} y \textbf{datatype}. En esta sintaxis están embebidos los tipos y fórmulas de HOL.\@ Para distinguir los dos niveles, todo lo específico de HOL (términos y tipos) debe estar entre comillas: \texttt{"\ldots"}. Las comillas alrededor de un único identificador se pueden eliminar. Cuando Isabelle imprime un mensaje de error de sintaxis, se refiere a la sintaxis HOL como la sintaxis interna y al lenguaje teórico adjunto como la sintaxis externa.% chktex 18 // intencionalmente usando "" en lugar de ``''
+
+\subsubsection{Estado de la prueba} 
+
+En una instalación habitual de Isabelle\footnote{\href{https://isabelle.in.tum.de/}{https://isabelle.in.tum.de/}}, con el cursor en un `lemma' o `theorem', es posible ver en la pestaña `state', los subgoals y estado parcial de nuestra prueba en proceso.
+
+\subsection{Algunos tipos y pruebas básicas}
+
+En esta sección detallaremos los tipos \textit{bool}, \textit{nat} y \textit{list}, los más importantes y utilizados en Isabelle/HOL.\@ Mostremos algunos ejemplos de pruebas sencillas y las probaremos con inducción y simplificación.
+
+\subsubsection{bool}
+
+Este tipo esta predefinido mediante:
+
+\texttt{datatype bool = True | False}
+
+El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funciones predefinidas,\\ como:  $\neg,\ \vee,\ \wedge,\ \rightarrow$, etc. El siguiente ejemplo muestra como puede definirse la conjunción lógica (conocida también como intersección en teoría de conjuntos) mediante `\textit{pattern matching}':
+
+\begin{lstlisting}[upquote=true, mathescape=true, basicstyle=\ttfamily]
+  fun conj :: "bool $\Rightarrow$ bool $\Rightarrow$ bool" where
+  "conj True True = True" |
+  "conj _ _ = False"}
+\end{lstlisting}
+
+Las definiciones de datatype y funciones siguen la sintaxis de lenguajes de programación funcional.
+
+\subsubsection{nat}
+Los números naturales y otros datatypes predefinidos.
+
+\texttt{datatype nat = 0 | Suc nat}
+
+Todos los valores de tipo \texttt{nat} son generados por los constructores \texttt{0} y \texttt{Suc}. Por lo tanto, los valores de tipo nat son \texttt{0}, \texttt{Suc 0}, \texttt{Suc (Suc 0)}, etc. Algunas de las funciones predefinidas son: +, *, $\leq$, etc. A continuación, vemos como podríamos definir nuestra propia operación de suma:
+
+\begin{lstlisting}[upquote=true, mathescape=true, basicstyle=\ttfamily]
+  fun add :: "nat $\Rightarrow$ nat $\Rightarrow$ nat" where
+  "add 0 n = n" |
+  "add (Suc m) n = Suc(add m n)"
+\end{lstlisting}
+
+Y a continuación vemos una prueba de \texttt{add m 0 = m}:
+\begin{lstlisting}[upquote=true, mathescape=true, basicstyle=\ttfamily]
+  lemma add_02: "add m 0 = m"
+  apply(induction m)
+  apply(
+	  
+  done
+\end{lstlisting}
+
+La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre, por ejemplo `\texttt{add\_02}'. Las propiedades definidas recursivamente suelen ser probadas por inducción en la mayoría de las ocasiones. El commando \texttt{apply (induction m)} le indica a Isabelle que debe comenzar una prueba por inducción, en la variable \texttt{m}. Como respuesta, va a mostrar el siguiente `estado de prueba':
+
+\begin{enumerate}
+	\item \texttt{add 0 0 = 0}
+	\item $\bigwedge$ \texttt{m.\ add m 0 = m} $\Longrightarrow$ \texttt{add (Suc m) 0 = Suc m}	
+\end{enumerate}
+
+Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{sec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos subgoals, Isabelle puede manejarlos con las teorías incluidas por defecto. 
+
+El caso base \texttt{add 0 0 = 0} se prueba por la definición de \texttt{add} y el paso inductivo es casi tan simple: \texttt{add (Suc m) 0 = Suc (add m 0) = Suc m} usando la definición de \texttt{add} y la hipótesis inductiva respectivamente. En resumen, ambas `sub-pruebas' se basan en la simplificación mediante la definición y la hipótesis inductiva. Como resultado de la keyword `\texttt{done}', Isabelle asocia el lema a su identificador.
+
+De ahora en más dicho lema podría ser utilizado como algún paso de prueba por lemas subsiguientes.
+
+\subsubsection{Listas}
+
+Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede ser encontrada en \href{https://isabelle.in.tum.de/library/HOL/HOL/List.html}{https://isabelle.in.tum.de/library/HOL/HOL/List.html}}, pero su definición puede ser simplificada como:
+
+\begin{lstlisting}[upquote=true, mathescape=true, basicstyle=\ttfamily]
+	datatype 'a list = Nil | Cons 'a "'a list"
+\end{lstlisting}
+
+\begin{itemize}
+	\item La lista \texttt{'a list} es el conjunto de listas con elementos de tipo \texttt{'a}. Debido a que \texttt{'a} es una variable de tipo, las listas son de hecho polimórficas: Los elementos de una lista pueden ser de tipo arbitrario (pero todos los elementos deben compartir el tipo).
+
+	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento (de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \textit{\texttt{Nil}}, \textit{\texttt{Cons x Nil}} o \textit{\texttt{Cons x (Cons y Nil)}}, etc.
+	
+\end{itemize}
+
 
 %##########################
 % Desarrollo: verificación de contratos financieros usando Isabelle
