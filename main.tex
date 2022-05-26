@@ -1128,7 +1128,7 @@ Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede 
 \begin{itemize}
 	\item La lista \texttt{'a list} es el conjunto de listas con elementos de tipo \texttt{'a}. Debido a que \texttt{'a} es una variable de tipo, las listas son de hecho polimórficas: Los elementos de una lista pueden ser de tipo arbitrario (pero todos los elementos deben compartir el tipo).
 
-	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento (de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \textit{\texttt{Nil}}, \textit{\texttt{Cons x Nil}} o \textit{\texttt{Cons x (Cons y Nil)}}, etc.
+	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \textit{\texttt{Nil}}, \textit{\texttt{Cons x Nil}} o \textit{\texttt{Cons x (Cons y Nil)}}, etc.
 	
 \end{itemize}
 
@@ -1139,6 +1139,199 @@ Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede 
 
 \chapter[Verificación de contratos financieros en Isabelle]{Desarrollo: Verificación de contratos financieros usando Isabelle}
 \section{Escritura de contratos ACTUS para Cardano}
+
+En esta sección, veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, en conjunto con IOHK.\@
+
+Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\href{https://iohk.io/en/team/yves-hauser}{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+
+\subsection{Descripción de la estructura del proyecto}
+
+% Contrato COM
+\subsection{Contrato COM (Commodity)}
+
+Según su descripción en~\cite{ACTUS_Dictionary}:
+
+\begin{quote} 
+``Este contrato no es de tipo financiero en el sentido estricto. Sin embargo, realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden utilizarse servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.''
+\end{quote}
+
+\subsubsection{Especificación técnica}
+
+A continuación adjunto la especificación técnica del contrato COM~\cite{ACTUS_Techspecs}:
+
+% ---------------------- table: com schedule ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{schedule}{COM}
+	AD & & Same as PAM \\
+	\hline
+	PRD & & Same as STK \\
+	\hline
+	TD & & Same as STK \\
+\end{schedule}
+\endgroup
+
+% ---------------------- table: com states ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{states}{COM}
+	$\svar{Sd}{}$ & & Same as STK \\
+\end{states}
+\endgroup
+
+% ---------------------- table: com functions ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{functions}{COM}
+	AD & \pof{AD}{PAM} & \stf{AD}{STK} \\
+	\hline
+	PRD & \pof{PRD}{STK} & \stf{PRD}{STK} \\
+	\hline
+	TD & \pof{PRD}{STK} & \stf{PRD}{STK} \\
+\end{functions}
+\endgroup
+
+
+
+% Contrato CSH
+\subsection{CSH (Cash)}
+
+Según su descripción en~\cite{ACTUS_Dictionary}:
+
+\begin{quote} 
+``Es un contrato simple, que representa tenencias de efectivo.''
+\end{quote}
+
+\subsubsection{Especificación técnica}
+
+A continuación adjunto la especificación técnica del contrato CSH~\cite{ACTUS_Techspecs}:
+
+% ---------------------- table: csh schedule ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{schedule}{CSH}
+	AD & & Same as PAM \\
+\end{schedule}
+\endgroup
+
+% ---------------------- table: csh states ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{states}{CSH}
+  	$\svar{Nt}{}$ & $\svar{Nt}{t_0}=\sgn\attr{NT}$ & \\
+	\hline
+	$\svar{Sd}{}$ & & Same as PAM \\
+\end{states}
+\endgroup
+
+% ---------------------- table: csh functions ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{functions}{CSH}
+	AD & \pof{AD}{PAM} & $\svar{Sd}{t^+}=t$ \\
+\end{functions}
+\endgroup
+
+
+% Contrato CLM
+\subsection{CLM (Call Money)}
+
+Según su descripción en~\cite{ACTUS_Dictionary}:
+
+\begin{quote}
+``Este tipo de contrato modela préstamos que se renuevan, mientras no sean notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.''
+\end{quote}
+
+\subsubsection{Especificación técnica}
+
+A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS_Techspecs}:
+
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+% ---------------------- table: clm schedule ----------------------
+\begin{schedule}{CLM}
+	AD & & Same as PAM \\
+	\hline
+	IED & & Same as PAM \\
+	\hline
+	PR & & Same as PAM \\
+	\hline
+	FP & & Same as PAM \\
+	\hline
+	IP & $t^{IP}=\svar{Md}{t_0}$ & \\
+	\hline
+	IPCI & $\vec{t}^{IPCI} = \begin{cases}
+					\varnothing & \text{if}\quad \attr{IPNR}=\varnothing \\
+					\sdl{s}{\attr{IPCL}}{\svar{Md}{t_0}} & \text{else} \end{cases}$ &
+				where\par
+				$s=\begin{cases} \attr{IPANX} & \text{if}\quad \attr{IPANX}\neq\varnothing \\ %chktex 21
+						\attr{IED}+\attr{IPCL} & \text{else} \end{cases}$ \\
+	\hline
+	RR & & Same as PAM \\
+	\hline
+	RRF & & Same as PAM \\
+	\hline
+	CE & & Same as PAM \\
+\end{schedule}
+\endgroup
+
+% ---------------------- table: clm states ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{states}{CLM}
+	$\svar{Md}{}$ & $\svar{Md}{t_0} = \begin{cases} \attr{MD} & \text{if}\quad \attr{MD}\neq\varnothing \\
+							s & \text{else if}\quad \obs{ev}{\attr{CID}}{t_0}\neq\{ \} \\ %chktex 21
+							\tmax & \text{else} \end{cases}$
+			& where\par
+			$s=\sup t\in\tev{\obs{ev}{\attr{CID}}{t_0}}$ \\
+	\hline
+  	$\svar{Nt}{}$ & & Same as PAM \\
+	\hline
+	$\svar{Ipnr}{}$ & & Same as PAM \\
+  	\hline
+  	$\svar{Ipac}{}$ & & Same as PAM \\
+	\hline
+  	$\svar{Feac}{}$ & & Same as PAM \\
+  	\hline
+  	$\svar{Prf}{}$ & & Same as PAM \\
+	\hline
+	$\svar{Sd}{}$ & & Same as PAM \\
+\end{states}
+\endgroup
+
+% ---------------------- table: clm functions ----------------------
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+\begin{functions}{CLM}
+	AD & \pof{AD}{PAM} & \stf{AD}{PAM} \\
+	\hline
+	IED & $X_{\attr{CUR}}^{\attr{CURS}}(t)\sgn (-1)\attr{NT}$ & \stf{IED}{PAM} \\
+	\hline
+	PR & \pof{PR}{PAM} & \stf{PR}{PAM} \\
+	\hline
+	FP & \pof{FP}{PAM}
+		& \stf{FP}{PAM} \\
+	\hline
+	IP & $X_{\attr{CUR}}^{\attr{CURS}}(t)(\svar{Ipac}{t^-}+\yfr{\svar{Sd}{t^-}}{t}\svar{Ipnr}{t^-}\svar{Nt}{t^-})$
+		& {$\begin{aligned}
+				\svar{Ipac}{t^+} &= 0.0 \\
+				\svar{Sd}{t^+} &= t \end{aligned}$} \\
+	\hline
+	IPCI & \pof{IPCI}{PAM}
+		& \stf{IPCI}{PAM} \\
+	\hline
+	RR & \pof{RR}{PAM}
+		& \stf{RR}{PAM} \\
+	\hline
+	RRF & \pof{RRF}{PAM}
+		& \stf{RRF}{PAM} \\
+	\hline
+	CE & \pof{CE}{PAM} & \stf{AD}{PAM} \\
+\end{functions}
+\endgroup
+
+
+
 \section{sss}
 \section{sss}
 
