@@ -25,6 +25,7 @@
 
 \input{languages.tex}
 \input{actus-techspecs-format.tex}
+\input{dirtree.tex}
 
 
 \usepackage[spanish]{babel}
@@ -1146,6 +1147,80 @@ Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footn
 
 \subsection{Descripción de la estructura del proyecto}
 
+%└── Language
+   %└── Marlowe
+      %└── ACTUS
+         %├── Domain
+         %│  ├── BusinessEvents.hs
+         %│  ├── ContractState.hs
+         %│  ├── ContractTerms.hs
+         %│  ├── Ops.hs
+         %│  └── Schedule.hs
+         %├── Generator
+         %│  ├── Analysis.hs
+         %│  ├── Generator.hs
+         %│  ├── GeneratorFs.hs
+         %│  ├── GeneratorStatic.hs
+         %│  └── MarloweCompat.hs
+         %├── Model
+         %│  ├── Applicability.hs
+         %│  ├── ContractSchedule.hs
+         %│  ├── Payoff.hs
+         %│  ├── StateInitialization.hs
+         %│  └── StateTransition.hs
+         %└── Utility
+            %├── ANN
+            %│  └── Annuity.hs
+            %├── DateShift.hs
+            %├── ScheduleGenerator.hs
+            %└── YearFraction.hs
+\begin{figure}[H]
+\begin{tikzpicture}%
+	\draw[color=black!60!white]
+	\FTdir(\FTroot,root,.){       % root: parent = \FTroot
+	  \FTdir(root,Language,Language){       % normal dir: (parentID, currentID, label)
+          \FTdir(Language,Marlowe,Marlowe){                    
+              \FTdir(Marlowe,ACTUS,ACTUS){                    
+                  \FTdir(ACTUS,Domain,Domain){
+                      \FTfile(Domain,BusinessEvents.hs)
+                      \FTfile(Domain,ContractState.hs)
+                      \FTfile(Domain,ContractTerms.hs)
+                      \FTfile(Domain,Ops.hs)
+                      \FTfile(Domain,Schedule.hs)
+                  }
+                  ++(0,-0.5em)                % additional space if neded
+                  \FTdir(ACTUS,Generator,Generator){
+                      \FTfile(Generator,Analysis.hs)
+                      \FTfile(Generator,Generator.hs)
+                      \FTfile(Generator,GeneratorFs.hs)
+                      \FTfile(Generator,GeneratorStatic.hs)
+                      \FTfile(Generator,MarloweCompat.hs)
+                  }
+                  ++(0,-0.5em)                % additional space if neded
+                  \FTdir(ACTUS,Model,Model){
+                      \FTfile(Model,Applicability.hs)
+                      \FTfile(Model,ContractSchedule.hs)
+                      \FTfile(Model,Payoff.hs)
+                      \FTfile(Model,StateInitialization.hs)
+                      \FTfile(Model,StateTransition.hs)
+                  }
+                  ++(0,-0.5em)                % additional space if neded
+                  \FTdir(ACTUS,Utility,Utility){
+                      \FTdir(Utility,ANN,ANN){
+                          \FTfile(ANN,Annuity.hs)
+                      }
+                      \FTfile(Utility,DateShift.hs)
+                      \FTfile(Utility,ScheduleGenerator.hs)
+                      \FTfile(Utility,YearFraction.hs)
+                  }
+              }
+          }
+      }
+    };
+\end{tikzpicture}
+\caption{Arbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}}\label{fig:Marlowe_dirtree}
+\end{figure}
+
 % Contrato COM
 \subsection{Contrato COM (Commodity)}
 
@@ -1199,7 +1274,7 @@ A continuación adjunto la especificación técnica del contrato COM~\cite{ACTUS
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote} 
-``Es un contrato simple, que representa tenencias de efectivo.''
+``Es un contrato simple, que representa tenencias de dinero en efectivo.''
 \end{quote}
 
 \subsubsection{Especificación técnica}
