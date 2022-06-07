@@ -10,7 +10,7 @@
 \usepackage{subfigure}
 \usepackage{indentfirst}
 \usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage} % TODO - Consultar si se deja o saca 
+\newcommand{\sectionbreak}{\clearpage}
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
 \usepackage{gensymb}
 
@@ -33,7 +33,7 @@
 \usepackage[table]{xcolor}
 \usepackage{url}
 
-% \boxed destruye los endline
+% \boxed no tolera los endline
 \newcommand\mybox[2][l]{\fbox{\begin{tabular}{@{}#1@{}}#2\end{tabular}}}
 
 %% Biblatex
@@ -136,9 +136,9 @@ Los propietarios de activos digitales se identifican por sus claves públicas, y
 
 Un contrato inteligente o `smart contract' es un acuerdo digital automatizado, escrito en código, que trackea, verifica y ejecuta las transacciones vinculantes de un contrato entre varias partes. Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa corto cuyas entradas y salidas son transacciones en una cadena de bloques.
 
-Los smart contracts son autoejecutables y confiables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye a través de una red blockchain descentralizada, lo que lo hace transparente e irreversible.
+Los smart contracts son auto-ejecutables y confiables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye a través de una red blockchain descentralizada, lo que lo hace transparente e irreversible.
 
-En resumen, los contratos inteligentes son inmutables ya que no se pueden modificar, son distribuibles y a prueba de manipulaciones, rápidos y rentables, ya que no hay intermediarios, lo que ahorra dinero y tiempo, y es seguro gracias al cifrado del mismo.
+En resumen, los contratos inteligentes son inmutables ya que no se pueden modificar, pueden distribuirse y son a prueba de manipulaciones, rápidos y rentables, ya que no hay intermediarios, lo que ahorra dinero y tiempo, y es seguro gracias al cifrado del mismo.
 
 Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorno funcional, Cardano apoyará el desarrollo y la implementación de contratos inteligentes utilizando lenguajes de programación como:
 
@@ -172,7 +172,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardanof}}\label{fig:Cardano_logo}
+	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardano}}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -348,7 +348,7 @@ Antes de analizar la estructura de las transacciones, haremos un pequeño repaso
 
 El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de `outputs' dentro de una transacción.
 
-Los valores o values en el mapa son pares formados por un `coin value' y una dirección, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de `script' (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
+Los valores o `values' en el mapa son pares formados por un `coin value' y una dirección, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de `script' (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
 
 Para poder comprender la estructura de la transacción en sí, analicemos primero los `outputs'. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los outputs, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito.
 Las claves del mapa son indices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho indice identifica de forma global a dicho output.
@@ -1148,7 +1148,7 @@ Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footn
 \newpage
 \subsection{Descripción de la estructura del proyecto}
 
-En la siguiente subsección, describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la esctructura de archivos del mismo, junto con la responsibilidad de algunos de ellos.
+En la siguiente sub-sección, describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
 
 \begin{figure}[H]
 \begin{tikzpicture}
@@ -1164,7 +1164,7 @@ En la siguiente subsección, describiremos brevemente algunos de las entidades r
                       \FTfile(Domain,Ops.hs)
                       \FTfile(Domain,Schedule.hs)
                   }
-                  ++(0,-0.5em)                % additional space if neded
+                  ++(0,-0.5em)                
                   \FTdir(ACTUS,Generator,Generator){
                       \FTfile(Generator,Analysis.hs)
                       \FTfile(Generator,Generator.hs)
@@ -1172,7 +1172,7 @@ En la siguiente subsección, describiremos brevemente algunos de las entidades r
                       \FTfile(Generator,GeneratorStatic.hs)
                       \FTfile(Generator,MarloweCompat.hs)
                   }
-                  ++(0,-0.5em)                % additional space if neded
+                  ++(0,-0.5em)                
                   \FTdir(ACTUS,Model,Model){
                       \FTfile(Model,Applicability.hs)
                       \FTfile(Model,ContractSchedule.hs)
@@ -1180,7 +1180,7 @@ En la siguiente subsección, describiremos brevemente algunos de las entidades r
                       \FTfile(Model,StateInitialization.hs)
                       \FTfile(Model,StateTransition.hs)
                   }
-                  ++(0,-0.5em)                % additional space if neded
+                  ++(0,-0.5em)                
                   \FTdir(ACTUS,Utility,Utility){
                       \FTdir(Utility,ANN,ANN){
                           \FTfile(ANN,Annuity.hs)
@@ -1194,10 +1194,10 @@ En la siguiente subsección, describiremos brevemente algunos de las entidades r
       }
     };
 \end{tikzpicture}
-\caption{Arbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}}\label{fig:Marlowe_dirtree}
+\caption{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}}\label{fig:Marlowe_dirtree}
 \end{figure}
 
-Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el codigo necesario para modelar los contratos ACTUS, generar contratos el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
+Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el código necesario para modelar los contratos ACTUS, generar contratos el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
 
 \subsubsection{Domain}
 
@@ -1214,7 +1214,7 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
     };
 \end{tikzpicture}
 
-A lo largo de los mismos, se puden ver definiciones de tipos necesarios en ACTUS. Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
+A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS. Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
@@ -1257,7 +1257,7 @@ data ContractStatePoly a = ContractStatePoly
   , ipac  :: a               -- ^ Accrued Interest (IPAC): The current value of accrued interest
   , ipac1 :: Maybe a         -- ^ Accrued Interest (IPAC1): The current value of accrued interest of the first leg
   , ipac2 :: Maybe a         -- ^ Accrued Interest (IPAC2): The current value of accrued interest of the second leg
-  , ipla  :: Maybe a         -- ^ Last Interst Period
+  , ipla  :: Maybe a         -- ^ Last Interest Period
   , feac  :: a               -- ^ Fee Accrued (FEAC): The current value of accrued fees
   , nsc   :: a               -- ^ Notional Scaling Multiplier (SCNT): The multiplier being applied to principal cash flows
   , isc   :: a               -- ^ InterestScalingMultiplier (SCIP): The multiplier being applied to interest cash flows
@@ -1393,9 +1393,9 @@ En este directorio se encuentran los archivos que modelan la lógica expuesta po
 \end{tikzpicture}
 
 
-Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se expera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
+Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
 
-Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, la inicialización del estado y los cambios del mismo.
+Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, inicializar las variables de estado, y las transiciones sobre las mismas.
 
 Como ejemplo, puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
 
@@ -1466,7 +1466,7 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
     };
 \end{tikzpicture}
 
-Funciones para calcular determinadas fechas, para cada tipo de convención de día habil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
+Funciones para calcular determinadas fechas, para cada tipo de convención de día hábil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
 
 
 % Contrato COM
