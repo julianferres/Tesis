@@ -205,7 +205,6 @@ Cardano también admite la creación de tokens nativos: activos digitales que se
 
 % En este trabajo nos proponemos estudiar la verificación a bajo nivel de un grupo específico de contratos financieros definidos en el estándar ACTUS\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, en particular para la cadena de bloques \textit{Cardano}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
 
-
 \subsection{Proof of stake}
 
 Proof of stake (PoS o Prueba de participación) es un tipo de protocolo de consenso que utiliza la cantidad de participación (o valor) mantenida en el sistema para determinar el consenso.
@@ -438,7 +437,7 @@ data Contract = Close
 \end{lstlisting}
 
 Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos ---
-\texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, and \texttt{Assert} --- construyen un contrato complejo a partir de contratos más simples, y el ultimo método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
+\texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, y \texttt{Assert} --- construyen un contrato complejo a partir de contratos más simples, y el ultimo método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
 
 Antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
@@ -1151,7 +1150,7 @@ Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footn
 En la siguiente subsección, describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la esctructura de archivos del mismo, junto con la responsibilidad de algunos de ellos.
 
 \begin{figure}[H]
-\begin{tikzpicture}%
+\begin{tikzpicture}
 	\draw[color=black!60!white]
 	\FTdir(\FTroot,root,.){       % root: parent = \FTroot
 	  \FTdir(root,Language,Language){       % normal dir: (parentID, currentID, label)
@@ -1203,7 +1202,7 @@ Para comenzar, podemos observar los cuatro directorios principales: \texttt{Doma
 
 El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.
 
-\begin{tikzpicture}%
+\begin{tikzpicture}
 	\draw[color=black!60!white]
         \FTdir(\FTroot,Domain,Domain){
             \FTfile(Domain,BusinessEvents.hs)
@@ -1324,6 +1323,57 @@ data BDC = BDC_NULL -- ^ No shift
 
 \subsubsection{Generator}
 
+En este directorio se implementan los diferentes generadores y compatibilidad hacia el lenguaje Marlowe.
+
+\begin{tikzpicture}
+    \draw[color=black!60!white]
+    \FTdir(\FTroot,Generator,Generator){
+        \FTfile(Generator,Analysis.hs)
+        \FTfile(Generator,Generator.hs)
+        \FTfile(Generator,GeneratorFs.hs)
+        \FTfile(Generator,GeneratorStatic.hs)
+        \FTfile(Generator,MarloweCompat.hs)
+    };
+\end{tikzpicture}
+
+
+En el archivo \texttt{Analysis.hs}, se definen las funciones:
+
+\begin{itemize}
+    \item \texttt{genProjectedCashflows}
+    \item \texttt{genCashflow}
+    \item \texttt{genSchedules}
+    \item \texttt{genStates}
+    \item \texttt{genPayoffs}
+\end{itemize}
+
+Las mismas, como sus nombres lo indican, generan los flujos de dinero proyectados, flujos de dinero, cronogramas, estados y pagos respectivamente. Los flujos de dinero pueden ser utilizados para generar los pagos en un contrato en Marlowe.
+
+En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS. In \texttt{genFsContract}, los `risk factors' son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
+
+La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. `Deposit' y `Pay'.
+
+Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. A continuación se muestra el fragmento inicial de la misma:
+
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Comienzo de la función \texttt{toMarlowe}]
+toMarlowe :: ContractTerms -> ContractTermsMarlowe
+toMarlowe ct =
+  ContractTermsPoly
+    { contractId = contractId ct,
+      contractType = contractType ct,
+      contractStructure = map trans (contractStructure ct),
+      contractRole = contractRole ct,
+      settlementCurrency = settlementCurrency ct,
+      initialExchangeDate = initialExchangeDate ct,
+      dayCountConvention = dayCountConvention ct,
+      scheduleConfig = scheduleConfig ct,
+      statusDate = statusDate ct,
+      contractPerformance = contractPerformance ct,
+      creditEventTypeCovered = creditEventTypeCovered ct,
+
+      [...]
+\end{lstlisting}
 
 
 \subsubsection{Model}
