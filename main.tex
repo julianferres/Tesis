@@ -1205,13 +1205,13 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
 
 \begin{tikzpicture}
 	\draw[color=black!60!white]
-        \FTdir(\FTroot,Domain,Domain){
-            \FTfile(Domain,BusinessEvents.hs)
-            \FTfile(Domain,ContractState.hs)
-            \FTfile(Domain,ContractTerms.hs)
-            \FTfile(Domain,Ops.hs)
-            \FTfile(Domain,Schedule.hs)
-        };
+    \FTdir(\FTroot,Domain,Domain){
+        \FTfile(Domain,BusinessEvents.hs)
+        \FTfile(Domain,ContractState.hs)
+        \FTfile(Domain,ContractTerms.hs)
+        \FTfile(Domain,Ops.hs)
+        \FTfile(Domain,Schedule.hs)
+    };
 \end{tikzpicture}
 
 A lo largo de los mismos, se puden ver definiciones de tipos necesarios en ACTUS. Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
@@ -1352,7 +1352,7 @@ Las mismas, como sus nombres lo indican, generan los flujos de dinero proyectado
 
 En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS. In \texttt{genFsContract}, los `risk factors' son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
 
-La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. `Deposit' y `Pay'.
+La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
 
 Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. A continuación se muestra el fragmento inicial de la misma:
 
@@ -1378,7 +1378,96 @@ toMarlowe ct =
 
 
 \subsubsection{Model}
+
+En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como Schedule, Inicialización de variables de estado y funciones de transición de estado y de pago.
+
+\begin{tikzpicture}
+    \draw[color=black!60!white]
+    \FTdir(\FTroot,Model,Model){
+        \FTfile(Model,Applicability.hs)
+        \FTfile(Model,ContractSchedule.hs)
+        \FTfile(Model,Payoff.hs)
+        \FTfile(Model,StateInitialization.hs)
+        \FTfile(Model,StateTransition.hs)
+    };
+\end{tikzpicture}
+
+
+Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se expera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
+
+Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, la inicialización del estado y los cambios del mismo.
+
+Como ejemplo, puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Parte de la función que modela la transicción de estados.]
+        [...]
+        ------------------------------------
+        -- Interest Capitalization (IPCI) --
+        ------------------------------------
+        -- STF_IPCI_PAM
+        -- STF_IPCI_CLM
+        stf
+          IPCI
+          rf
+          ct@ContractTermsPoly
+            { contractType,
+              dayCountConvention = Just dcc,
+              maturityDate
+            }
+          st@ContractStatePoly
+            { ..
+            } | contractType `elem` [PAM, CLM] =
+            let y_sd_t = _y dcc sd t maturityDate
+                st' = stf IP rf ct st
+             in st'
+                  { nt = nt + ipac + y_sd_t * nt * ipnr
+                  }
+        [...]
+\end{lstlisting}
+
+La misma refleja las variables siendo ajustadas de acuerdo al estándar:
+
+\begingroup
+\fontsize{9pt}{9pt}\selectfont
+
+
+\begin{functions}{PAM}
+	IPCI & 0.0
+	& {$\begin{aligned}
+					\svar{Nt}{t^+}   & = \svar{Nt}{t^-} + \svar{Ipac}{t^-} + \yfr{\svar{Sd}{t^-}}{t}\svar{Nt}{t^-}\svar{Ipnr}{t^-}                                         \\
+					\svar{Ipac}{t^+} & = 0.0                                                                                                                               \\
+					\svar{Feac}{t^+} & = \begin{cases} \svar{Feac}{t^-} + \yfr{\svar{Sd}{t^-}}{t}\svar{Nt}{t^-}\attr{FER} & \text{if} \quad \attr{FEB}=\text{'N'} \\
+              \frac{\yfr{t^{FP-}}{t}}{\yfr{t^{FP-}}{t^{FP+}}}\sgn\attr{FER}      & \text{else}\end{cases} \\
+					\svar{Sd}{t^+}   & = t\end{aligned}$} \par
+	with\par
+	{$\begin{aligned}
+				t^{FP-} & = \sup t \in \vec{t}^{FP}\mid t<t_0 \\
+				t^{FP+} & = \inf t \in \vec{t}^{FP}\mid t>t_0\end{aligned}$} \\
+	\hline
+\end{functions}
+\endgroup
+
+
+
+
 \subsubsection{Utility}
+
+En este directorio se encuentran algunos archivos con funciones que se utilizan para aislar la lógica del calculo de fechas, que suele tornarse complejo y repetitivo durante los contratos.
+
+\begin{tikzpicture}
+	\draw[color=black!60!white]
+	\FTdir(\FTroot,Utility,Utility){ 
+        \FTdir(Utility,ANN,ANN){
+            \FTfile(ANN,Annuity.hs)
+        }
+        \FTfile(Utility,DateShift.hs)
+        \FTfile(Utility,ScheduleGenerator.hs)
+        \FTfile(Utility,YearFraction.hs)
+    };
+\end{tikzpicture}
+
+Funciones para calcular determinadas fechas, para cada tipo de convención de día habil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
+
 
 % Contrato COM
 \subsection{Contrato COM (Commodity)}
