@@ -1,9 +1,7 @@
 \documentclass[12pt]{book}
 \usepackage[utf8]{inputenc}
-\usepackage{minted}
 \usepackage{multirow}
 \usepackage{listings}
-
 \usepackage{amssymb,amsmath,amsthm,amsfonts}
 \usepackage{calc}
 \usepackage{graphicx}
@@ -12,7 +10,7 @@
 \usepackage{titlesec}
 \newcommand{\sectionbreak}{\clearpage}
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
-\usepackage{gensymb}
+\usepackage{textcomp, gensymb}
 
 \usepackage{url}
 \usepackage{amsmath}
@@ -372,11 +370,6 @@ Veamos como se refleja dicha actualización del ledger en términos de notación
 \end{center}
 
 Utilizaremos la notación introducida para procesar una nueva transacción. En otras palabras, eliminar los outputs no gastados correspondientes y construir un nuevo conjunto de outputs que serán agregados al \texttt{UTXO} (como se describió anteriormente). Los outputs a agregar serían computados de la siguiente manera:
-
-% \begin{equation}
-%     $ \text{txins} \in \mathbb{P}(\text{Tx}) \rightarrow \mathbb{P}(\text{TxIn}) $ &&
-%     hola
-% \end{equation}
 
 \begin{center}
 	\begin{tabular}{|r c l|}
@@ -1201,7 +1194,7 @@ Para comenzar, podemos observar los cuatro directorios principales: \texttt{Doma
 
 \subsubsection{Domain}
 
-El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.
+El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.\@
 
 \begin{tikzpicture}
 	\draw[color=black!60!white]
@@ -1214,7 +1207,7 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
     };
 \end{tikzpicture}
 
-A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS. Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
+A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
@@ -1350,11 +1343,13 @@ En el archivo \texttt{Analysis.hs}, se definen las funciones:
 
 Las mismas, como sus nombres lo indican, generan los flujos de dinero proyectados, flujos de dinero, cronogramas, estados y pagos respectivamente. Los flujos de dinero pueden ser utilizados para generar los pagos en un contrato en Marlowe.
 
-En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS. In \texttt{genFsContract}, los `risk factors' son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
+En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS.\@En \texttt{genFsContract}, los `risk factors' son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
 
 La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
 
-Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. A continuación se muestra el fragmento inicial de la misma:
+Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. 
+
+A continuación se muestra el fragmento inicial de la misma:
 
 
 \begin{lstlisting}[style=Haskell-cardano, caption=Comienzo de la función \texttt{toMarlowe}]
@@ -1395,7 +1390,7 @@ En este directorio se encuentran los archivos que modelan la lógica expuesta po
 
 Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
 
-Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, inicializar las variables de estado, y las transiciones sobre las mismas.
+Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y\\ \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, inicializar las variables de estado, y las transiciones sobre las mismas.
 
 Como ejemplo, puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
 
