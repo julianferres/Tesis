@@ -21,7 +21,6 @@
 \usepackage{vmargin}
 \setmarginsrb{2 cm}{2 cm}{2 cm}{2 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
 
-
 \usepackage[spanish]{babel}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \hypersetup{
@@ -1209,7 +1208,7 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
     };
 \end{tikzpicture}
 
-A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en \texttt{ContractState.hs}.
+A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en\\ \texttt{ContractState.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
@@ -1349,7 +1348,7 @@ En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} gene
 
 La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
 
-Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. 
+Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función\\ \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. 
 
 A continuación se muestra el fragmento inicial de la misma:
 
@@ -1461,7 +1460,7 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
     };
 \end{tikzpicture}
 
-Funciones para calcular determinadas fechas, para cada tipo de convención de día hábil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
+\sloppy Funciones para calcular determinadas fechas, para cada tipo de convención de día hábil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
 
 \subsection{Metodología de escritura de un Contrato ACTUS en Cardano}
 
@@ -1475,7 +1474,7 @@ Todas las impelementaciones son testeadas usando algunos ejemplos\footnote{Dispo
 
 En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnostica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejectutados en la plataforma (en este caso, en la blockchain Cardano).
 
-A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:
+A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:\@
 
 
 \begin{lstlisting}[style=Haskell-cardano, caption=Test propuesto por ACTUS para el contrato COM. Se pueden ovservar tanto los términos como eventos observados y los eventos que se esperá que la implementación genere.]
@@ -1567,8 +1566,6 @@ contractFromFile f = eitherDecode <$> B.readFile f
 
 El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
 
-
-
 % Contrato COM
 \subsection{Contrato COM (Commodity)}
 
@@ -1613,6 +1610,8 @@ A continuación adjunto la especificación técnica del contrato COM~\cite{ACTUS
 	TD & \pof{PRD}{STK} & \stf{PRD}{STK} \\
 \end{functions}
 \endgroup
+
+El contrato COM tiene una implementación similar al contrato STK (Stock), debido a que comparte alguna de las funciones de cambio de estado. Los detalles de la implementación, junto con la de los demas contratos, se encuentran disponibles en la rama \texttt{fiuba-collaboration-writing-actus-contracts}\footnote{Disponible en el \href{https://github.com/input-output-hk/marlowe-cardano/tree/fiuba-collaboration-writing-actus-contracts}{repositorio marlowe-cardano de input-output-hk}}.
 
 
 
@@ -1755,8 +1754,23 @@ A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS
 
 
 
-\section{sss}
-\section{sss}
+\section{Probando una propiedad en un contrato COM y PAM}
+\newpage
+\subsection{Generación de codigo Marlowe de algunos contratos COM}
+
+\subsection{Traducción del contrato a Isabelle}
+
+\subsection{Algunas ejecuciones de prueba}
+
+\subsection{Prueba de minSlot no decreciente en COM}
+
+\subsection{Prueba de minSlot no decreciente en PAM }
+
+\newpage
+
+\section{Probando la ausencia de Warnings en el contrato Auction}
+
+\subsection{Traducción del contrato Auction en Isabelle}
 
 %##########################
 % Conclusión
