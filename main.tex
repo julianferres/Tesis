@@ -38,6 +38,7 @@
 % \usepackage[style=plain]{biblatex}
 % \addbibresource{bibliografia.bib}
 
+
 \input{languages.tex}
 \input{actus-techspecs-format.tex}
 \input{dirtree.tex}
@@ -127,6 +128,7 @@ Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura
 
 % De esta forma se puede renunciar a la toma de acciones legales por parte de un individuo, empresa o gobierno, y en su lugar optar por la ejecución de un programa, o contrato inteligente, para controlar la transferencia de fondos entre los participantes.
 % Este objetivo se logra inmortalizando tanto el programa como su resultado en el ledger de la cadena de bloques subyacente al contrato, y garantizando así que todo el historial (incluido el estado actual del contrato) se registre de forma inmutable con un alto grado de fiabilidad. Desde la perspectiva del autor del contrato inteligente, la blockchain es un sistema de contabilidad distribuido, que realiza un seguimiento de quién posee una cantidad de un recurso virtual (Bitcoin, Ada, etc.) y cuándo los activos se transfieren de una entidad a otra.
+
 
 Los propietarios de activos digitales se identifican por sus claves públicas, y pueden ser personas o máquinas.
 
@@ -1371,7 +1373,6 @@ toMarlowe ct =
       [...]
 \end{lstlisting}
 
-
 \subsubsection{Model}
 
 En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como Schedule, Inicialización de variables de estado y funciones de transición de estado y de pago.
@@ -1386,7 +1387,6 @@ En este directorio se encuentran los archivos que modelan la lógica expuesta po
         \FTfile(Model,StateTransition.hs)
     };
 \end{tikzpicture}
-
 
 Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
 
@@ -1462,6 +1462,109 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
 \end{tikzpicture}
 
 Funciones para calcular determinadas fechas, para cada tipo de convención de día hábil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
+
+\subsection{Metodología de escritura de un Contrato ACTUS en Cardano}
+
+Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, pero también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
+
+Con repecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
+
+Todas las impelementaciones son testeadas usando algunos ejemplos\footnote{Disponibles en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS\footnote{Disponibles en \href{https://github.com/actusfrf/actus-tests/}{https://github.com/actusfrf/actus-tests/}}.
+
+En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnostica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejectutados en la plataforma (en este caso, en la blockchain Cardano).
+
+A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:
+
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Test propuesto por ACTUS para el contrato COM. Se pueden ovservar tanto los términos como eventos observados y los eventos que se esperá que la implementación genere.]
+"com04": {
+        "identifier": "com04",
+        "terms": {
+            "contractType": "COM",
+            "contractID": "com04",
+            "statusDate": "2014-12-30T00:00:00",
+            "contractDealDate": "2014-12-15T00:00:00",
+            "purchaseDate": "2015-03-30T00:00:00",
+            "priceAtPurchaseDate": "700",
+            "terminationDate": "2016-02-20T00:00:00",
+            "priceAtTerminationDate": "900",
+            "contractRole": "RPL",
+            "currency": "GBP",
+            "marketValueObserved": "100",
+            "quantity": "3",
+            "unit": "BRL"
+        },
+        "to": "2016-03-30T00:00:00",
+        "dataObserved": {
+
+        },
+        "eventsObserved": [
+
+        ],
+        "results": [
+            {
+                "eventDate": "2015-03-30T00:00:00",
+                "eventType": "PRD",
+                "payoff": 2100,
+                "notionalPrincipal": 0,
+                "nominalInterestRate": 0,
+                "accruedInterest": 0,
+                "currency": "GBP"
+            },
+            {
+                "eventDate": "2016-02-20T00:00:00",
+                "eventType": "TD",
+                "payoff": -2700,
+                "notionalPrincipal": 0,
+                "nominalInterestRate": 0,
+                "accruedInterest": 0,
+                "currency": "GBP"
+            }
+        ]
+    }
+\end{lstlisting}
+
+Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/TestFramework.hs}{TestFramework.hs}, donde se parsea la entrada, se ejectura el generador, y se comparan los campos del json inicial con los del objeto generado por la implementación.
+
+Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM 
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Test de ejemplo escrito durante el desarrollo de la tesis para el contrato COM]
+-- |ex_com1 defines a contract of type COM
+ex_com1 :: IO ()
+ex_com1 =
+  contractFromFile "test/Spec/Marlowe/ACTUS/ex_com1.json"
+    >>= either msg run
+  where
+    msg err = putStr err
+    run ct = case genFsContract defaultRiskFactors (toMarlowe ct) of
+      Failure _ -> assertFailure "Terms validation should not fail"
+      Success contract ->
+          let principal = NormalInput . IDeposit (Role "party") "party" ada
+              out =
+                computeTransaction
+                  ( TransactionInput
+                      (0, 0)
+                      [ principal 1400
+                      ]
+                  )
+                  (emptyState 0)
+                  contract
+           in case out of
+                Error _ -> assertFailure "Transactions are not expected to fail"
+                TransactionOutput txWarn txPay _ con -> do
+                  assertBool "Contract is in Close" $ con == Close
+                  assertBool "No warnings" $ null txWarn
+
+                  assertBool "total payments to party" (totalPayments (Party "party") txPay == 0)
+                  let tc = totalPayments (Party "counterparty") txPay
+                  assertBool ("total payments to counterparty: " ++ show tc) (tc == 1400)
+
+contractFromFile :: FilePath -> IO (Either String ContractTerms)
+contractFromFile f = eitherDecode <$> B.readFile f
+\end{lstlisting}
+
+El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
+
 
 
 % Contrato COM
