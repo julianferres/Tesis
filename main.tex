@@ -1141,7 +1141,7 @@ En esta sección, veremos como se desarrolló la escritura de tres contratos ACT
 Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\href{https://iohk.io/en/team/yves-hauser}{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 \newpage
-\subsection{Descripción de la estructura del proyecto}
+\subsection{Descripción de la estructura del proyecto}\label{sec:estructura}
 
 En la siguiente sub-sección, describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
 
@@ -1465,7 +1465,9 @@ Funciones para calcular determinadas fechas, para cada tipo de convención de d�
 
 \subsection{Metodología de escritura de un Contrato ACTUS en Cardano}
 
-Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, pero también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
+Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
+
+Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{sec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizas sea necesario agregar alguna función en Utility.
 
 Con repecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
 
