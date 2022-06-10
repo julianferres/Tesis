@@ -11,7 +11,6 @@
 \newcommand{\sectionbreak}{\clearpage}
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
 \usepackage{textcomp, gensymb}
-
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -1470,7 +1469,7 @@ Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{s
 
 Con repecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
 
-Todas las impelementaciones son testeadas usando algunos ejemplos\footnote{Disponibles en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS\footnote{Disponibles en \href{https://github.com/actusfrf/actus-tests/}{https://github.com/actusfrf/actus-tests/}}.
+Todas las implementaciones son testeadas usando algunos ejemplos\footnote{Disponibles en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS~\cite{ACTUS_Tests}.
 
 En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnostica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejectutados en la plataforma (en este caso, en la blockchain Cardano).
 
@@ -1553,15 +1552,15 @@ ex_com1 =
            in case out of
                 Error _ -> assertFailure "Transactions are not expected to fail"
                 TransactionOutput txWarn txPay _ con -> do
-                  assertBool "Contract is in Close" $ con == Close
-                  assertBool "No warnings" $ null txWarn
+                  assertBool "Contract is in Close" $\$$ con == Close
+                  assertBool "No warnings" $\$$ null txWarn
 
                   assertBool "total payments to party" (totalPayments (Party "party") txPay == 0)
                   let tc = totalPayments (Party "counterparty") txPay
                   assertBool ("total payments to counterparty: " ++ show tc) (tc == 1400)
 
 contractFromFile :: FilePath -> IO (Either String ContractTerms)
-contractFromFile f = eitherDecode <$> B.readFile f
+contractFromFile f = eitherDecode <$\$$> B.readFile f
 \end{lstlisting}
 
 El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
@@ -1758,7 +1757,79 @@ A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS
 
 \subsection{Generación de codigo Marlowe de algunos contratos COM}
 
+Para poder obtener contratos una instancia de contrato Marlowe, es necesario modificar levemente el código del mismo. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
+
+Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \texttt{marlowe}:
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Función para imprimir contratos en Marlowe]
+printCOM :: IO ()
+printCOM =
+  contractFromFile "test/Spec/Marlowe/ACTUS/ex_com1.json"
+    >>= either msg run
+  where
+    msg err = putStr err
+    run ct = case genFsContract defaultRiskFactors (toMarlowe ct) of
+      Failure _ -> assertFailure "Terms validation should not fail"
+      Success contract -> do
+          assertBool (pTrace (".\n\nMostrando el contrato:\n\n" ++ show contract) "") False
+\end{lstlisting}
+
+Con esto, podemos obtener el contrato que necesitemos, según los términos del mismo y las condiciones de riesgo (para el siguiente ejemplo utilizamos los riesgos por defecto).
+
+Se puede ver a continuación el contrato generado en Marlowe:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato COM en Marlowe]
+When
+    [Case
+        (Deposit "party" "party"
+            (Token "" "")
+            (Constant 2100)
+        )
+        (Pay "party"
+            (Party "counterparty")
+            (Token "" "")
+            (Constant 2100)
+            (When
+                [Case
+                    (Deposit "counterparty" "counterparty"
+                        (Token "" "")
+                        (NegValue (Constant (-2700)))
+                    )
+                    (Pay "counterparty"
+                        (Party "party")
+                        (Token "" "")
+                        (NegValue (Constant (-2700))) 
+                        Close
+                    )
+                ]
+                (Slot { getSlot = 1455926300 })
+                Close
+            )
+        )
+    ]
+    (Slot { getSlot = 1427673500 })
+    Close
+\end{lstlisting}
+
+
+
 \subsection{Traducción del contrato a Isabelle}
+
+En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.
+
+\begin{lstlisting}[style=Isabelle]
+theory Scratch
+  imports Main
+  begin
+
+lemma hola : "(1::nat)+(1::nat) = (2::nat) $\Longrightarrow$  (1::nat) + 3 = 4"
+  by auto
+
+
+end
+
+\end{lstlisting}
+
 
 \subsection{Algunas ejecuciones de prueba}
 
