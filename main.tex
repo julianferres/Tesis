@@ -1361,7 +1361,9 @@ En esta sección detallaremos los tipos \textit{bool}, \textit{nat} y \textit{li
 
 Este tipo esta predefinido mediante:
 
-\texttt{datatype bool = True | False}
+\begin{lstlisting}[style=Isabelle]
+datatype bool = True | False
+\end{lstlisting}
 
 El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funciones predefinidas,\\ como:  $\neg,\ \vee,\ \wedge,\ \rightarrow$, etc. El siguiente ejemplo muestra como puede definirse la conjunción lógica (conocida también como intersección en teoría de conjuntos) mediante `\textit{pattern matching}':
 
