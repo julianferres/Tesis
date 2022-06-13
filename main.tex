@@ -244,7 +244,7 @@ Durante este capítulo, nos adentraremos en la escritura de contratos financiero
 
 Al final del mismo, el lector estará familiarizado con la notación correspondiente y expondremos brevemente la especificación para un tipo de contrato.
 
-\section{El modelo UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
+\section{El modelo UTXO}\label{sec:UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
 
 Para entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
@@ -412,18 +412,104 @@ En particular, un contrato no puede esperar indefinidamente una acción: si la m
 
 Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, se puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
-\subsection{Contratos en Marlowe}\label{sec:Contratos_en_marlowe}
+\subsection{El modelo de Marlowe}
+
+Marlowe está diseñado para soportar la ejecución de contratos financieros en la blockchain, específicamente en Cardano. Los contratos se construyen reuniendo una pequeña cantidad de constructores que se pueden combinar para describir muchos tipos diferentes de contratos financieros.
+
+Antes de describir estos constructores en~\ref{sec:constructores_marlowe}, debemos analizar el enfoque general para modelar contratos en Marlowe, y el contexto en el que se ejecutan los mismos (la blockchain de Cardano). Al hacer esto, también presentamos parte de la terminología que usaremos, indicando las definiciones en cursiva.
+
+\subsubsection{Contratos}
+Los contratos en Marlowe se ejecutan en una blockchain, pero deben interactuar con el mundo fuera de la misma. Las partes (\textit{parties}) del contrato, a las que también llamamos participantes, pueden realizar diversas acciones: se les puede pedir que depositen dinero o que elijan entre varias alternativas. Una notificación de un valor externo (también llamado valor de oráculo), como el precio actual de un producto en particular, es la otra forma posible de entrada.\footnote{Podemos pensar a los oráculos como otro tipo de \textit{party} del contrato; bajo este punto de vista, las notificaciones se convierten en las elecciones (\textit{choices}) realizadas por esa \textit{party}.}
+
+La ejecución de un contrato también producirá efectos externos, al realizar pagos a las partes en el mismo.
+
+\subsubsection{Participantes y roles}
+Los \textit{participantes} y los \textit{roles} se comportan de forma ligeramente distinta en un contrato en Marlowe. Los roles en un contrato son fijos e inmutables, y pueden ser llamados \texttt{party}, \texttt{counterparty}, etc. Por otro lado, los participantes que están vinculados a los roles del contrato pueden cambiar durante la ejecución de la instancia de contrato en particular. Esto permite que los roles en la ejecución de contratos se intercambien entre los participantes, a través de un mecanismo de \textit{tokenización}. A la fecha de escritura de este documento, la simulación en \textit{Marlowe Playground}~\cite{marlowe_playground} simplemente presenta roles de contrato.
+
+\subsubsection{Cuentas}
+El modelo de Marlowe permite que un contrato pueda almacenar activos. Todas las partes que participan en el contrato poseen implícitamente una cuenta con su nombre. Todos los bienes almacenados en el contrato deben estar en la cuenta de una de las partes; de esta forma, cuando se cierra el contrato, todos los bienes que quedan en el contrato pertenecen a alguien, por lo que pueden ser reembolsados a sus respectivos dueños. Estas cuentas son \textit{locales}: solo existen mientras dura la ejecución del contrato, y durante ese tiempo son accesibles (solo desde dentro del contrato).
+
+\subsubsection{Pasos y estados}
+Los contratos de Marlowe describen una serie de \textit{pasos}, generalmente describiendo el primer paso, junto con otro subcontrato que describe qué hacer a continuación. Por ejemplo, el contrato \texttt{Pay a p t v cont} dice ``realice un pago del valor \texttt{v} del token \texttt{t} a la parte \texttt{p} desde la cuenta \texttt{a}, y luego siga el contrato \texttt{cont}''. Llamamos \texttt{cont} a la continuación del contrato.
+
+Al ejecutar un contrato, debemos realizar un seguimiento del \textit{contrato actual}: después de dar un paso en el ejemplo anterior, el contrato actual es la continuación, \texttt{cont}. También tenemos que realizar un seguimiento de información adicional, como por ejemplo: cuánto se tiene en cada cuenta. Llamamos a esta información el \textit{estado}: este también cambia potencialmente en cada paso. Un paso también puede implicar que se lleva a cabo una acción, como el depósito de dinero o la producción de un \textit{efecto}, por ejemplo un pago.
+
+\subsubsection{Blockchain}
+
+Si bien Marlowe está diseñado para trabajar con cadenas de bloques en general, algunos detalles de cómo interactúa con la misma son relevantes al describir la semántica y la implementación del lenguaje.
+
+Una cadena de bloques basada en UTXO~\ref{sec:UTXO} contiene una coleccion de transacciones. Cada transacción tiene un conjunto de entradas y salidas, y la cadena de bloques se construye vinculando las salidas de transacciones no gastadas (UTXO) a las entradas de una nueva transacción. Como máximo se puede generar un bloque en cada \textit{slot}, que tienen una duración de 1 segundo.
+
+Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento, pero los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques. Actualmente, utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en cadena usaremos el tiempo, adoptando el estándar de tiempo Posix.
+
+\subsubsection{UTXO, billeteras y la aplicación Marlowe Run}
+El dinero dentro de la blockchain reside en los UTXO, que están protegidos criptográficamente por una clave privada en poder del propietario. Estas claves se pueden usar para canjear la salida y usarlas como entradas para nuevas transacciones. Los usuarios suelen realizar un seguimiento de sus claves privadas y los valores adjuntos a ellas en una billetera (o \textit{wallet}) criptográficamente segura.
+
+Para interactuar con un contrato que se ejecuta en blockchain, los usuarios deberán usar la aplicación cliente \textit{Marlowe Run}. Esta interactuará con las billeteras de los usuarios para autenticar las transacciones que gastan criptoactivos, ya que los depósitos se realizan desde las billeteras de los usuarios y los pagos son recibidos por ellos. El código que realiza este tipo de acciones suele ser llamado \textit{off-chain}, debido a que no queda inmortalizado en la misma.
+
+\subsubsection{Simulación omnisciente}
+El Playground de Marlowe~\cite{marlowe_playground} admite la simulación de contratos. Esta es una simulación omnisciente, en la que el usuario puede realizar cualquier acción para cualquier rol y, por lo tanto, puede observar la ejecución desde la perspectiva de todos los usuarios simultáneamente. Esto contrasta con la experiencia de ejecutar un contrato en Marlowe Run, en el que cada participante ve el contrato desde su propio punto de vista. En particular, los participantes solo pueden interactuar con un contrato en ejecución que está esperando su entrada; si ese no es el caso, entonces verán que la ejecución del contrato está esperando la participación de otra persona.
+
+\subsubsection{Valores y \textit{tokens}}
+En los ejemplos de los capítulos posteriores, veremos que siempre que se requiere un \textit{valor}, hemos utilizado exclusivamente \textit{Ada}. Esto tiene sentido ya que \textit{Ada} es la moneda fundamental respaldada por Cardano.
+
+Sin embargo, Marlowe ofrece un concepto de \textit{valor} más general, que admite tokens \textit{nativos} personalizados, que pueden ser fungibles, no fungibles o mixtos:
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Definicion del tipo \texttt{Value}]
+newtype Value = Value
+    {getValue :: Map CurrencySymbol (Map TokenName Integer)}
+\end{lstlisting}
+
+Los tipos \texttt{CurrencySymbol} y \texttt{TokenName} son wrappers simples alrededor de \texttt{ByteString}.
+
+
+Esta noción de valor abarca a \textit{Ada}, tokens fungibles (como monedas), tokens no fungibles o NFT (tokens personalizados que no son intercambiables con otros tokens) y casos mixtos más exóticos:
+
+\begin{itemize}
+    \item Ada usa la cadena de bytes vacía como \texttt{CurrencySymbol} y \texttt{TokenName}.
+
+    \item Un \textit{token fungible} está representado por un \texttt{CurrencySymbol} (o símbolo de moneda) para el que existe exactamente un \texttt{TokenName} (nombre de token) que puede tener una cantidad entera arbitraria no negativa (del cual \textit{Ada} es un caso especial).
+
+    \item Una clase de \textit{tokens no fungibles} es un \texttt{CurrencySymbol} con varios \texttt{TokenName}s, cada uno de los cuales tiene una cantidad de uno. Cada uno de estos nombres corresponde a un \textit{token único no fungible}.
+
+    \item Los \textit{tokens mixtos} son aquellos que tienen varios \texttt{TokenName}s y cantidades superiores a uno.
+
+\end{itemize}
+
+\subsubsection{Ejecución de un contrato Marlowe}
+Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato. Si en un punto particular de ejecución, un contrato espera un depósito de \texttt{100 Ada} de Alice, solo esa transacción tendrá éxito, cualquier otra será rechazada.
+
+Una transacción contiene una lista ordenada de \textit{entradas} o \textit{acciones}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. Primero, evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar ninguna entrada, una condición que se llama \textit{quiescent} (o inactiva). En esta etapa, avanza a través cualquier \texttt{When} con tiempos de espera que hayan pasado, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
+
+A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
+
+Tal \textit{transacción}, como se muestra en el diagrama a continuación, se agrega a la cadena de bloques. 
+
+Hemos mostrado que el comportamiento de un Marlowe es independiente de cómo se recopilan las entradas en las transacciones, por lo que cuando simulamos la acción de un contrato no necesitamos agrupar las entradas en transacciones explícitamente. Para ser más concretos, podemos pensar que cada transacción tiene como máximo una entrada. Si bien la semántica de un contrato es independiente de cómo se agrupan las entradas en transacciones, los costos de ejecución pueden ser menores si se pueden agrupar varias entradas en una sola transacción.
+
+En la simulación omnisciente disponible en el \textit{Playground}, podemos abstraernos con seguridad de la agrupación de transacciones, ya que la agrupación no afecta el comportamiento del contrato.
+
+\subsubsection{Construyendo una transacción}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Transaccion.png}
+    \caption{Diagrama de ejemplo de una transacción. Extraído de \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
+\end{figure}
+
+
+\subsection{Piezas fundamentales de un contrato en Marlowe}\label{sec:constructores_marlowe}
 Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
 Marlowe en sí mismo está embebido en Haskell, y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}. A continuación mostramos la definición más general de un contrato en Marlowe:
 
-\begin{lstlisting}[language=Marlowe]
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Tipos de contratos en Marlowe.]
 data Contract = Close
-              | Pay Party Payee Token Value Contract
-              | If Observation Contract Contract
-              | When [Case] Timeout Contract
-              | Let ValueId Value Contract
-              | Assert Observation Contract
+              | Pay party payee token value contract
+              | If observation contract1 contract2
+              | When [Case] timeout contract
+              | Let valueId value contract
+              | Assert observation contract
 \end{lstlisting}
 
 Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos ---
@@ -469,14 +555,10 @@ Además de permitirnos usar abreviaturas, este mecanismo nos brinda la capacidad
 \subsubsection{Assert}
 Un contrato \texttt{Assert obs cont} no tiene ningún efecto en el estado de un contrato, que continua inmediatamente en \texttt{cont}, pero genera una advertencia cuando la observación \texttt{obs} es falsa. Puede ser utilizado para asegurar que alguna propiedad se cumple en un momento particular de la ejecución del contrato. Esta sentencia es útil porque permite que un \textit{análisis estático} detecte que algún \texttt{assert} es falso, para alguna ejecución específica del contrato.
 
-\subsection{El modelo de Marlowe}
-
-% TODO
-
 
 \section{Un contrato de ejemplo en Marlowe}
 
-Esta sección introduce un contrato financiero simple en pseudocódigo y luego explicá como puede ser modificado para funcionar en Marlowe, dando el primer ejemplo de un contrato en el lenguaje.
+Esta sección introduce un contrato financiero simple en pseudocódigo y luego explicá como puede ser modificado para funcionar en Marlowe, dando el primer ejemplo de un contrato en el lenguaje. La misma se basa principalmente en el contrato de ejemplo brindado por la documentación oficial\footnote{Disponible en \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/escrow-ex.html}{https://play.marlowe-finance.io/doc/marlowe/tutorials/escrow-ex.html}}.
 
 \subsection{El contrato \textit{Escrow}}
 
@@ -585,7 +667,7 @@ Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se 
 Hay un \textit{timeout} en el \textit{slot} número 10 para realizar el depósito; si se alcanza sin que se haya realizado el mismo, el contrato se cierra y se reembolsa todo el dinero que ya estaba en el contrato. En este caso, no hay ningún reembolso pendiente y simplemente finaliza del contrato.
 
 \subsubsection{Completando las funciones}
-En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprobechan de la posibildad de Marlowe de ser embebido en Haskell~\ref{sec:Contratos_en_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ} para hacer algunas descripciones y cuentas mas concisas.
+En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprobechan de la posibildad de Marlowe de ser embebido en Haskell~\ref{sec:constructores_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ}) para hacer algunas descripciones y cuentas mas concisas.
 
 Las funciones restantes pueden ser escritas en Haskell de la siguiente manera:
 
