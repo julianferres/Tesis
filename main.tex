@@ -117,7 +117,7 @@ Como una cadena de bloques almacena datos de manera descentralizada, es independ
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\textwidth]{Bloques.png}
-	\caption{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}}\label{fig:Bloques}
+	\caption{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}.}\label{fig:Bloques}
 \end{figure}
 
 Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales, conocidos como \textit{smart contracts}.
@@ -170,7 +170,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardano}}\label{fig:Cardano_logo}
+	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardano}.}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -412,7 +412,7 @@ En particular, un contrato no puede esperar indefinidamente una acción: si la m
 
 Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, se puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
-\subsection{Contratos en Marlowe}
+\subsection{Contratos en Marlowe}\label{sec:Contratos_en_marlowe}
 Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
 Marlowe en sí mismo está embebido en Haskell, y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}. A continuación mostramos la definición más general de un contrato en Marlowe:
@@ -446,7 +446,7 @@ Un contrato de pago \texttt{(Pay acc payee tok val cont)} realizará un pago de 
 
 Se generarán \textit{warnings} si el valor \texttt{val} no es positivo, o si no hay recursos suficientes en \texttt{acc} para realizar el pago en su totalidad (incluso si hay balances positivos de otros tokens en la misma). En este último caso, se realizará un pago parcial (conteniendo todo el dinero disponible). El contrato en el que continuará la ejecución es \texttt{cont}.
 
-\subsubsection{Close}
+\subsubsection{Close}\label{sec:Close}
 
 Un contrato \texttt{Close} prevé que el contrato sea cerrado (o rescindido). La única acción que realiza es reembolsar a los titulares de cuentas que contienen un saldo positivo. Esto se realiza de a una cuenta a la vez, pero todas las cuentas se reembolsarán en una sola transacción.
 
@@ -469,6 +469,225 @@ Además de permitirnos usar abreviaturas, este mecanismo nos brinda la capacidad
 \subsubsection{Assert}
 Un contrato \texttt{Assert obs cont} no tiene ningún efecto en el estado de un contrato, que continua inmediatamente en \texttt{cont}, pero genera una advertencia cuando la observación \texttt{obs} es falsa. Puede ser utilizado para asegurar que alguna propiedad se cumple en un momento particular de la ejecución del contrato. Esta sentencia es útil porque permite que un \textit{análisis estático} detecte que algún \texttt{assert} es falso, para alguna ejecución específica del contrato.
 
+\subsection{El modelo de Marlowe}
+
+% TODO
+
+
+\section{Un contrato de ejemplo en Marlowe}
+
+Esta sección introduce un contrato financiero simple en pseudocódigo y luego explicá como puede ser modificado para funcionar en Marlowe, dando el primer ejemplo de un contrato en el lenguaje.
+
+\subsection{El contrato \textit{Escrow}}
+
+Supongamos que Alice quiere comprarle un libro a Bob, pero ninguno de los dos confía en el otro. Afortunadamente, tienen una amiga en común, Carol, en quien ambos confían para que sea neutral (pero no lo suficiente como para darle el dinero y actuar como intermediaria). Entonces, acuerdan el siguiente contrato, escrito en pseudocódigo funcional. Este tipo de contrato es un ejemplo simple de depósito en garantía o \textit{escrow}:
+
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Primer pseudocódigo del contrato Escrow.]
+When aliceChoice
+     (When bobChoice
+           (If (aliceChosen `ValueEQ` $\backtick$ bobChosen)
+               agreement
+               arbitrate))
+\end{lstlisting}
+
+
+El contrato se describe utilizando los constructores vistos en la sección previa. El constructor más externo \texttt{When} tiene dos argumentos: el primero es una observación y el segundo es otro contrato. El significado esperado es que cuando ocurre la acción, se activa el segundo contrato.
+
+El segundo contrato es en sí mismo otro \texttt{When} --- esperando una decisión de Bob --- pero dentro de este, hay una opción: Si (\texttt{If}) Alice y Bob están de acuerdo en qué hacer, se procede; en caso contratio, se le pide a Carol que arbitre y tome una decisión.
+
+En general, \texttt{When} ofrece una lista de casos\footnote{Las listas en Marlowe se representan entre corchetes, como en \texttt{[2,3,4]}.}, cada uno con una acción y un contrato correspondiente que se activa cuando ocurre esa acción. Sabiendo esto, podemos permitir la opción de que Bob realice la primera elección, en lugar de Alice, de la siguiente forma:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Pseudocódigo agnóstico al orden de las elecciones.]
+When [ Case aliceChoice
+            (When [ Case bobChoice
+                        (If (aliceChosen `ValueEQ` bobChosen)
+                           agreement
+                           arbitrate) ],
+      Case bobChoice
+            (When [ Case aliceChoice
+                        (If (aliceChosen `ValueEQ` bobChosen)
+                            agreement
+                            arbitrate) ]
+     ]
+\end{lstlisting}
+
+En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin perdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el codigo simétrico y repetido que cubriría el caso en el que Bob comienza).
+
+A coninuación, se incluye un diagrama de secuencia que ilustra el comportamiento esperado del contrato, descripto anteriormente en pseudocódigo:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Escrow.png}
+    \caption{Diagrama de secuencia del contrato \textit{Escrow}.}\label{fig:Escrow}
+\end{figure}
+
+En~\cite{composing-contracts, multi-party-contracts} se encuentran los trabajos iniciales sobre la utilización de programación funcional para la descripción de contratos financieros.
+
+\subsection{Escrow en Marlowe}
+
+Los contratos de Marlowe incorporan parametros adicionales para garantizar que progresen correctamente. Cada vez que vemos un \texttt{When}, debemos proporcionar dos cosas adicionales:
+
+\begin{itemize}
+    \item El tiempo de espera (o \textit{timeout}) luego del cual el contrato progresará.
+    \item El contrato de continuación al que progresa.
+\end{itemize}
+
+\subsubsection{Agregando \textit{timeouts}}
+
+Primero, examinemos cómo modificar el pseudocódigo escrito para solucionar el caso de que la condición del \texttt{When} no se cumpla. Para eso, agregamos valores de \textit{tiemout} y `contrato de continuación' para cada \texttt{When} en el contrato:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Pseudocódigo con timeouts.]
+When [ Case aliceChoice
+            (When [ Case bobChoice
+                        (If (aliceChosen `ValueEQ` bobChosen)
+                           agreement
+                           arbitrate) ]
+                  60            -- AGREGADO
+                  arbitrate)    -- AGREGADO
+      ]
+      40           -- AGREGADO
+      Close        -- AGREGADO
+\end{lstlisting}
+
+El \texttt{When} más externo requiere que Alice haga la primera elección. Si Alice no ha hecho una elección luego del \texttt{slot}\footnote{Los \textit{slots} representan la unidad básica de tiempo en la cadena de bloques.} 40, el contrato se cierra y se reembolsan todos los fondos del mismo.
+
+El contrato \texttt{Close} suele ser el último paso en cada `camino' a través de un contrato en Marlowe, y su efecto es el de reembolsar el dinero del contrato a los participantes. Describiremos esto con más detalle en~\ref{sec:Close}. En este caso particular, el reembolso se realizará en el \textit{slot} número 40.
+
+Viendo los constructores internos, si se ha hecho la elección de Alice, entonces esperamos una de Bob. Si eso no está disponible para el \textit{slot} 60, entonces se llama a Carol para que arbitre. 
+
+
+\subsubsection{Agregando compromisos}
+
+A continuación, debemos ver cómo se compromete el efectivo como primer paso del contrato.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Pseudocódigo con validación de fondos.]
+When [Case (Deposit "alice" "alice" ada price)   -- AGREGADO
+ (When [ Case aliceChoice
+             (When [ Case bobChoice
+                         (If (aliceChosen `ValueEQ` bobChosen)
+                            agreement
+                            arbitrate) ]
+                   60
+                   arbitrate)
+       ]
+       40
+       Close)
+   ]
+   10                                      -- AGREGADO
+   Close                                   -- AGREGADO
+\end{lstlisting}
+\end{minipage}
+
+Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se da, entonces se mantiene en una cuenta, también llamada \texttt{"{}alice"{}}. Cuentas como esta existen solo durante la vigencia del contrato; cada cuenta pertenece a un solo contrato.
+
+Hay un \textit{timeout} en el \textit{slot} número 10 para realizar el depósito; si se alcanza sin que se haya realizado el mismo, el contrato se cierra y se reembolsa todo el dinero que ya estaba en el contrato. En este caso, no hay ningún reembolso pendiente y simplemente finaliza del contrato.
+
+\subsubsection{Completando las funciones}
+En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprobechan de la posibildad de Marlowe de ser embebido en Haskell~\ref{sec:Contratos_en_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ} para hacer algunas descripciones y cuentas mas concisas.
+
+Las funciones restantes pueden ser escritas en Haskell de la siguiente manera:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Funciones \texttt{agreement} y \texttt{arbitrate}.]
+agreement :: Contract
+agreement =
+  If
+    (aliceChosen `ValueEQ` (Constant 0))
+    (Pay "alice" (Party "bob") ada price Close)
+    Close
+
+arbitrate :: Contract
+arbitrate =
+  When  [ Case carolClose Close,
+          Case carolPay (Pay "alice" (Party "bob") ada price Close) ]
+        100
+        Close
+\end{lstlisting}
+
+Dentro de los contratos podemos usar abreviaciones como:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Funcion \texttt{price}.]
+price :: Value
+price = Constant 450
+\end{lstlisting}
+
+
+También podemos describir las elecciones realizadas por Alice y Bob:
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Definicion de las elecciones.]
+aliceChosen, bobChosen :: Value
+
+aliceChosen = ChoiceValue (ChoiceId choiceName "alice")
+bobChosen   = ChoiceValue (ChoiceId choiceName "bob")
+
+choiceName :: ChoiceName
+choiceName = "choice"
+\end{lstlisting}
+
+Sin abreviaciones ni la utilización de Haskell, hubiesemos arribado al siguiente contrato escrito en ``Marlowe puro'':
+
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato \textit{Escrow} completamente expandido.]
+When [
+  (Case
+     (Deposit
+        "alice" "alice" ada
+        (Constant 450))
+     (When [
+           (Case
+              (Choice
+                 (ChoiceId "choice" "alice") [
+                 (Bound 0 1)])
+              (When [
+                 (Case
+                    (Choice
+                       (ChoiceId "choice" "bob") [
+                       (Bound 0 1)])
+                    (If
+                       (ValueEQ
+                          (ChoiceValue
+                             (ChoiceId "choice" "alice"))
+                          (ChoiceValue
+                             (ChoiceId "choice" "bob")))
+                       (If
+                          (ValueEQ
+                             (ChoiceValue
+                                (ChoiceId "choice" "alice"))
+                             (Constant 0))
+                          (Pay
+                             "alice"
+                             (Party "bob") ada
+                             (Constant 450) Close) Close)
+                       (When [
+                             (Case
+                                (Choice
+                                   (ChoiceId "choice" "carol") [
+                                   (Bound 1 1)]) Close)
+                             ,
+                             (Case
+                                (Choice
+                                   (ChoiceId "choice" "carol") [
+                                   (Bound 0 0)])
+                                (Pay
+                                   "alice"
+                                   (Party "bob") ada
+                                   (Constant 450) Close))] 100 Close)))] 60
+                 (When [
+                       (Case
+                          (Choice
+                             (ChoiceId "choice" "carol") [
+                             (Bound 1 1)]) Close)
+                       ,
+                       (Case
+                          (Choice
+                             (ChoiceId "choice" "carol") [
+                             (Bound 0 0)])
+                          (Pay
+                             "alice"
+                             (Party "bob") ada
+                             (Constant 450) Close))] 100 Close)))
+      ]
+\end{lstlisting}
 
 \section{El estándar ACTUS}
 Los contratos financieros son acuerdos legales entre dos (o más) partes sobre el futuro intercambio de dinero. Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual. Como resultado, los mismos pueden describirse matemáticamente y representarse digitalmente como algoritmos. Los beneficios de representar contratos financieros de esta forma son múltiples; Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos.
@@ -960,7 +1179,7 @@ La siguiente figura representa la arquitectura, omitiendo la reconstrucción y m
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
-	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}}\label{fig:Sledgehammer_arquitecture}
+	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture.}
 \end{figure}
 
 Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
@@ -1183,7 +1402,7 @@ En la siguiente sub-sección, describiremos brevemente algunos de las entidades 
       }
     };
 \end{tikzpicture}
-\caption{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}}\label{fig:Marlowe_dirtree}
+\caption{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}.}\label{fig:Marlowe_dirtree}
 \end{figure}
 
 Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el código necesario para modelar los contratos ACTUS, generar contratos el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
@@ -1207,7 +1426,7 @@ A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Com
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Algunos tipos de eventos]
+\begin{lstlisting}[style=Haskell-cardano, caption=Algunos tipos de eventos.]
 {-| ACTUS event types
     https://github.com/actusfrf/actus-dictionary/blob/master/actus-dictionary-event.json
 -}
@@ -1233,7 +1452,7 @@ data EventType =
     | AD   -- ^ Monitoring
 \end{lstlisting}
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Contract state poly]
+\begin{lstlisting}[style=Haskell-cardano, caption=Contract state poly.]
 
 {-| ACTUS contract states are defined in
     https://github.com/actusfrf/actus-dictionary/blob/master/actus-dictionary-states.json
@@ -1264,7 +1483,7 @@ También es posible ver tipos relacionados a características de un contrato, co
 
 A continuación vemos algunos fragmentos de algunas definiciones de los mismos:
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Tipos de contrato]
+\begin{lstlisting}[style=Haskell-cardano, caption=Tipos de contrato.]
 -- |ContractType
 data CT = PAM   -- ^ Principal at maturity
         | LAM   -- ^ Linear amortizer
@@ -1281,7 +1500,7 @@ data CT = PAM   -- ^ Principal at maturity
         | CEC   -- ^ Collateral
 \end{lstlisting}
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Algunos tipos de roles de contrato]
+\begin{lstlisting}[style=Haskell-cardano, caption=Algunos tipos de roles de contrato.]
 -- |ContractRole
 data CR = CR_RPA -- ^ Real position asset
         | CR_RPL -- ^ Real position liability
@@ -1297,7 +1516,7 @@ data CR = CR_RPA -- ^ Real position asset
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Tipos de convención sobre días laborables]
+\begin{lstlisting}[style=Haskell-cardano, caption=Tipos de convención sobre días laborables.]
 -- |BusinessDayConvention
 data BDC = BDC_NULL -- ^ No shift
          | BDC_SCF  -- ^ Shift/calculate following
@@ -1348,7 +1567,7 @@ Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares 
 A continuación se muestra el fragmento inicial de la misma:
 
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Comienzo de la función \texttt{toMarlowe}]
+\begin{lstlisting}[style=Haskell-cardano, caption=Comienzo de la función \texttt{toMarlowe}.]
 toMarlowe :: ContractTerms -> ContractTermsMarlowe
 toMarlowe ct =
   ContractTermsPoly
@@ -1524,7 +1743,7 @@ Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/mar
 
 Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM 
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Test de ejemplo escrito durante el desarrollo de la tesis para el contrato COM]
+\begin{lstlisting}[style=Haskell-cardano, caption=Test de ejemplo escrito durante el desarrollo de la tesis para el contrato COM.]
 -- |ex_com1 defines a contract of type COM
 ex_com1 :: IO ()
 ex_com1 =
@@ -1548,15 +1767,15 @@ ex_com1 =
            in case out of
                 Error _ -> assertFailure "Transactions are not expected to fail"
                 TransactionOutput txWarn txPay _ con -> do
-                  assertBool "Contract is in Close" $\$$ con == Close
-                  assertBool "No warnings" $\$$ null txWarn
+                  assertBool "Contract is in Close" $ con == Close
+                  assertBool "No warnings" $ null txWarn
 
                   assertBool "total payments to party" (totalPayments (Party "party") txPay == 0)
                   let tc = totalPayments (Party "counterparty") txPay
                   assertBool ("total payments to counterparty: " ++ show tc) (tc == 1400)
 
 contractFromFile :: FilePath -> IO (Either String ContractTerms)
-contractFromFile f = eitherDecode <$\$$> B.readFile f
+contractFromFile f = eitherDecode <$> B.readFile f
 \end{lstlisting}
 
 El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
@@ -1757,7 +1976,7 @@ Para poder obtener contratos una instancia de contrato Marlowe, es necesario mod
 
 Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \texttt{marlowe}:
 
-\begin{lstlisting}[style=Haskell-cardano, caption=Función para imprimir contratos en Marlowe]
+\begin{lstlisting}[style=Haskell-cardano, caption=Función para imprimir contratos en Marlowe.]
 printCOM :: IO ()
 printCOM =
   contractFromFile "test/Spec/Marlowe/ACTUS/ex_com1.json"
@@ -1774,7 +1993,7 @@ Con esto, podemos obtener el contrato que necesitemos, según los términos del 
 
 Se puede ver a continuación el contrato generado en Marlowe:
 
-\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato COM en Marlowe]
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato COM en Marlowe.]
 When
     [Case
         (Deposit "party" "party"
