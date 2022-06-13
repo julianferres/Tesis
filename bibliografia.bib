@@ -35,19 +35,19 @@
   title        = {ACTUS Taxonomy},
   year         = 2019
 }
-@misc{ACTUS_Tests,
-  author       = {ACTUS},
-  howpublished = {\url{https://github.com/actusfrf/actus-tests/}},
-  month        = Jun,
-  title        = {ACTUS test cases},
-  year         = 2019
-}
 @misc{ACTUS_Techspecs,
   author       = {ACTUS},
   howpublished = {\url{https://www.actusfrf.org/techspecs}},
   month        = Nov,
   title        = {ACTUS Technical Specification},
   year         = {2018}
+}
+@misc{ACTUS_Tests,
+  author       = {ACTUS},
+  howpublished = {\url{https://github.com/actusfrf/actus-tests/}},
+  month        = Jun,
+  title        = {ACTUS test cases},
+  year         = 2019
 }
 @misc{Algebraic_data_type,
   author       = {HaskellWiki},
@@ -269,6 +269,40 @@
   year       = {2017}
 }
 
+@article{PoS-PoW-energy,
+  abstract  = {Although there are several special features in block-chain technology such as machine trust, traceability, and security, high energy consumption remains an issue in broadening the applications of block-chain technology. Some researchers proposed the use of proof of stake (PoS) mechanism rather than proof of work (PoW) mechanism to reduce energy consumption of block-chain. However, because PoS cannot guarantee fairness, mixed consensus mechanisms could be a solution and has been adopted in many studies. This paper aims to evaluate the performances of PoW, PoS and mixed consensus mechanisms from three aspects: energy consumption, fairness, and reliability. An agent-based model of a typical block-chain system equipped with different consensus mechanisms is created in NetLogo. This model simulates and evaluates the performances of different consensus mechanisms in the block-chain system.},
+  author    = {Rong Zhang and Wai Kin (Victor) Chan},
+  doi       = {10.1088/1742-6596/1584/1/012023},
+  journal   = {Journal of Physics: Conference Series},
+  month     = {jul},
+  number    = {1},
+  pages     = {012023},
+  publisher = {{IOP} Publishing},
+  title     = {Evaluation of Energy Consumption in Block-Chains with Proof of Work and Proof of Stake},
+  url       = {https://doi.org/10.1088/1742-6596/1584/1/012023},
+  volume    = {1584},
+  year      = 2020
+}
+
+@inproceedings{PoS-PoW-evaluation,
+  author       = {Nair, P Rajitha and Dorai, D Ramya},
+  booktitle    = {2021 Third International Conference on Intelligent Communication Technologies and Virtual Mobile Networks (ICICV)},
+  organization = {IEEE},
+  pages        = {279--283},
+  title        = {Evaluation of performance and security of proof of work and proof of stake using blockchain},
+  year         = {2021}
+}
+
+@article{PoS-PoW-pros-cons,
+  author  = {Vashchuk, Oleksandr and Shuwar, Roman},
+  journal = {Electronics and Information Technologies},
+  number  = {9},
+  pages   = {106--112},
+  title   = {Pros and cons of consensus algorithm proof of stake. Difference in the network safety in proof of work and proof of stake},
+  volume  = {9},
+  year    = {2018}
+}
+
 @manual{prog-prove-isabelle,
   author    = {Nipkow, Tobias},
   booktitle = {Technical report, University of Cambridge},
@@ -316,6 +350,7 @@
   year      = {2000}
 }
 
+
 @inproceedings{sledgehammer_judgement_day,
   abstract  = {Sledgehammer, a component of the interactive theorem prover Isabelle, finds proofs in higher-order logic by calling the automated provers for first-order logic E, SPASS and Vampire. This paper is the largest and most detailed empirical evaluation of such a link to date. Our test data consists of 1240 proof goals arising in 7 diverse Isabelle theories, thus representing typical Isabelle proof obligations. We measure the effectiveness of Sledgehammer and many other parameters such as run time and complexity of proofs. A facility for minimizing the number of facts needed to prove a goal is presented and analyzed.},
   address   = {Berlin, Heidelberg},
@@ -346,7 +381,6 @@
   year      = {2021}
 }
 
-
 @article{tableau_provers,
   address   = {Cambridge, MA, USA},
   author    = {Lawrence C. Paulson},
@@ -369,7 +403,6 @@
   title  = {The Extended UTXO Model},
   year   = {2020}
 }
-
 @misc{Translating_and_Unifying_UTXO-based,
   author       = {Joachim Zahnentferner},
   howpublished = {Cryptology ePrint Archive, Report 2018/262},
@@ -377,7 +410,6 @@
   title        = {Chimeric Ledgers: Translating and Unifying UTXO-based and Account-based Cryptocurrencies},
   year         = {2018}
 }
-
 @article{UTxO_Lars,
   author     = {Lars Br{\"{u}}njes and
                 Murdoch James Gabbay},
@@ -392,7 +424,6 @@
   volume     = {abs/2003.14271},
   year       = {2020}
 }
-
 @inproceedings{Z3,
   abstract  = {Satisfiability Modulo Theories (SMT) problem is a decision problem for logical first order formulas with respect to combinations of background theories such as: arithmetic, bit-vectors, arrays, and uninterpreted functions. Z3 is a new and efficient SMT Solver freely available from Microsoft Research. It is used in various software verification and analysis applications.},
   address   = {Berlin, Heidelberg},

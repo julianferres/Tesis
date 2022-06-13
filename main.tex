@@ -8,7 +8,7 @@
 \usepackage{subfigure}
 \usepackage{indentfirst}
 \usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
+%\newcommand{\sectionbreak}{\clearpage}
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
 \usepackage{textcomp, gensymb}
 \usepackage{url}
@@ -98,7 +98,7 @@
 
 En este capítulo, presentaremos al lector algunos conceptos generales que fueron utilizados a lo largo del desarrollo de esta tesis. Se presentarán temas tales como cadenas de bloques, contratos inteligentes y Cardano (la cadena de bloques en la cual se centra la escritura de dichos contratos y verificación de propiedades).
 
-Luego de este capítulo, el lector contará con las herramientas necesarias para adentrarse en cuestiones teóricas especificas a este tesis.
+Luego de este capítulo, el lector contará con las herramientas necesarias para adentrarse en cuestiones teóricas especificas a esta tesis.
 
 \section{Cadena de bloques o Blockchain}
 Las cadenas de bloques, conocidas en inglés como \textit{blockchains}, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
@@ -108,9 +108,9 @@ Con esta organización relativa, y con ayuda de técnicas criptográficas, la in
 Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar una base de datos pública no relacional, que contenga un registro histórico irrefutable de información.
 
 En la práctica esta técnica ha permitido la implementación de un registro contable o \textit{ledger} distribuido que soporta y garantiza la seguridad de transacciones y dinero digital.
-El concepto de cadena de bloque fue aplicado por primera vez en 2009 como parte central de Bitcoin~\cite{nakamoto2008bitcoin}. En este trabajo, nos concentraremos en la cadena de bloques conocida como Cardano~\cite{cardano_website}~\cite{cardano_utxo_ledger}.
+El concepto de cadena de bloque fue aplicado por primera vez en 2009 como parte central de Bitcoin~\cite{nakamoto2008bitcoin}. En este trabajo, nos concentraremos en la cadena de bloques conocida como Cardano~\cite{cardano_website,cardano_utxo_ledger}.
 
-Con respecto a como se implementa en sistemas reales, una blockchain es un tipo de base de datos o libro mayor (`ledger') que se duplica y distribuye a todos los participantes dentro de la red de esa blockchain. Está formada por un conjunto de nodos interconectados que almacenan datos o elementos de valor en bloques. Estos bloques se verifican mediante transacciones y se vinculan entre sí mediante un orden cronológico en la cadena. Los detalles de estas transacciones están escritos de forma permanentemente en el bloque y no pueden modificarse.
+Con respecto a como se implementa en sistemas reales, una blockchain es un tipo de base de datos o libro mayor (\textit{ledger}) que se duplica y distribuye a todos los participantes dentro de la red de esa blockchain. Está formada por un conjunto de nodos interconectados que almacenan datos o elementos de valor en bloques. Estos bloques se verifican mediante transacciones y se vinculan entre sí mediante un orden cronológico en la cadena. Los detalles de estas transacciones están escritos de forma permanentemente en el bloque y no pueden modificarse.
 
 Como una cadena de bloques almacena datos de manera descentralizada, es independiente de entidades de control centralizadas o intermediarios. Esto proporciona una mayor transparencia del almacenamiento de datos y su gestión. Una característica importante de blockchain es que almacena registros de forma inmutable, lo que significa que no se pueden cambiar, falsificar ni eliminar, ya que esto rompería la cadena de registros.
 
@@ -120,7 +120,7 @@ Como una cadena de bloques almacena datos de manera descentralizada, es independ
 	\caption{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}}\label{fig:Bloques}
 \end{figure}
 
-Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales (`smart contracts').
+Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales, conocidos como \textit{smart contracts}.
 
 % Tradicionalmente, un contrato se define como un acuerdo legalmente vinculante (por ejemplo, sobre un préstamo, venta, arrendamiento, etc). Un contrato inteligente permite forzar el cumplimiento de lo pactado en el mismo a través de una garantía asegurada por software, en la cual ninguna de las partes involucradas puede sabotear o alterar el contrato.
 
@@ -132,11 +132,11 @@ Los propietarios de activos digitales se identifican por sus claves públicas, y
 
 \section{Smart contracts}
 
-Un contrato inteligente o `smart contract' es un acuerdo digital automatizado, escrito en código, que trackea, verifica y ejecuta las transacciones vinculantes de un contrato entre varias partes. Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa corto cuyas entradas y salidas son transacciones en una cadena de bloques.
+Un contrato inteligente o \textit{smart contract} es un acuerdo digital automatizado, escrito en código, que rastrea, verifica y ejecuta las transacciones vinculantes de un contrato entre varias partes. Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa corto cuyas entradas y salidas son transacciones en una cadena de bloques.
 
 Los smart contracts son auto-ejecutables y confiables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye a través de una red blockchain descentralizada, lo que lo hace transparente e irreversible.
 
-En resumen, los contratos inteligentes son inmutables ya que no se pueden modificar, pueden distribuirse y son a prueba de manipulaciones, rápidos y rentables, ya que no hay intermediarios, lo que ahorra dinero y tiempo, y es seguro gracias al cifrado del mismo.
+En resumen, los contratos inteligentes son inmutables ya que no se pueden modificar, pueden distribuirse y son a prueba de manipulaciones, rápidos y rentables, ya que no hay intermediarios. Esto es seguro gracias al cifrado del mismo.
 
 Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorno funcional, Cardano apoyará el desarrollo y la implementación de contratos inteligentes utilizando lenguajes de programación como:
 
@@ -151,7 +151,7 @@ Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorn
 
 \section{Criptomonedas}
 
-Una criptomoneda es un activo digital, que se almacena en el ledger y está diseñado para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
+Las criptomonedas son activos digitales que se almacenan en el \textit{ledger} y estan diseñadas para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
 
 Los ledgers de blockchain son utilizados como tecnología subyacente para la creación de criptomonedas en un entorno descentralizado. Los protocolos de blockchain utilizan técnicas criptográficas rigurosas para permitir el minting (acuñación o creación) de criptomonedas, asegurar y verificar la propiedad de las mismas y los registros de movimiento de fondos. El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada. Se define por su valor, la correlación con las cifras del mundo real y está impulsado por la oferta y la demanda del mercado.
 
@@ -159,13 +159,13 @@ Las direcciones se utilizan al enviar pagos en criptomonedas. Son identificadore
 
 \section{Cardano}
 
-Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo `proof-of-stake' (prueba de participación)
+Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo \textit{proof-of-stake} (prueba de participación)
 \footnote{Definiciones más extensas sobre PoS se encuentran en los sitios web de \href{https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}{Ethereum} y \href{https://www.coinbase.com/es/learn/crypto-basics/what-is-proof-of-work-or-proof-of-stake}{Coinbase}}
-descentralizada de tercera generación y el hogar de la criptomoneda ada. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
+descentralizada de tercera generación y el hogar de la criptomoneda \textit{ada}. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
 
 La primera generación de blockchains (con Bitcoin como gran representante) ofrecía ledgers descentralizados para la transferencia segura de criptomonedas. Sin embargo, tales cadenas de bloques no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (DApps). A medida que la tecnología blockchain maduró, la segunda generación (por ejemplo Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
 
-Cardano se concibe como la cadena de bloques de tercera generación, ya que combina las propiedades de las generaciones anteriores y evoluciona para satisfacer todas las necesidades que surjan de los usuarios. Al comparar las propiedades de las blockchains, se deben considerar muchos aspectos. Por lo tanto, la mejor solución debe garantizar la máxima seguridad, escalabilidad (rendimiento de transacciones, escala de datos, ancho de banda de la red) y funcionalidad (además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales). Además, es importante asegurarse de que la tecnología blockchain esté en constante desarrollo en términos de sostenibilidad y sea interoperable con otras blockchains e instituciones financieras.
+Cardano se concibe como la cadena de bloques de tercera generación, ya que combina las propiedades de las generaciones anteriores y evoluciona para satisfacer todas las necesidades que surjan de los usuarios. Al comparar las propiedades de las blockchains, se deben considerar muchos aspectos. Por lo tanto, la mejor solución debe garantizar la máxima seguridad, escalabilidad (rendimiento de transacciones, escala de datos, ancho de banda de la red) y funcionalidad (además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales). Asimismo, es importante asegurarse de que la tecnología blockchain esté en constante desarrollo en términos de sostenibilidad y sea interoperable con otras blockchains e instituciones financieras.
 
 \begin{figure}[H]
 	\centering
@@ -180,11 +180,7 @@ Es un proyecto totalmente de código abierto que tiene como objetivo ofrecer una
 
 Uno de sus principales objetivos es brindar servicios financieros confiables y seguros a aquellas personas que actualmente no tienen acceso.
 
-Cardano ha sido diseñado con la seguridad como uno de sus principios fundamentales.
-
-Está escrito en Haskell, un lenguaje de programación funcional.
-En un lenguaje funcional como Haskell, se fomenta la construcción de su sistema usando funciones puras, lo que conduce a un diseño en el que los componentes se pueden probar convenientemente de forma aislada.
-Además, las funciones avanzadas de Haskell nos permiten emplear una amplia gama de métodos potentes para garantizar la corrección del código, como basar la implementación en especificaciones formales y ejecutables, pruebas exhaustivas basadas en propiedades y ejecutar pruebas en simulación.
+Cardano ha sido diseñado con la seguridad como uno de sus principios fundamentales. Está escrito en Haskell, un lenguaje de programación funcional. Los lenguajes funcionales fomentan la construcción de software usando funciones puras, lo que conduce a un diseño en el que los componentes se pueden probar convenientemente de forma aislada. Además, las funciones avanzadas de Haskell nos permiten emplear una amplia gama de métodos potentes para garantizar la corrección del código, como basar la implementación en especificaciones formales y ejecutables, pruebas exhaustivas basadas en propiedades y ejecutar pruebas en simulación.
 
 Cardano está desarrollando una plataforma de `smart contracts' que busca ofrecer funciones más avanzadas que cualquier protocolo desarrollado anteriormente, y servirá como una plataforma estable y segura para el desarrollo de dApps de nivel empresarial.
 
@@ -193,7 +189,7 @@ Cardano está desarrollando una plataforma de `smart contracts' que busca ofrece
 
 Cada ledger de blockchain tiene su criptomoneda subyacente o moneda nativa. Ada es la moneda nativa o principal en Cardano. Esto significa que ada es la principal unidad de pago en Cardano; se acepta como pago de cuotas, para realizar depósitos, y también es la única moneda en la que se distribuyen las recompensas.
 
-Lovelace es la denominación más pequeña de ada. $\boxed{ 1 \text{ ada} = 1.000.000 \text{ lovelaces}}$. Ada tiene seis decimales, lo que la hace fácilmente divisible en fracciones más pequeñas.
+Lovelace es la denominación más pequeña de ada, siendo $\boxed{ 1 \text{ ada} = 1.000.000 \text{ lovelaces}}$. Ada tiene seis decimales, lo que la hace fácilmente divisible en fracciones más pequeñas.
 
 \subsubsection{Tokens nativos}
 
@@ -204,25 +200,25 @@ Cardano también admite la creación de tokens nativos: activos digitales que se
 
 % En este trabajo nos proponemos estudiar la verificación a bajo nivel de un grupo específico de contratos financieros definidos en el estándar ACTUS\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, en particular para la cadena de bloques \textit{Cardano}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
 
-\subsection{Proof of stake}
+\subsection{Proof of Stake}
 
-Proof of stake (PoS o Prueba de participación) es un tipo de protocolo de consenso que utiliza la cantidad de participación (o valor) mantenida en el sistema para determinar el consenso.
+\textit{Proof of Stake} (PoS o Prueba de participación) es un tipo de protocolo de consenso que utiliza la cantidad de participación (o valor) mantenida en el sistema para determinar el consenso~\cite{PoS-PoW-pros-cons, PoS-PoW-energy, PoS-PoW-evaluation}.
 
 En esencia, un protocolo de consenso es lo que controla las leyes y los parámetros que rigen el comportamiento de las cadenas de bloques. El consenso puede resumirse como un conjunto de reglas a las que se adhiere cada participante de la red.
 
-Dado que las blockchains no están controladas por ninguna autoridad central única, en su lugar se utiliza un protocolo de consenso para permitir que los participantes de la red distribuida acuerden el historial de la red reflejada en la cadena de bloques, para llegar a un consenso sobre lo que ha sucedido y continuar desde una sola fuente de `verdad'.
+Dado que las blockchains no están controladas por ninguna autoridad central única, en su lugar se utiliza un protocolo de consenso para permitir que los participantes del sistema distribuido acuerden el historial de la red reflejada en la cadena de bloques, para llegar a un consenso sobre lo que ha sucedido y continuar desde una sola fuente de `verdad'.
 
 Cardano se basa en el protocolo de consenso PoS llamado Ouroboros~\cite{pof_ouroboros}, el primer protocolo de consenso de blockchain que se desarrolla a través de una investigación revisada por pares. En el corazón del protocolo se encuentran los `stake pools' (grupos de participación), nodos servidores confiables administrados por un operador de `stake pools' en los que los titulares de ada pueden delegar su participación. Los `stake pools' se utilizan para garantizar que todos puedan participar en el protocolo, independientemente de la experiencia técnica o la disponibilidad para mantener un nodo en funcionamiento.
 
-\subsubsection{Proof of stake vs. Proof of work}
+\subsubsection{Proof of Stake vs. Proof of Work}
 
-Por el contrario, el protocolo conocido como `Proof of work' (PoW) o prueba de trabajo es un mecanismo síncrono que anima a los mineros a competir para ser los primeros en resolver cualquier problema dentro del bloque. Se utiliza un sistema de recompensas para incentivar esta resolución de problemas. Sin embargo, este enfoque acarrea una gran desventaja, con un mayor uso de electricidad y períodos de tiempo más largos para resolver problemas dentro de la cadena. Estos factores pueden ralentizar la red significativamente y significativamente más costosa de mantener.
+Por el contrario, el protocolo conocido como \textit{Proof of Work} (PoW) o prueba de trabajo es un mecanismo síncrono que anima a los mineros a competir para ser los primeros en resolver cualquier problema dentro del bloque. Se utiliza un sistema de recompensas para incentivar esta resolución de problemas. Sin embargo, este enfoque acarrea una gran desventaja, con un mayor uso de electricidad y períodos de tiempo más largos para resolver problemas dentro de la cadena. Estos factores pueden ralentizar la red significativamente y hacerla más costosa de mantener.
 
 \subsubsection{Características del protocolo proof of stake}
 
-Una de las características clave de PoS es que a medida que aumenta el valor del usuario, también aumenta la oportunidad de mantener el ledger.
+Una de las características clave de PoS es que a medida que aumenta el valor del usuario, también aumenta la oportunidad de mantener el ledger; Esto significa una mayor probabilidad de producir nuevos bloques que se pueden agregar a la cadena de bloques.
 
-Esto significa una mayor probabilidad de producir nuevos bloques que se pueden agregar a la cadena de bloques. El creador de un nuevo bloque se elige en función de una combinación de selección aleatoria y una medida de su participación o riqueza. Dentro de la cadena se produce una especie de elección de líder. Cabe aclarar que dentro de un protocolo de prueba de participación, los participantes acumulan las tarifas de transacción, lo que aumenta su riqueza a medida que avanzan. Este enfoque fomenta el crecimiento constante y estable de la blockchain y reduce los casos de transacciones estancadas que pueden impedir el crecimiento de la misma.
+El creador de un nuevo bloque se elige en función de una combinación de selección aleatoria y una medida de su participación o riqueza. Cabe aclarar que dentro de un protocolo de prueba de participación, los participantes acumulan las tarifas de transacción, lo que aumenta su riqueza a medida que avanzan. Este enfoque fomenta el crecimiento constante y estable de la blockchain y reduce los casos de transacciones estancadas que pueden impedir el crecimiento de la misma.
 
 \subsubsection{Principales ventajas de Proof of Stake por sobre Proof of Work}
 
@@ -244,18 +240,18 @@ Esto significa una mayor probabilidad de producir nuevos bloques que se pueden a
 \chapter[Escritura de contratos financieros en
   Marlowe]{Escritura de contratos financieros en Marlowe para Cardano}
 
-Durante este capítulo, nos adentraremos en la escritura de contratos financieros en Marlowe, para esto, será necesario describir el modelo contable de preferencia de dichas plataformas descentralizadas, el estándar involucrado en la clasificación de los contratos financieros y el lenguaje propiamente dicho.
+Durante este capítulo, nos adentraremos en la escritura de contratos financieros en Marlowe. Para esto será necesario describir el modelo contable de preferencia de dichas plataformas descentralizadas, el estándar involucrado en la clasificación de los contratos financieros y el lenguaje propiamente dicho.
 
 Al final del mismo, el lector estará familiarizado con la notación correspondiente y expondremos brevemente la especificación para un tipo de contrato.
 
 \section{El modelo UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
 
-Para poder entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
+Para entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
 
-La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (Unspent transaction output, o `Salidas de transacción no utilizadas').
+La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (\textit{Unspent transaction output}, o `Salidas de transacción no utilizadas').
 
-El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based}\cite{UTxO_Lars} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
+El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based, UTxO_Lars} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
 
 Consideremos el gráfico de flujo de dinero en la figura~\ref{fig:UTXO_Funds_Flow_Example}. Las lineas negras representan outputs no gastados de las transacciones, y las lineas rojas representan dichos outputs siendo utilizados como inputs de transacciones posteriores.
 
@@ -313,8 +309,8 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 		txin    & \ $\in$\ \  & TxIn    & = & (txid, ix)           & \ $\in$\ \  & TxId $\times$ Ix                                      & entrada de la transacción \\
 		txout   & \ $\in$\ \  & TxOut   & = & (addr, c)            & \ $\in$\ \  & Addr $\times$ Coin                                    & salida de la transacción  \\
 		utxo    & \ $\in$\ \  & UTxO    & = & txin $\mapsto$ txout & \ $\in$\ \  & TxIn $\mapsto$ TxOut                                  & salidas sin gastar        \\
-		b       & \ $\in$\ \  & Block   & = & tx                   & \ $\in$\ \  & $\mathbb{P}(\text{Tx})$                               & bloque                    \\
-		pending & \ $\in$\ \  & Pending & = & tx                   & \ $\in$\ \  & $\mathbb{P}(\text{Tx})$                               & transacciones pendientes
+        b       & \ $\in$\ \  & Block   & = & \{tx\}                   & \ $\in$\ \  & $\mathbb{P}(\text{Tx})$                               & bloque                    \\
+        pending & \ $\in$\ \  & Pending & = & \{tx\}                   & \ $\in$\ \  & $\mathbb{P}(\text{Tx})$                               & transacciones pendientes
 	\end{tabular}
 \end{center}
 
@@ -322,7 +318,7 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 
 \begin{center}
 	\begin{tabular}{ r @{} c @{} l r }
-		txid & \ $\in$\ \  & TxId $\mapsto$ TxId       & computar id de la transacción               \\
+		txid & \ $\in$\ \  & Tx $\mapsto$ TxId       & computar id de la transacción               \\
 		ours & \ $\in$\ \  & Addr $\mapsto \mathbb{B}$ & direcciones que corresponden a la billetera \\
 	\end{tabular}
 \end{center}
@@ -342,7 +338,7 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 %     \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
 % \end{figure}
 
-Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
+Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
 El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de `outputs' dentro de una transacción.
 
@@ -396,7 +392,7 @@ Usando esta notación, podemos definir la actualización del \texttt{UTXO}, debi
 
 \[ (\text{txins } tx\ntriangleleft\ utxo) \cup\text{outs } tx \]
 
-Hay que tener en cuenta que se debe realizar un cálculo explícito de la cantidad total de Aca en las salidas y el total de Ada en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas.
+Hay que tener en cuenta que se debe realizar un cálculo explícito de la cantidad total de Aca en las salidas y el total de \textit{ada} en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas.
 
 Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTXO brinda protección integrada contra el `doble gasto' de un output determinado.
 
@@ -406,20 +402,20 @@ Para finalizar, hay que tener en cuenta que una transacción incluye una gran ca
 
 
 \section{Marlowe como DSL}
-Marlowe~\cite{implementing_financial_contracts_on_blockchain}~\cite{standardized_crypto_loans} es un lenguaje pequeño, con pocas sentencias soportadas que, para cada contrato, describen el comportamiento que involucra un conjunto fijo y finito de roles.
+Marlowe~\cite{implementing_financial_contracts_on_blockchain, standardized_crypto_loans} es un lenguaje pequeño, con pocas sentencias soportadas que, para cada contrato, describen el comportamiento que involucra un conjunto fijo y finito de roles.
 
 Marlowe está diseñado para crear bloques para contratos financieros: pagos o depósitos de las partes, elecciones e información del mundo real. Cuando se ejecuta un contrato, los roles que implica son satisfechos por los participantes, que son identidades en la cadena de bloques. Cada rol está representado por un token en la cadena y los roles se pueden transferir durante la ejecución del contrato, lo que significa que esencialmente se pueden intercambiar.
 
 Los contratos se pueden construir reuniendo una pequeña cantidad de estas sentencias que, en combinación, se pueden usar para describir y modelar muchos tipos diferentes de contratos financieros. Algunos ejemplos incluyen un contrato que puede realizar un pago a un rol o a una clave pública, un contrato que puede esperar una acción por parte de uno de los roles, como un depósito de moneda, o una elección entre un conjunto de opciones.
 
-En particular, un contrato no puede esperar indefinidamente una acción: si no se ha realizado en un tiempo determinado (conocido como \textit{timeout}), el mismo continuará con un comportamiento alternativo, por ejemplo, reembolsar los fondos en el contrato.
+En particular, un contrato no puede esperar indefinidamente una acción: si la misma no se ha realizado en un tiempo determinado (conocido como \textit{timeout}), el mismo continuará con un comportamiento alternativo, por ejemplo, reembolsar los fondos en el contrato.
 
-Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
+Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, se puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
 \subsection{Contratos en Marlowe}
 Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
-Marlowe, en sí mismo, está embebido en Haskell y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}, con contratos definidos por el tipo de contrato:
+Marlowe en sí mismo está embebido en Haskell, y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}. A continuación mostramos la definición más general de un contrato en Marlowe:
 
 \begin{lstlisting}[language=Marlowe]
 data Contract = Close
@@ -436,11 +432,11 @@ Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos ---
 Antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
 \begin{enumerate}
-	\item \textbf{Valores}: Incluyen cantidades que cambian con el tiempo, tales como: el \textit{slot interval} o `intervalo actual', el balance de cierto token en una cuenta o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
+    \item \textbf{Valores (\textit{values})}: Incluyen cantidades que cambian con el tiempo, tales como: el \textit{slot interval} o `intervalo actual', el balance de cierto token en una cuenta o elecciones que se han realizado (conocidas como \textit{valores volátiles}). Los valores pueden ser combinados usando operaciones como suma, resta, negación, etc. Los mismos pueden ser valores condicionales o una observación.
 
-	\item \textbf{Observaciones}: Valores booleanos que son obtenidos al comparar valores, y que pueden ser combinados con los operadores booleanos estándar. Además, es posible observar si alguna elección se ha realizado (para una elección en concreto). Las observaciones tendrán un valor en cada etapa de la ejecución.
+	\item \textbf{Observaciones (\textit{observations})}: Valores booleanos que son obtenidos al comparar valores, y que pueden ser combinados con los operadores booleanos estándar. Además, es posible observar si alguna elección se ha realizado (para una elección en concreto). Las observaciones tendrán un valor en cada etapa de la ejecución.
 
-	\item \textbf{Acciones}: Suceden en momentos particulares durante la ejecución, por ejemplo: un depósito de dinero o elegir entre varias alternativas.
+	\item \textbf{Acciones (\textit{actions})}: Suceden en momentos particulares durante la ejecución, por ejemplo: un depósito de dinero o elegir entre varias alternativas.
 	      % Revisar oracles, que parecen haber sido incluidos, pero no estoy seguro de si son relevantes o no para nuestro trabajo.
 \end{enumerate}
 
@@ -1815,7 +1811,7 @@ When
 
 \subsection{Traducción del contrato a Isabelle}
 
-En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.
+En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.\@
 
 \begin{lstlisting}[style=Isabelle]
 theory Scratch
@@ -1830,12 +1826,11 @@ end
 
 \end{lstlisting}
 
-
 \subsection{Algunas ejecuciones de prueba}
 
 \subsection{Prueba de minSlot no decreciente en COM}
 
-\subsection{Prueba de minSlot no decreciente en PAM }
+\subsection{Prueba de minSlot no decreciente en PAM}
 
 \section{Probando la ausencia de Warnings en el contrato Auction}
 
