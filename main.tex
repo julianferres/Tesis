@@ -1427,27 +1427,83 @@ datatype 'a list = Nil | Cons 'a "'a list"
 
 Antes de comenzar a realizar pruebas sobre cualquier contrato escrito en Marlowe, es necesario definir formalmente en Isabelle los pilares del DSL.\@
 
-Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba traducida casi totalmente a Isabelle (junto con algunos \textit{lemmas} y teoremas correspondientes). El mayor responsable de dicha traducción es Pablo Lamela\footnote{\url{https://iohk.io/en/team/pablo-lamela-seijas}}, quien colaboró durante todo el desarrollo de este trabajo, en particular durante la escritura de mis pruebas.
+Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba traducida a Isabelle~\cite{implementing_financial_contracts_on_blockchain, efficient-static-analysis-marlowe-isabelle} (junto con algunos \textit{lemmas} y teoremas correspondientes). El mayor responsable de dicha traducción es Pablo Lamela\footnote{\url{https://iohk.io/en/team/pablo-lamela-seijas}}, quien colaboró durante todo el desarrollo de este trabajo, en particular durante la escritura de mis pruebas.
 
 Debido a que no existen actualmente traductores de Haskell~\cite{translating-haskell-to-isabelle}, dicho trabajo debe realizarse manualmente. 
 
 Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando una definición es escrita, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
 
-La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}, donde se pueden destacar los siguientes módulos:
+La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}. Algunas de las teorías ya probadas se detallan a continuación. En~\cite{implementing_financial_contracts_on_blockchain} se menciona que las versiones tan similares como sea posible, pero que diferencian en dos prinicpales aspectos:
 
 \begin{itemize}
-    \item SemanticsTypes
-    \item Semantics
-    \item MoneyPreservation
-    \item PositiveAccounts
-    \item QuiescentResult
-    \item ValidState
-    \item CloseSafe
+    \item Se usaron \textit{enteros como identificadores} ya que son mas sencillos para manejar que las strings.
+    \item Se usaron \textit{implementaciones personalizadas de map y set}, basadas en listas, debido a que Isabelle ya provee un extenso arsenal de teoremas probados en listas.
 \end{itemize}
 
-% TODO: WIP
+Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a continuación:
 
+\subsection{Prueba de Terminación (\textit{Termination proof})}
+Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}. Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \texttt{NotReduced}, por lo tanto la probar terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
 
+\begin{lstlisting}[style=Isabelle]
+fun evalBound :: "State $\Rightarrow$ Contract $\Rightarrow$ nat" where
+"evalBound sta cont = length (accounts sta) + 2 * (size cont)"
+\end{lstlisting}
+donde \texttt{size} es una medida generada automáticamente por Isabelle. 
+
+Fue requerida la cantidad de cuentas en \texttt{State} porque el tamaño del contrato \texttt{Close} no disminuirá al llamar a \texttt{reduceContractStep}, pero la cantidad de cuentas sí lo hará, a menos que estén todas vacías.
+
+Adicionalmente, necesitaron multiplicar el tamaño del \textit{Contrato} por dos porque el \texttt{Deposit} puede aumentar el número de cuentas en uno, entonces necesitaban multiplicar el efecto de la reducción del tamaño del contrato para compensarlo.
+
+\subsection{Estado valido y preservación de cuentas en positivo}
+Hay algunos valores para \texttt{State} que están permitidos por su tipo pero no tienen sentido, especialmente en el caso de la semántica de Isabelle donde usamos listas en lugar de mapas:
+
+\begin{enumerate}
+    \item Las listas representan mapas, por lo tanto no deberían tener claves repetidas.
+    \item Es deseable que dos mapas iguales sean representados de la misma forma, entonces fuerzan a las claves a estar en orden ascendiente.
+    \item Es requerido almacenar solamente las cuentas con una valor positivo.
+\end{enumerate}
+
+Se define a un valor de \texttt{State} como \textit{valido} si las dos primeras propiedades son verdaderas. Y decimos que tiene cuentas positivas si la tercer propiedad es verdadera.
+
+Se demostró que las funciones en la semántica conservan las tres propiedades.
+
+\subsubsection{Resultado inactivo (Quiescent result)}
+Un contrato es inactivo o \texttt{quiescent} si y solo si el constructor raíz es \texttt{When} (esperando \textit{inputs} de usuario), o si el contrato es \texttt{Close} y todas las cuentas están vacías. Fue probado que, si un \texttt{State} de entrada es válido y las cuentas son positivas, entonces la salida sera inactiva.
+
+\subsection{Preservación del dinero y \textit{timeout} del contrato}
+
+Uno de los peligros de usar \textit{smart contracts} es que uno mal escrito puede potencialmente bloquear sus fondos para siempre. Al final del contrato, todo el dinero retenido en el contrato debe distribuirse, de alguna manera, a un subconjunto de los participantes del mismo. Para asegurarse de que este sea el caso, probamoron dos propiedades:
+
+\subsubsection{Preservación del dinero}
+El dinero no se crea ni se destruye por la semántica. Concretamente, el dinero que ingresa más el dinero en el contrato antes de la transacción debe ser igual al dinero que sale más el dinero en el contrato después de la transacción, salvo en casos que ocurra un error.
+
+\subsubsection{Un \textit{timeout} cierra un contrato} 
+Por cada contrato en Marlowe hay un \textit{slot} después del cual se puede emitir una transacción vacía que cerrará el mismo y reembolsará todo el dinero en sus cuentas.
+
+Un límite superior conservador para el \textit{slot} de vencimiento se puede calcular de manera eficiente utilizando la función \texttt{maxTime} (o \texttt{maxTimeContract} en la semántica de Isabelle), que simplemente toma el máximo de todos los \textit{timeouts} en el contrato.
+
+Han probado que este límite superior conservador es lo suficientemente general para cada contrato, mostrando que, si el contrato no está cerrado y vacío, entonces una transacción vacía enviada después de \texttt{maxTime} cerrará el contrato y vaciará las cuentas.
+
+\subsection{Limite en el número máximo de transacciones}
+
+Otra propiedad de Marlowe es que cualquier \texttt{Contract} tiene un límite finito implícito en el número máximo de \texttt{Transaccions} que acepta. Esta es una propiedad conveniente por dos razones:
+
+En primer lugar, reduce el peligro de ataques de denegación de servicio (DoS), ya que el número de entradas válidas es limitado, un participante atacante no puede bloquear arbitrariamente el contrato mediante la emisión de una cantidad ilimitada de transacciones inútiles.
+
+En segundo lugar, el número de transacciones limita la longitud de los rastros que necesita explorar la ejecución simbólica (consultar la Sección 4 de~\cite{implementing_financial_contracts_on_blockchain}). Establecemos la propiedad de la siguiente manera:
+
+\begin{lstlisting}[style=Isabelle]
+lemma playTrace_only_accepts_maxTransactionsInitialState :
+"playTrace sl c l = TransactionOutput txOut
+    $\Longrightarrow$ length l $\leq$ maxTransactionsInitialState c"
+\end{lstlisting}
+
+donde \texttt{maxTransactionsInitialState} es el máximo número de constructores \texttt{When} anidados en el contrato más uno.
+
+Esta propiedad implica que cualquier seguimiento (\textit{trace}) que sea más largo que esto produce al menos un error. Debido a que las transacciones que producen un error no alteran el estado del contrato, tal lista de transacciones (un \textit{trace}) será equivalente a una lista de transacciones que no tiene la transacción errónea.
+
+Por lo tanto, no perdemos generalidad al explorar solo \textit{traces} más cortos.
 
 
 %##########################
