@@ -29,13 +29,9 @@
 \usepackage[table]{xcolor}
 \usepackage{url}
 
-% \boxed no tolera los endline
-\newcommand\mybox[2][l]{\fbox{\begin{tabular}{@{}#1@{}}#2\end{tabular}}}
-
 %% Biblatex
 % \usepackage[style=plain]{biblatex}
 % \addbibresource{bibliografia.bib}
-
 
 \input{languages.tex}
 \input{actus-techspecs-format.tex}
@@ -142,7 +138,7 @@ Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorn
 
 \begin{itemize}
 	\item \textbf{Plutus}: Una plataforma de desarrollo y ejecución de smart contracts especialmente diseñada.
-	      Los contratos de Plutus consisten en partes que se ejecutan en la blockchain (`código on-chain') y partes que se ejecutan en la maquina del usuario (`código off-chain o de cliente').
+	      Los contratos de Plutus consisten en partes que se ejecutan en la blockchain (código \textit{on-chain}) y partes que se ejecutan en la maquina del usuario (`código \textit{off-chain} o de cliente').
 	      Plutus se basa en la investigación de lenguajes modernos para proporcionar un entorno de programación completo y seguro basado en Haskell, el lenguaje de programación funcional líder.
 
 	\item \textbf{Marlowe}: Un lenguaje de dominio específico~\cite{fowler2010dsl} para escribir y ejecutar contratos financieros que permite construir contratos visualmente, así como en código más tradicional. Las instituciones financieras pueden usarlo para desarrollar e implementar instrumentos personalizados para sus clientes y usuarios. El propio lenguaje Marlowe está integrado tanto en JavaScript como en Haskell y ofrece una selección de editores según las preferencias y el conjunto de habilidades de los desarrolladores.
@@ -151,7 +147,7 @@ Cardano presentará el soporte de contratos inteligentes en 2021. Como un entorn
 
 \section{Criptomonedas}
 
-Las criptomonedas son activos digitales que se almacenan en el \textit{ledger} y estan diseñadas para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
+Las criptomonedas son activos digitales que se almacenan en el \textit{ledger} y están diseñadas para servir como medio de intercambio de bienes o servicios. Suelen ser popularmente llamadas `criptos'.
 
 Los ledgers de blockchain son utilizados como tecnología subyacente para la creación de criptomonedas en un entorno descentralizado. Los protocolos de blockchain utilizan técnicas criptográficas rigurosas para permitir el minting (acuñación o creación) de criptomonedas, asegurar y verificar la propiedad de las mismas y los registros de movimiento de fondos. El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada. Se define por su valor, la correlación con las cifras del mundo real y está impulsado por la oferta y la demanda del mercado.
 
@@ -182,7 +178,7 @@ Uno de sus principales objetivos es brindar servicios financieros confiables y s
 
 Cardano ha sido diseñado con la seguridad como uno de sus principios fundamentales. Está escrito en Haskell, un lenguaje de programación funcional. Los lenguajes funcionales fomentan la construcción de software usando funciones puras, lo que conduce a un diseño en el que los componentes se pueden probar convenientemente de forma aislada. Además, las funciones avanzadas de Haskell nos permiten emplear una amplia gama de métodos potentes para garantizar la corrección del código, como basar la implementación en especificaciones formales y ejecutables, pruebas exhaustivas basadas en propiedades y ejecutar pruebas en simulación.
 
-Cardano está desarrollando una plataforma de `smart contracts' que busca ofrecer funciones más avanzadas que cualquier protocolo desarrollado anteriormente, y servirá como una plataforma estable y segura para el desarrollo de dApps de nivel empresarial.
+Cardano está desarrollando una plataforma de \textit{smart contracts} que busca ofrecer funciones más avanzadas que cualquier protocolo desarrollado anteriormente, y servirá como una plataforma estable y segura para el desarrollo de dApps de nivel empresarial.
 
 \subsection{Ada como criptomoneda de Cardano}
 
@@ -208,7 +204,7 @@ En esencia, un protocolo de consenso es lo que controla las leyes y los parámet
 
 Dado que las blockchains no están controladas por ninguna autoridad central única, en su lugar se utiliza un protocolo de consenso para permitir que los participantes del sistema distribuido acuerden el historial de la red reflejada en la cadena de bloques, para llegar a un consenso sobre lo que ha sucedido y continuar desde una sola fuente de `verdad'.
 
-Cardano se basa en el protocolo de consenso PoS llamado Ouroboros~\cite{pof_ouroboros}, el primer protocolo de consenso de blockchain que se desarrolla a través de una investigación revisada por pares. En el corazón del protocolo se encuentran los `stake pools' (grupos de participación), nodos servidores confiables administrados por un operador de `stake pools' en los que los titulares de ada pueden delegar su participación. Los `stake pools' se utilizan para garantizar que todos puedan participar en el protocolo, independientemente de la experiencia técnica o la disponibilidad para mantener un nodo en funcionamiento.
+Cardano se basa en el protocolo de consenso PoS llamado Ouroboros~\cite{pof_ouroboros}, el primer protocolo de consenso de blockchain que se desarrolla a través de una investigación revisada por pares. En el corazón del protocolo se encuentran los \textit{stake pools} (grupos de participación), nodos servidores confiables administrados por un operador de \textit{stake pools} en los que los titulares de ada pueden delegar su participación. Los \textit{stake pools} se utilizan para garantizar que todos puedan participar en el protocolo, independientemente de la experiencia técnica o la disponibilidad para mantener un nodo en funcionamiento.
 
 \subsubsection{Proof of Stake vs. Proof of Work}
 
@@ -244,7 +240,7 @@ Durante este capítulo, nos adentraremos en la escritura de contratos financiero
 
 Al final del mismo, el lector estará familiarizado con la notación correspondiente y expondremos brevemente la especificación para un tipo de contrato.
 
-\section{El modelo UTXO}\label{sec:UTXO} % TODO: No hay bib del libro de plutus, considero escribir la entrada por mi mismo
+\section{El modelo UTXO}\label{sec:UTXO}
 
 Para entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
@@ -282,11 +278,11 @@ Para mantener la integridad de la contabilidad, las nuevas transacciones debe te
 
 En nuestro ejemplo anterior, la nueva transacción elimina (utilizándolas como entrada) a los outputs no gastados de valor 42 de Alice y 10 de Bob, para un total de 52 Ada. Esto implica que la transacción esta obligada a totalizar 52 Ada como outputs sin gastar (que de hecho cumple, con 2 para Bob y 50 para Charlie).
 
-Un aspecto a destacar es que Bob tiene un `unspent output' como entrada y uno como salida. Esto se podría interpretar como un `cambio' (de 2 Ada) para esta transacción. Dicho concepto es similar al que utilizamos en el día a día al realizar pagos en efectivo: Si un producto cuesta \$98 y tenemos un billete de \$100, no podemos fraccionar dicho billete. Tenemos que pagar con todo el billete y recibir \$2 de cambio.
+Un aspecto a destacar es que Bob tiene un \textit{unspent output} como entrada y uno como salida. Esto se podría interpretar como un `cambio' (de 2 Ada) para esta transacción. Dicho concepto es similar al que utilizamos en el día a día al realizar pagos en efectivo: Si un producto cuesta \$98 y tenemos un billete de \$100, no podemos fraccionar dicho billete. Tenemos que pagar con todo el billete y recibir \$2 de cambio.
 
-Dado que no existe una forma real de gastar parte de un `unspent output', así es como el modelo UTXO trata el gasto parcial: agregando una salida de `cambio'.
+Dado que no existe una forma real de gastar parte de un \textit{unspent output}, así es como el modelo UTXO trata el gasto parcial: agregando una salida de `cambio'.
 
-Cabe destacar que este modelo contable hace que sea conveniente distribuir el flujo de efectivo de varios contribuyentes a varios destinatarios haciendo que el mismo fluya hacia un fondo común, en este caso, la transacción, antes de enviarse a los beneficiarios finales. Esto representa, en un sentido muy general, el objetivo de los `smart contracts' o contratos inteligentes.
+Cabe destacar que este modelo contable hace que sea conveniente distribuir el flujo de efectivo de varios contribuyentes a varios destinatarios haciendo que el mismo fluya hacia un fondo común, en este caso, la transacción, antes de enviarse a los beneficiarios finales. Esto representa, en un sentido muy general, el objetivo de los \textit{smart contracts} o contratos inteligentes.
 
 Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@Para el modelo de transacciones básico que analizaremos, podemos referirnos a las siguientes definiciones:
 
@@ -338,18 +334,18 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 %     \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
 % \end{figure}
 
-Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o ledger. El registro que contiene la información sobre el ledger es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
+Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
-El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de `outputs' dentro de una transacción.
+El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de \textit{outputs} dentro de una transacción.
 
-Los valores o `values' en el mapa son pares formados por un `coin value' y una dirección, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de `script' (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
+Los valores o \textit{values} en el mapa son pares formados por un \textit{coin value} y una dirección, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de \textit{script} (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
 
-Para poder comprender la estructura de la transacción en sí, analicemos primero los `outputs'. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los outputs, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito.
+Para poder comprender la estructura de la transacción en sí, analicemos primero los \textit{outputs}. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los \textit{outputs}, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito.
 Las claves del mapa son indices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho indice identifica de forma global a dicho output.
 En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto.
 
 
-Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el `ledger' que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
+Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el \textit{ledger} que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
 
 Procesar una transacción implica actualizar el \texttt{UTXO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UTXO}.
 
@@ -424,13 +420,15 @@ Los contratos en Marlowe se ejecutan en una blockchain, pero deben interactuar c
 La ejecución de un contrato también producirá efectos externos, al realizar pagos a las partes en el mismo.
 
 \subsubsection{Participantes y roles}
-Los \textit{participantes} y los \textit{roles} se comportan de forma ligeramente distinta en un contrato en Marlowe. Los roles en un contrato son fijos e inmutables, y pueden ser llamados \texttt{party}, \texttt{counterparty}, etc. Por otro lado, los participantes que están vinculados a los roles del contrato pueden cambiar durante la ejecución de la instancia de contrato en particular. Esto permite que los roles en la ejecución de contratos se intercambien entre los participantes, a través de un mecanismo de \textit{tokenización}. A la fecha de escritura de este documento, la simulación en \textit{Marlowe Playground}~\cite{marlowe_playground} simplemente presenta roles de contrato.
+Los \textit{participantes} y los \textit{roles} se comportan de forma ligeramente distinta en un contrato en Marlowe. Los roles en un contrato son fijos e inmutables, y pueden ser llamados \textit{party}, \textit{counterparty}, etc. Por otro lado, los participantes que están vinculados a los roles del contrato pueden cambiar durante la ejecución de la instancia de contrato en particular.
+
+Esto permite que los roles en la ejecución de contratos se intercambien entre los participantes, a través de un mecanismo de \textit{tokenización}. A la fecha de escritura de este documento, la simulación en \textit{Marlowe Playground}~\cite{marlowe_playground} simplemente presenta roles de contrato.
 
 \subsubsection{Cuentas}
 El modelo de Marlowe permite que un contrato pueda almacenar activos. Todas las partes que participan en el contrato poseen implícitamente una cuenta con su nombre. Todos los bienes almacenados en el contrato deben estar en la cuenta de una de las partes; de esta forma, cuando se cierra el contrato, todos los bienes que quedan en el contrato pertenecen a alguien, por lo que pueden ser reembolsados a sus respectivos dueños. Estas cuentas son \textit{locales}: solo existen mientras dura la ejecución del contrato, y durante ese tiempo son accesibles (solo desde dentro del contrato).
 
 \subsubsection{Pasos y estados}
-Los contratos de Marlowe describen una serie de \textit{pasos}, generalmente describiendo el primer paso, junto con otro subcontrato que describe qué hacer a continuación. Por ejemplo, el contrato \texttt{Pay a p t v cont} dice ``realice un pago del valor \texttt{v} del token \texttt{t} a la parte \texttt{p} desde la cuenta \texttt{a}, y luego siga el contrato \texttt{cont}''. Llamamos \texttt{cont} a la continuación del contrato.
+Los contratos de Marlowe describen una serie de \textit{pasos}, generalmente describiendo el primer paso, junto con otro \textit{sub-contrato} que describe qué hacer a continuación. Por ejemplo, el contrato \texttt{Pay a p t v cont} dice ``realice un pago del valor \texttt{v} del token \texttt{t} a la parte \texttt{p} desde la cuenta \texttt{a}, y luego siga el contrato \texttt{cont}''. Llamamos \texttt{cont} a la continuación del contrato.
 
 Al ejecutar un contrato, debemos realizar un seguimiento del \textit{contrato actual}: después de dar un paso en el ejemplo anterior, el contrato actual es la continuación, \texttt{cont}. También tenemos que realizar un seguimiento de información adicional, como por ejemplo: cuánto se tiene en cada cuenta. Llamamos a esta información el \textit{estado}: este también cambia potencialmente en cada paso. Un paso también puede implicar que se lleva a cabo una acción, como el depósito de dinero o la producción de un \textit{efecto}, por ejemplo un pago.
 
@@ -438,14 +436,14 @@ Al ejecutar un contrato, debemos realizar un seguimiento del \textit{contrato ac
 
 Si bien Marlowe está diseñado para trabajar con cadenas de bloques en general, algunos detalles de cómo interactúa con la misma son relevantes al describir la semántica y la implementación del lenguaje.
 
-Una cadena de bloques basada en UTXO~\ref{sec:UTXO} contiene una coleccion de transacciones. Cada transacción tiene un conjunto de entradas y salidas, y la cadena de bloques se construye vinculando las salidas de transacciones no gastadas (UTXO) a las entradas de una nueva transacción. Como máximo se puede generar un bloque en cada \textit{slot}, que tienen una duración de 1 segundo.
+Una cadena de bloques basada en UTXO~\ref{sec:UTXO} contiene una colección de transacciones. Cada transacción tiene un conjunto de entradas y salidas, y la cadena de bloques se construye vinculando las salidas de transacciones no gastadas (UTXO) a las entradas de una nueva transacción. Como máximo se puede generar un bloque en cada \textit{slot}, que tienen una duración de 1 segundo.
 
-Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento, pero los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques. Actualmente, utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en cadena usaremos el tiempo, adoptando el estándar de tiempo Posix.
+Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento, pero los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques. Actualmente, utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en cadena usaremos el tiempo, adoptando el estándar de tiempo \textit{Posix}.
 
 \subsubsection{UTXO, billeteras y la aplicación Marlowe Run}
 El dinero dentro de la blockchain reside en los UTXO, que están protegidos criptográficamente por una clave privada en poder del propietario. Estas claves se pueden usar para canjear la salida y usarlas como entradas para nuevas transacciones. Los usuarios suelen realizar un seguimiento de sus claves privadas y los valores adjuntos a ellas en una billetera (o \textit{wallet}) criptográficamente segura.
 
-Para interactuar con un contrato que se ejecuta en blockchain, los usuarios deberán usar la aplicación cliente \textit{Marlowe Run}. Esta interactuará con las billeteras de los usuarios para autenticar las transacciones que gastan criptoactivos, ya que los depósitos se realizan desde las billeteras de los usuarios y los pagos son recibidos por ellos. El código que realiza este tipo de acciones suele ser llamado \textit{off-chain}, debido a que no queda inmortalizado en la misma.
+Para interactuar con un contrato que se ejecuta en blockchain, los usuarios deberán usar la aplicación cliente \textit{Marlowe Run}. Esta interactuará con las billeteras de los usuarios para autenticar las transacciones que gastan activos, ya que los depósitos se realizan desde las billeteras de los usuarios y los pagos son recibidos por ellos. El código que realiza este tipo de acciones suele ser llamado \textit{off-chain}, debido a que no queda inmortalizado en la misma.
 
 \subsubsection{Simulación omnisciente}
 El Playground de Marlowe~\cite{marlowe_playground} admite la simulación de contratos. Esta es una simulación omnisciente, en la que el usuario puede realizar cualquier acción para cualquier rol y, por lo tanto, puede observar la ejecución desde la perspectiva de todos los usuarios simultáneamente. Esto contrasta con la experiencia de ejecutar un contrato en Marlowe Run, en el que cada participante ve el contrato desde su propio punto de vista. En particular, los participantes solo pueden interactuar con un contrato en ejecución que está esperando su entrada; si ese no es el caso, entonces verán que la ejecución del contrato está esperando la participación de otra persona.
@@ -494,7 +492,7 @@ En la simulación omnisciente disponible en el \textit{Playground}, podemos abst
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Transaccion.png}
-    \caption{Diagrama de ejemplo de una transacción. Extraído de \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
+    \caption{Diagrama de ejemplo de una transacción. Extraído de \url{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
 \end{figure}
 
 
@@ -558,7 +556,7 @@ Un contrato \texttt{Assert obs cont} no tiene ningún efecto en el estado de un 
 
 \section{Un contrato de ejemplo en Marlowe}
 
-Esta sección introduce un contrato financiero simple en pseudocódigo y luego explicá como puede ser modificado para funcionar en Marlowe, dando el primer ejemplo de un contrato en el lenguaje. La misma se basa principalmente en el contrato de ejemplo brindado por la documentación oficial\footnote{Disponible en \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/escrow-ex.html}{https://play.marlowe-finance.io/doc/marlowe/tutorials/escrow-ex.html}}.
+Esta sección introduce un contrato financiero simple en pseudocódigo y luego explica como puede ser modificado para funcionar en Marlowe, dando el primer ejemplo de un contrato en el lenguaje. La misma se basa principalmente en el contrato de ejemplo brindado por la documentación oficial\footnote{Disponible en \url{https://play.marlowe-finance.io/doc/marlowe/tutorials/escrow-ex.html}}.
 
 \subsection{El contrato \textit{Escrow}}
 
@@ -576,7 +574,7 @@ When aliceChoice
 
 El contrato se describe utilizando los constructores vistos en la sección previa. El constructor más externo \texttt{When} tiene dos argumentos: el primero es una observación y el segundo es otro contrato. El significado esperado es que cuando ocurre la acción, se activa el segundo contrato.
 
-El segundo contrato es en sí mismo otro \texttt{When} --- esperando una decisión de Bob --- pero dentro de este, hay una opción: Si (\texttt{If}) Alice y Bob están de acuerdo en qué hacer, se procede; en caso contratio, se le pide a Carol que arbitre y tome una decisión.
+El segundo contrato es en sí mismo otro \texttt{When} --- esperando una decisión de Bob --- pero dentro de este, hay una opción: Si (\texttt{If}) Alice y Bob están de acuerdo en qué hacer, se procede; en caso contrario, se le pide a Carol que arbitre y tome una decisión.
 
 En general, \texttt{When} ofrece una lista de casos\footnote{Las listas en Marlowe se representan entre corchetes, como en \texttt{[2,3,4]}.}, cada uno con una acción y un contrato correspondiente que se activa cuando ocurre esa acción. Sabiendo esto, podemos permitir la opción de que Bob realice la primera elección, en lugar de Alice, de la siguiente forma:
 
@@ -594,9 +592,9 @@ When [ Case aliceChoice
      ]
 \end{lstlisting}
 
-En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin perdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el codigo simétrico y repetido que cubriría el caso en el que Bob comienza).
+En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin perdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el código simétrico y repetido que cubriría el caso en el que Bob comienza).
 
-A coninuación, se incluye un diagrama de secuencia que ilustra el comportamiento esperado del contrato, descripto anteriormente en pseudocódigo:
+A continuación, se incluye un diagrama de secuencia que ilustra el comportamiento esperado del contrato, descrito anteriormente en pseudocódigo:
 
 \begin{figure}[H]
     \centering
@@ -608,7 +606,7 @@ En~\cite{composing-contracts, multi-party-contracts} se encuentran los trabajos 
 
 \subsection{Escrow en Marlowe}
 
-Los contratos de Marlowe incorporan parametros adicionales para garantizar que progresen correctamente. Cada vez que vemos un \texttt{When}, debemos proporcionar dos cosas adicionales:
+Los contratos de Marlowe incorporan parámetros adicionales para garantizar que progresen correctamente. Cada vez que vemos un \texttt{When}, debemos proporcionar dos cosas adicionales:
 
 \begin{itemize}
     \item El tiempo de espera (o \textit{timeout}) luego del cual el contrato progresará.
@@ -617,7 +615,7 @@ Los contratos de Marlowe incorporan parametros adicionales para garantizar que p
 
 \subsubsection{Agregando \textit{timeouts}}
 
-Primero, examinemos cómo modificar el pseudocódigo escrito para solucionar el caso de que la condición del \texttt{When} no se cumpla. Para eso, agregamos valores de \textit{tiemout} y `contrato de continuación' para cada \texttt{When} en el contrato:
+Primero, examinemos cómo modificar el pseudocódigo escrito para solucionar el caso de que la condición del \texttt{When} no se cumpla. Para eso, agregamos valores de \textit{timeout} y `contrato de continuación' para cada \texttt{When} en el contrato:
 
 \begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Pseudocódigo con timeouts.]
 When [ Case aliceChoice
@@ -667,7 +665,7 @@ Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se 
 Hay un \textit{timeout} en el \textit{slot} número 10 para realizar el depósito; si se alcanza sin que se haya realizado el mismo, el contrato se cierra y se reembolsa todo el dinero que ya estaba en el contrato. En este caso, no hay ningún reembolso pendiente y simplemente finaliza del contrato.
 
 \subsubsection{Completando las funciones}
-En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprobechan de la posibildad de Marlowe de ser embebido en Haskell~\ref{sec:constructores_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ}) para hacer algunas descripciones y cuentas mas concisas.
+En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprovechan de la capacidad de Marlowe de ser embebido en Haskell~\ref{sec:constructores_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ}) para hacer algunas descripciones y cuentas mas concisas.
 
 Las funciones restantes pueden ser escritas en Haskell de la siguiente manera:
 
@@ -707,7 +705,7 @@ choiceName :: ChoiceName
 choiceName = "choice"
 \end{lstlisting}
 
-Sin abreviaciones ni la utilización de Haskell, hubiesemos arribado al siguiente contrato escrito en ``Marlowe puro'':
+Sin abreviaciones ni la utilización de Haskell, se obtiene el siguiente contrato escrito en ``Marlowe puro'':
 
 \begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato \textit{Escrow} completamente expandido.]
 When [
@@ -1173,7 +1171,7 @@ Para una historia de los asistentes de demostración y la demostración interact
 
 \section{Isabelle}
 
-Isabelle es un sistema genérico para implementar formalismos lógicos, e Isabelle/HOL es la especialización de Isabelle para HOL, abreviatura de `Higher-Order Logic'.
+Isabelle es un sistema genérico para implementar formalismos lógicos, e Isabelle/HOL es la especialización de Isabelle para HOL, abreviatura de \textit{Higher-Order Logic}.
 
 En resumidas palabras, HOL puede ser definido como:
 
@@ -1194,7 +1192,7 @@ La simplificación es el principal caballo de batalla en Isabelle. El sistema pu
 \begin{itemize}
 	\item \textit{Procedimientos de simplificación basados en patrones} que derivan y aplican reglas de reescritura de forma dinámica. Muchos de estos procedimientos están pre-instalados, en particular los de simplificación aritmética para números y términos simbólicos.
 	\item \textit{Solvers especiales para reglas de reescritura condicional}. Los ejemplos típicos son: fragmentos de aritmética lineal y un prover de clausuras para relaciones transitivas arbitrarias.
-	\item \textit{`Loopers' especiales} que advierten el objetivo luego de cada ronda de simplificación. Los separadores de casos se proveen de esta manera.
+	\item \textit{\textit{Loopers} especiales} que advierten el objetivo luego de cada ronda de simplificación. Los separadores de casos se proveen de esta manera.
 \end{itemize}
 
 El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
@@ -1250,11 +1248,11 @@ Para los probadores de resolución, se emplean técnicas estándar para traducir
 
 Hasta hace poco, la traducción de tipos no era sólida: proporcionaba suficiente información de tipos para hacer cumplir el razonamiento de clase de tipos correcto, pero no para especificar el tipo de cada término. (Esto se debía a que el kernel de inferencia de Isabelle vuelve a verificar las demostraciones, pero la solidez no era crucial). La implementación actual soluciona de forma segura la mayoría de la problemas de información de tipos infiriendo la monotonicidad de los mismos~\cite{monotonicity_inference_for_hol}, la cual brinda una codificación sólida y eficiente.
 
-Para los solvers de SMT, la traducción asigna operadores aritméticos y de igualdad a conceptos correspondientes en SMT-LIB~\cite{SMT-LIB}. La lógica de SMT-LIB está ordenada de forma múltiple, lo que la hace más apropiada para codificar información de escritura HOL que la lógica clásica de primer orden, pero no admite polimorfismo. La solución para este inconveniente es monomorfizar las fórmulas: las fórmulas polimórficas se instancian de forma iterativa con `instancias fundamentales' de sus constantes polimórficas. Este proceso se itera para obtener el problema monomorfizado. Las aplicaciones parciales se traducen usando un operador de `apply', pero en contraste con el enfoque de combinación que se usa cuando se comunica con probadores de resolución, las abstracciones $\lambda$ se elevan a nuevas reglas, introduciendo así nuevas constantes.
+Para los solvers de SMT, la traducción asigna operadores aritméticos y de igualdad a conceptos correspondientes en SMT-LIB~\cite{SMT-LIB}. La lógica de SMT-LIB está ordenada de forma múltiple, lo que la hace más apropiada para codificar información de escritura HOL que la lógica clásica de primer orden, pero no admite polimorfismo. La solución para este inconveniente es monomorfizar las fórmulas: las fórmulas polimórficas se instancian de forma iterativa con `instancias fundamentales' de sus constantes polimórficas. Este proceso se itera para obtener el problema monomorfizado. Las aplicaciones parciales se traducen usando un operador de \textit{apply}, pero en contraste con el enfoque de combinación que se usa cuando se comunica con probadores de resolución, las abstracciones $\lambda$ se elevan a nuevas reglas, introduciendo así nuevas constantes.
 
 \subsubsection{Invocación de probadores externos}
 
-Sledgehammer permite que los probadores externos se ejecuten en paralelo, tanto de forma local como remota. En una instalación habitual de Isabelle\footnote{\href{https://isabelle.in.tum.de/}{https://isabelle.in.tum.de/}}, E, SPASS, y Z3 son ejecutados localmente, mientras que Vampire y el metaprover SInE son utilizados mediante SystemOnTPTP remoto. Los usuarios pueden también habilitar CVC3 y Yices.
+Sledgehammer permite que los probadores externos se ejecuten en paralelo, tanto de forma local como remota. En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.de/}}, E, SPASS, y Z3 son ejecutados localmente, mientras que Vampire y el metaprover SInE son utilizados mediante SystemOnTPTP remoto. Los usuarios pueden también habilitar CVC3 y Yices.
 
 La siguiente figura representa la arquitectura, omitiendo la reconstrucción y minimización de la prueba. En la misma, se puede apreciar que se ejecutan dos instancias del filtro de relevancia para tener en cuenta diferentes conjuntos de constantes integradas. Los hechos relevantes y la conjetura se traducen a la versión TPTP o SMT (lógica de primer orden), y los problemas resultantes se delegan a los probadores. La traducción de Z3 se realiza de forma ligeramente diferente a la de CVC3 e Yices, para beneficiarse del soporte de Z3 en aritmética no lineal.
 
@@ -1280,7 +1278,7 @@ Con respecto a SMT, las pruebas que no involucran razonamiento aritmético gener
 
 Los probadores externos usualmente usan muchos más hechos de los necesarios. La herramienta de minimización de Sledgehammer toma el conjunto de hechos usados retornados por un prover e invoca repetidamente al mismo con subconjuntos de los hechos para encontrar un conjunto mínimo.
 
-Dependiendo del número de hechos iniciales, se basa en un algoritmo lineal `naive' que intenta eliminar un hecho a la vez o en un algoritmo binario que biseca recursivamente los hechos~\cite{sledgehammer_judgement_day}.
+Dependiendo del número de hechos iniciales, se basa en un algoritmo lineal \textit{naive} que intenta eliminar un hecho a la vez o en un algoritmo binario que biseca recursivamente los hechos~\cite{sledgehammer_judgement_day}.
 
 La minimización frecuentemente mejora el rendimiento y la tasa de éxito de Metis, y al mismo tiempo elimina el desorden de las formalizaciones de Isabelle. Para algunos provers, es difícil o imposible extraer la lista de hechos usados de la prueba; la minimización es entonces la única opción. Por ejemplo, las pruebas detalladas devueltas por CVC3 siempre se refieren a todos los hechos, sean realmente necesarios o no, y no existe un criterio fácil para aislar los hechos necesarios.
 
@@ -1336,7 +1334,7 @@ end
 
 donde $T_1 \ldots T_n$ son los nombres de teorías existentes en las que $T$ está basado. Se dice que $T_i$ son las teorías padre de $T$. Todo lo definido en los padres de $T$ (y los padres de sus padres, recursivamente) es visible automáticamente. Cada teoría $T$ debe estar guardada en un archivo llamado \texttt{T.thy}.
 
-Ademas de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\href{https://isabelle.in.tum.de/library/HOL}{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\href{https://isa-afp.org}{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
+Ademas de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\url{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\url{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
 
 
 \subsubsection{Comillas}
@@ -1344,12 +1342,12 @@ La definición textual de una teoría sigue una sintaxis especifica incluyendo k
 
 \subsubsection{Estado de la prueba} 
 
-En una instalación habitual de Isabelle\footnote{\href{https://isabelle.in.tum.de/}{https://isabelle.in.tum.de/}}, con el cursor en un `lemma' o `theorem', es posible ver en la pestaña `state', los subgoals y estado parcial de nuestra prueba en proceso.
+En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.de/}}, con el cursor en un \textit{lemma} o \textit{theorem}, es posible ver en la pestaña \textit{state}, los \textit{subgoals} y estado parcial de nuestra prueba en proceso.
 
 \begin{figure}[H]
 	\centering
     \includegraphics[width=0.7\textwidth]{Proof_state_isabelle.png}
-	\caption{Pantalla de `status' para una prueba en proceso de la sintaxis de Marlowe.}\label{fig:Proof_state}
+	\caption{Pantalla de \textit{status} para una prueba en proceso de la sintaxis de Marlowe.}\label{fig:Proof_state}
 \end{figure}
 
 
@@ -1365,7 +1363,7 @@ Este tipo esta predefinido mediante:
 datatype bool = True | False
 \end{lstlisting}
 
-El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funciones predefinidas,\\ como:  $\neg,\ \vee,\ \wedge,\ \rightarrow$, etc. El siguiente ejemplo muestra como puede definirse la conjunción lógica (conocida también como intersección en teoría de conjuntos) mediante `\textit{pattern matching}':
+El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funciones predefinidas,\\ como:  $\neg,\ \vee,\ \wedge,\ \rightarrow$, etc. El siguiente ejemplo muestra como puede definirse la conjunción lógica (conocida también como intersección en teoría de conjuntos) mediante \textit{pattern matching}:
 
 \begin{lstlisting}[style=Isabelle]
   fun conj :: "bool $\Rightarrow$ bool $\Rightarrow$ bool" where
@@ -1400,10 +1398,10 @@ Y a continuación vemos una prueba de \texttt{add m 0 = m}:
 
 La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre, por ejemplo `\texttt{add\_02}'. Las propiedades definidas recursivamente suelen ser probadas por inducción en la mayoría de las ocasiones. El commando \texttt{apply (induction m)} le indica a Isabelle que debe comenzar una prueba por inducción, en la variable \texttt{m}. Como respuesta, va a mostrar el siguiente `estado de prueba':
 
-\begin{enumerate}
-	\item \texttt{add 0 0 = 0}
-	\item $\bigwedge$ \texttt{m.\ add m 0 = m} $\Longrightarrow$ \texttt{add (Suc m) 0 = Suc m}	
-\end{enumerate}
+\begin{lstlisting}[style=Isabelle]
+	1. add 0 0 = 0
+	2. $\bigwedge$ m. add m 0 = m $\Longrightarrow$ add (Suc m) 0 = Suc m	
+\end{lstlisting}
 
 Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{sec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos subgoals, Isabelle puede manejarlos con las teorías incluidas por defecto. 
 
@@ -1413,7 +1411,7 @@ De ahora en más dicho lema podría ser utilizado como algún paso de prueba por
 
 \subsubsection{Listas}
 
-Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede ser encontrada en \href{https://isabelle.in.tum.de/library/HOL/HOL/List.html}{https://isabelle.in.tum.de/library/HOL/HOL/List.html}}, pero su definición puede ser simplificada como:
+Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede ser encontrada en \url{https://isabelle.in.tum.de/library/HOL/HOL/List.html}}, pero su definición puede ser simplificada como:
 
 \begin{lstlisting}[style=Isabelle]
 datatype 'a list = Nil | Cons 'a "'a list"
@@ -1422,9 +1420,34 @@ datatype 'a list = Nil | Cons 'a "'a list"
 \begin{itemize}
 	\item La lista \texttt{'a list} es el conjunto de listas con elementos de tipo \texttt{'a}. Debido a que \texttt{'a} es una variable de tipo, las listas son de hecho polimórficas: Los elementos de una lista pueden ser de tipo arbitrario (pero todos los elementos deben compartir el tipo).
 
-	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \textit{\texttt{Nil}}, \textit{\texttt{Cons x Nil}} o \textit{\texttt{Cons x (Cons y Nil)}}, etc.
-	
+	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \texttt{Nil}, \texttt{(Cons x Nil)}, \texttt{(Cons x (Cons y Nil))}, etc.
 \end{itemize}
+
+\section{Semántica de Marlowe en Isabelle}
+
+Antes de comenzar a realizar pruebas sobre cualquier contrato escrito en Marlowe, es necesario definir formalmente en Isabelle los pilares del DSL.\@
+
+Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba traducida casi totalmente a Isabelle (junto con algunos \textit{lemmas} y teoremas correspondientes). El mayor responsable de dicha traducción es Pablo Lamela\footnote{\url{https://iohk.io/en/team/pablo-lamela-seijas}}, quien colaboró durante todo el desarrollo de este trabajo, en particular durante la escritura de mis pruebas.
+
+Debido a que no existen actualmente traductores de Haskell~\cite{translating-haskell-to-isabelle}, dicho trabajo debe realizarse manualmente. 
+
+Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando una definición es escrita, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
+
+La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}, donde se pueden destacar los siguientes módulos:
+
+\begin{itemize}
+    \item SemanticsTypes
+    \item Semantics
+    \item MoneyPreservation
+    \item PositiveAccounts
+    \item QuiescentResult
+    \item ValidState
+    \item CloseSafe
+\end{itemize}
+
+% TODO: WIP
+
+
 
 
 %##########################
@@ -1436,7 +1459,7 @@ datatype 'a list = Nil | Cons 'a "'a list"
 
 En esta sección, veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, en conjunto con IOHK.\@
 
-Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\href{https://iohk.io/en/team/yves-hauser}{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 \newpage
 \subsection{Descripción de la estructura del proyecto}\label{sec:estructura}
@@ -1507,7 +1530,7 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
     };
 \end{tikzpicture}
 
-A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Como por ejemplo: `EventType' o `RiskFactorsPoly' en \texttt{BusinessEvents.hs} o `ContractStatePoly' en\\ \texttt{ContractState.hs}.
+A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@Como por ejemplo: \textit{EventType} o \textit{RiskFactorsPoly} en \texttt{BusinessEvents.hs} o \textit{ContractStatePoly} en\\ \texttt{ContractState.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
@@ -1564,7 +1587,7 @@ data ContractStatePoly a = ContractStatePoly
 \end{lstlisting}
 
 
-También es posible ver tipos relacionados a características de un contrato, como `ContractType', `ContractRole', `DayCountConvention', `BusinessDayConvention', etc en \texttt{ContractTerms.hs}.
+También es posible ver tipos relacionados a características de un contrato, como \textit{ContractType}, \textit{ContractRole}, \textit{DayCountConvention}, \textit{BusinessDayConvention}, etc en \texttt{ContractTerms.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de los mismos:
 
@@ -1643,9 +1666,9 @@ En el archivo \texttt{Analysis.hs}, se definen las funciones:
 
 Las mismas, como sus nombres lo indican, generan los flujos de dinero proyectados, flujos de dinero, cronogramas, estados y pagos respectivamente. Los flujos de dinero pueden ser utilizados para generar los pagos en un contrato en Marlowe.
 
-En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS.\@En \texttt{genFsContract}, los `risk factors' son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
+En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS.\@En \texttt{genFsContract}, los \textit{risk factors} son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
 
-La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los `risk factors' sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
+La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los \textit{risk factors} sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
 
 Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función\\ \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. 
 
@@ -1686,7 +1709,7 @@ En este directorio se encuentran los archivos que modelan la lógica expuesta po
     };
 \end{tikzpicture}
 
-Las reglas de aplicabilidad\footnote{Especificadas en \href{https://www.actusfrf.org/aplicability}{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
+Las reglas de aplicabilidad\footnote{Especificadas en \url{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
 
 Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y\\ \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, inicializar las variables de estado, y las transiciones sobre las mismas.
 
@@ -1765,13 +1788,13 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
 
 Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
 
-Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{sec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizas sea necesario agregar alguna función en Utility.
+Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{sec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizás sea necesario agregar alguna función en Utility.
 
-Con repecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
+Con respecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
 
-Todas las implementaciones son testeadas usando algunos ejemplos\footnote{Disponibles en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS~\cite{ACTUS_Tests}.
+Todas las implementaciones son probadas usando algunos ejemplos\footnote{Disponibles en \url{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS~\cite{ACTUS_Tests}.
 
-En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnostica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejectutados en la plataforma (en este caso, en la blockchain Cardano).
+En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnóstica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejecutados en la plataforma (en este caso, en la blockchain Cardano).
 
 A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:\@
 
@@ -1824,7 +1847,7 @@ A continuación se muestra un test de ejemplo para el contrato COM, provisto por
     }
 \end{lstlisting}
 
-Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/TestFramework.hs}{TestFramework.hs}, donde se parsea la entrada, se ejectura el generador, y se comparan los campos del json inicial con los del objeto generado por la implementación.
+Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/TestFramework.hs}{TestFramework.hs}, donde se analiza gramaticalmente la entrada, se ejecuta el generador, y se comparan los campos del json inicial con los del objeto generado por la implementación.
 
 Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM 
 
@@ -2052,6 +2075,11 @@ A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS
 \endgroup
 
 
+\section{Traduciendo algunos contratos financieros a Isabelle (Pay, Swap, PAM)}
+
+Con el fin de poder comprender mejor la Semantica de Marlowe escrita en Isabelle~\cite{marlowe-isabelle-repo}, procedí a traducir algunos contratos financieros relativamente sencillos (algunos de los cuales se encuentran como ejemplos en el \textit{Playground}~\cite{marlowe_playground})
+
+% TODO: WIP
 
 \section{Probando una propiedad en un contrato COM y PAM}
 
@@ -2117,18 +2145,7 @@ When
 
 En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.\@
 
-\begin{lstlisting}[style=Isabelle]
-theory Scratch
-  imports Main
-  begin
 
-lemma hola : "(1::nat)+(1::nat) = (2::nat) $\Longrightarrow$  (1::nat) + 3 = 4"
-  by auto
-
-
-end
-
-\end{lstlisting}
 
 \subsection{Algunas ejecuciones de prueba}
 
