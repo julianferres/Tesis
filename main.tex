@@ -1423,7 +1423,7 @@ datatype 'a list = Nil | Cons 'a "'a list"
 	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \texttt{Nil}, \texttt{(Cons x Nil)}, \texttt{(Cons x (Cons y Nil))}, etc.
 \end{itemize}
 
-\section{Semántica de Marlowe en Isabelle}
+\section{Semántica de Marlowe en Isabelle}\label{sec:Semantica_marlowe_isabelle}
 
 Antes de comenzar a realizar pruebas sobre cualquier contrato escrito en Marlowe, es necesario definir formalmente en Isabelle los pilares del DSL.\@
 
@@ -1945,7 +1945,7 @@ contractFromFile f = eitherDecode <$> B.readFile f
 El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
 
 % Contrato COM
-\subsection{Contrato COM (Commodity)}
+\subsection{Contrato COM (\textit{Commodity})}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
@@ -1994,7 +1994,7 @@ El contrato COM tiene una implementación similar al contrato STK (Stock), debid
 
 
 % Contrato CSH
-\subsection{CSH (Cash)}
+\subsection{CSH (\textit{Cash})}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
@@ -2034,7 +2034,7 @@ A continuación adjunto la especificación técnica del contrato CSH~\cite{ACTUS
 
 
 % Contrato CLM
-\subsection{CLM (Call Money)}
+\subsection{CLM (\textit{Call Money})}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
@@ -2131,16 +2131,171 @@ A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS
 \endgroup
 
 
-\section{Traduciendo algunos contratos financieros a Isabelle (Pay, Swap, PAM)}
+\section{Traduciendo algunos contratos financieros a Isabelle (\textit{Pay} y \textit{Swap})}
 
-Con el fin de poder comprender mejor la Semantica de Marlowe escrita en Isabelle~\cite{marlowe-isabelle-repo}, procedí a traducir algunos contratos financieros relativamente sencillos (algunos de los cuales se encuentran como ejemplos en el \textit{Playground}~\cite{marlowe_playground})
+Con el fin de poder comprender mejor la Semantica de Marlowe escrita en Isabelle~\cite{marlowe-isabelle-repo}, procedí a traducir algunos contratos financieros relativamente sencillos de ejemplo.
 
-% TODO: WIP
+\subsection{Contrato \textit{Pay}}
+
+Pese a ser un contrato sencillo, este contrato permite comprender la lógica de tipos que sigue la semántica de Marlowe en Isabelle, como mencionamos en~\ref{sec:Semantica_marlowe_isabelle}.
+
+En el siguiente contrato se pueden ver tipos como \texttt{Party}, \texttt{Payee} o \texttt{Token}, así como también el uso de \texttt{Constant} para definir un \texttt{Value}.
+
+\begin{lstlisting}[style=Isabelle, caption=Contrato \textit{Pay}]
+theory PayContract
+  imports Semantics
+begin
+
+definition role_borrower :: Party where
+"role_borrower = Role [1]"
+
+definition role_lender :: Party where
+"role_lender = Role [2]"
+
+definition payee :: Payee where
+"payee = Party role_lender"
+
+definition token_ada :: Token where
+"token_ada = Token [] []"
+
+definition payContract :: Contract where
+"payContract = (Pay role_borrower payee token_ada (Constant 37) Close)"
+
+end
+\end{lstlisting}
+
+\subsection{Contrato \textit{Swap}}
+
+En el contrato \textit{Swap}, traducido de uno de los ejemplos del \textit{Playground}\footnote{\url{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-playground-server/contracts/Swap.hs}}, hace uso de funciones, definiciones, datatypes, etc. 
+
+Se puede destacar la definición del tipo de datos \textit{SwapParty}, junto con sus \textit{getters}, que hacen uso de parte del poderoso \textit{Pattern matching} que provee Isabelle:
+
+\begin{lstlisting}[style=Isabelle]
+datatype SwapParty = SwapParty Party Token Value
+\end{lstlisting}
+
+Este es utilizado por el contrato \textit{Swap} para encapsular parte de la lógica del mismo:
+
+\begin{lstlisting}[style=Isabelle, caption=Definición del contrato \textit{Swap}]
+theory SwapExample
+  imports Semantics
+begin
+
+(* Traduccion de Swap.hs *)
+
+fun ConstantParam :: "int $\Rightarrow$ Value" where
+"ConstantParam x = Constant x"
+
+definition explicitRefunds :: Observation where
+"explicitRefunds = TrueObs"
+
+definition lovelacePerAda :: Value where
+"lovelacePerAda = Constant 1000000"
+
+definition amountOfAda :: Value where 
+"amountOfAda = ConstantParam 10" 
+
+definition amountOfLovelace :: Value where
+"amountOfLovelace = MulValue lovelacePerAda amountOfAda"
+
+definition amountOfDollars :: Value where
+"amountOfDollars = ConstantParam 1000"
+
+fun adaDepositTimeout :: "int $\Rightarrow$ Slot" where
+"adaDepositTimeout x = x"
+
+fun dollarDepositTimeout :: "int $\Rightarrow$ Slot" where
+"dollarDepositTimeout x = x"
+
+definition dollar :: TokenName where
+"dollar = [0b1]" 
+
+definition token_dollars :: Token where
+"token_dollars = Token [0x85bb65] dollar"
+
+definition token_ada :: Token where
+"token_ada = Token [] []"
+
+datatype SwapParty = SwapParty Party Token Value
+
+fun getParty :: "SwapParty $\Rightarrow$ Party" where
+"getParty (SwapParty p _ _) = p"
+
+fun getCurrency :: "SwapParty $\Rightarrow$ Token" where
+"getCurrency (SwapParty _ t _) = t"
+
+fun getAmount :: "SwapParty $\Rightarrow$ Value" where
+"getAmount (SwapParty _ _ v) = v"
+
+definition role_ada_provider :: Party where
+"role_ada_provider = Role [1]"
+
+definition adaProvider :: SwapParty where
+"adaProvider = SwapParty role_ada_provider token_ada amountOfLovelace"
+
+definition role_dollar_provider :: Party where
+"role_dollar_provider = Role [2]"
+
+definition dollarProvider :: SwapParty where
+"dollarProvider = SwapParty role_dollar_provider
+                            token_dollars 
+                            amountOfDollars"
+
+fun makeDeposit :: "SwapParty $\Rightarrow$ Timeout $\Rightarrow$ Contract $\Rightarrow$ Contract $\Rightarrow$
+                    Contract" where
+"makeDeposit src timeout timeoutContinuation continuation =
+  When [ Case (Deposit 
+                (getParty src)
+                (getParty src)
+                (getCurrency src) 
+                (getAmount src))
+                continuation
+       ] timeout
+         timeoutContinuation"
+
+fun refundSwapParty :: "SwapParty $\Rightarrow$ Contract" where
+"refundSwapParty swapParty = (If explicitRefunds
+                                (Pay
+                                  (getParty swapParty)
+                                  (Party (getParty swapParty))
+                                  (getCurrency swapParty)
+                                  (getAmount swapParty)
+                                  Close)
+                                Close
+                              )"
+
+fun makePayment :: "SwapParty $\Rightarrow$ SwapParty $\Rightarrow$ Contract $\Rightarrow$ Contract" where
+"makePayment src dest =
+  Pay (getParty src)
+      (Party (getParty dest))
+      (getCurrency src)
+      (getAmount src)"
+
+
+definition contract :: Contract where
+"contract = makeDeposit 
+              adaProvider 
+              (adaDepositTimeout 100)
+              Close
+              (makeDeposit 
+                  dollarProvider
+                  (dollarDepositTimeout 150)
+                  (refundSwapParty adaProvider)
+                  (makePayment 
+                      adaProvider 
+                      dollarProvider
+                      (makePayment 
+                          dollarProvider 
+                          adaProvider
+                          Close
+                      )
+                  )
+              )"
+\end{lstlisting}
 
 \section{Probando una propiedad en un contrato COM y PAM}
 
 \subsection{Generación de codigo Marlowe de algunos contratos COM}
-
 Para poder obtener contratos una instancia de contrato Marlowe, es necesario modificar levemente el código del mismo. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
 
 Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \texttt{marlowe}:
@@ -2196,22 +2351,34 @@ When
 \end{lstlisting}
 
 
+% TODO: WIP
 
 \subsection{Traducción del contrato a Isabelle}
 
 En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.\@
 
 
+% TODO: WIP
 
 \subsection{Algunas ejecuciones de prueba}
 
+% TODO: WIP
+
 \subsection{Prueba de minSlot no decreciente en COM}
+
+% TODO: WIP
 
 \subsection{Prueba de minSlot no decreciente en PAM}
 
+% TODO: WIP
+
 \section{Probando la ausencia de Warnings en el contrato Auction}
 
+% TODO: WIP
+
 \subsection{Traducción del contrato Auction en Isabelle}
+
+% TODO: WIP
 
 %##########################
 % Conclusión
@@ -2219,11 +2386,15 @@ En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de
 
 \chapter{Conclusión}
 
+% TODO: WIP
+
 %##########################
 % Apéndice
 %##########################
 
 \chapter{Apéndice}
+
+% TODO: WIP
 
 %##########################
 % Bibliografía
