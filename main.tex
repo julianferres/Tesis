@@ -408,7 +408,7 @@ En particular, un contrato no puede esperar indefinidamente una acción: si la m
 
 Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, se puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
-\subsection{El modelo de Marlowe}
+\subsection{El modelo de Marlowe}\label{sec:Modelo_de_marlowe}
 
 Marlowe está diseñado para soportar la ejecución de contratos financieros en la blockchain, específicamente en Cardano. Los contratos se construyen reuniendo una pequeña cantidad de constructores que se pueden combinar para describir muchos tipos diferentes de contratos financieros.
 
@@ -660,7 +660,7 @@ When [Case (Deposit "alice" "alice" ada price)   -- AGREGADO
 \end{lstlisting}
 \end{minipage}
 
-Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se da, entonces se mantiene en una cuenta, también llamada \texttt{"{}alice"{}}. Cuentas como esta existen solo durante la vigencia del contrato; cada cuenta pertenece a un solo contrato.
+Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se da, entonces se mantiene en una cuenta, también llamada \texttt{"{}alice"{}}. Cuentas como esta existen solo durante la vigencia del contrato; cada cuenta pertenece a un solo contrato. % chktex 18
 
 Hay un \textit{timeout} en el \textit{slot} número 10 para realizar el depósito; si se alcanza sin que se haya realizado el mismo, el contrato se cierra y se reembolsa todo el dinero que ya estaba en el contrato. En este caso, no hay ningún reembolso pendiente y simplemente finaliza del contrato.
 
@@ -1259,7 +1259,7 @@ La siguiente figura representa la arquitectura, omitiendo la reconstrucción y m
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
-	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture.}
+	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture}
 \end{figure}
 
 Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
@@ -1347,7 +1347,7 @@ En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.d
 \begin{figure}[H]
 	\centering
     \includegraphics[width=0.7\textwidth]{Proof_state_isabelle.png}
-	\caption{Pantalla de \textit{status} para una prueba en proceso de la sintaxis de Marlowe.}\label{fig:Proof_state}
+	\caption{Pantalla de \textit{status} para una prueba en proceso de la semántica de Marlowe.}\label{fig:Proof_state}
 \end{figure}
 
 
@@ -2295,7 +2295,7 @@ definition contract :: Contract where
 
 \section{Probando una propiedad en un contrato COM y PAM}
 
-\subsection{Generación de codigo Marlowe de algunos contratos COM}
+\subsection{Generación de codigo Marlowe de algunos contratos COM y PAM}
 Para poder obtener contratos una instancia de contrato Marlowe, es necesario modificar levemente el código del mismo. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
 
 Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \texttt{marlowe}:
@@ -2317,7 +2317,7 @@ Con esto, podemos obtener el contrato que necesitemos, según los términos del 
 
 Se puede ver a continuación el contrato generado en Marlowe:
 
-\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato COM en Marlowe.]
+\begin{lstlisting}[style=Haskell-cardano, language=Marlowe, caption=Contrato COM4 en Marlowe.]
 When
     [Case
         (Deposit "party" "party"
@@ -2350,27 +2350,221 @@ When
     Close
 \end{lstlisting}
 
+De la misma forma, se generó un contrato PAM con los términos del primer contrato\footnote{Disponible en \url{https://github.com/actusfrf/actus-tests/blob/master/tests/actus-tests-pam.json}} en los tests propuestos por ACTUS~\cite{ACTUS_Tests}. Se omite en este caso el contrato PAM generado en Marlowe debido a la extensión del mismo.
 
-% TODO: WIP
+\subsubsection{Traducción del contrato a Isabelle}
 
-\subsection{Traducción del contrato a Isabelle}
+Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@Esto tuvo como consecuencia la traducción manual de los contratos generados:
 
-En la fecha de escritura de este documento, no se ha desarrollado ningun tipo de traductor Haskell $\longrightarrow$ Isabelle/HOL o Haskell $\longrightarrow$ Isabelle/HOL.\@
+\begin{lstlisting}[style=Isabelle]
+theory COM 
+imports Semantics StaticAnalysis
+begin
+
+definition party :: Party where
+"party = Role [0]"
+
+definition counterparty :: Party where
+"counterparty = Role [1]"
+
+definition token_ada :: Token where
+"token_ada = Token [] []"
+
+definition COM1 :: Contract where
+"COM1 = When
+            [ Case
+                (Deposit 
+                    party
+                    party
+                    token_ada
+                    (Constant 1400)
+                )
+            ( Pay party
+                ( Party counterparty )
+                token_ada
+                ( Constant 1400 ) Close
+            )
+            ]
+            1427673500
+            Close"
+
+[...]
+
+definition COM4 :: Contract where
+"COM4 = When
+    [Case
+        ( Deposit 
+            party
+            party
+            token_ada
+            ( Constant 2100 )
+        )
+        (Pay 
+            party
+            (Party counterparty)
+            token_ada
+            (Constant 2100)
+            ( When
+                [ Case
+                    ( Deposit 
+                        counterparty
+                        counterparty
+                        token_ada
+                        (NegValue (Constant (-2700)))
+                    )
+                    (Pay 
+                        counterparty
+                        (Party party)
+                        token_ada
+                        (NegValue (Constant (-2700)))
+                        Close
+                    )
+                ]
+                1455926300 
+                Close
+            )
+        )
+    ]
+    1427673500
+    Close"
 
 
-% TODO: WIP
+
+\end{lstlisting}
 
 \subsection{Algunas ejecuciones de prueba}
 
-% TODO: WIP
 
-\subsection{Prueba de minSlot no decreciente en COM}
+\begin{lstlisting}[style=Isabelle]
 
-% TODO: WIP
+definition COMTransactionList :: "Transaction list" where
+"COMTransactionList  = [ (| interval = (0, 1), 
+                            inputs = [IDeposit party party token_ada 1400] 
+                         |)]"
 
-\subsection{Prueba de minSlot no decreciente en PAM}
+definition COMDepositTransaction :: "Transaction" where
+"COMDepositTransaction = (| interval = (0, 1),
+                            inputs = [IDeposit party party token_ada 1400]
+                          |)"
 
-% TODO: WIP
+value "computeTransaction COMDepositTransaction (emptyState 0) COM1"
+
+(* Se genero el siguiente TransactionOutput:
+
+"TransactionOutput
+  (| txOutWarnings = [], 
+     txOutPayments = [Payment 
+                        (Role [0]) (Party (Role [1])) (Token [] []) 1400],
+     txOutState = (|accounts = [], 
+                    choices = [], 
+                    boundValues = [], 
+                    minSlot = 0|),
+     txOutContract = Close |)"
+  :: "TransactionOutput"
+
+*)
+
+(* Concateno dos deposits para poder ver si COM4 genera los dos pagos *)
+
+definition base_env :: "Environment" where
+"base_env = (| slotInterval = (0, 0) |)"
+
+definition inputListCOM4 :: "Input list" where
+"inputListCOM4 = [(IDeposit party party token_ada 2100),
+              (IDeposit counterparty counterparty token_ada (2700))
+             ]"
+
+value "applyAllInputs base_env (emptyState 0) COM4 inputListCOM4"
+
+(* Se generaron los dos pagos esperados:
+
+"ApplyAllSuccess True []
+  [Payment (Role [0]) (Party (Role [1])) (Token [] []) 2100,
+   Payment (Role [1]) (Party (Role [0])) (Token [] []) 2700]
+  (|accounts = [], choices = [], boundValues = [], minSlot = 0|) Close"
+  :: "ApplyAllResult"
+*)
+
+value "reduceContractStep base_env (emptyState 0) COM4"
+
+(*
+"NotReduced"
+  :: "ReduceStepResult"
+*)
+\end{lstlisting}
+
+Con estas ejecuciones se puede ver el funcionamiento del modelo de Marlowe (detallado en~\ref{sec:Modelo_de_marlowe}). Esto nos podrá ayudar a probar algunas propiedades sobre los contratos.
+
+\subsection{Prueba de \textit{minSlot} no decreciente en COM}
+
+En esta sección detallaremos el proceso de prueba de la siguiente propiedad para el contrato COM4. Cabe destacar que se eligió este contrato en particular debido a que, entre todos los contratos generados a partir de los tests de ACTUS, es el que mayor anidación de constructores posee:
+
+\begin{quote} 
+``Evaluar \texttt{applyAllInputs} en el contrato COM4, para cualquiero \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
+\end{quote}
+
+Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podrían llevar a caminos de ejecución no deseados.
+
+\begin{lstlisting}[style=Isabelle]
+lemma applyAllInputsDoesNotDecreaseMinSlot :
+"applyAllInputs env sta COM4 inputList = 
+    ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
+    reduceContractStep env sta COM4 = NotReduced $\Longrightarrow$
+  (minSlot sta) $\leq$ (minSlot newstate)"
+  apply auto
+  apply (cases inputList)
+  apply auto 
+  by (smt (z3) ApplyAllResult.distinct(1) (* propuesto por Sledgehammer *)
+                  ApplyResult.case(1)
+                  ApplyResult.case(2)
+                  ApplyResult.exhaust
+                  COM4_def
+                  applyAllLoop_preserves_minSlot
+                  applyCases_preserves_minSlot applyInput.simps(1))
+  done
+\end{lstlisting}
+
+En el mismo se pueden ver distintas técnicas de prueba, algunas ya mencionadas, como \textit{auto}; otras, como \textit{cases}, que permiten separar la prueba según casos en alguna variable (en este caso \texttt{inputList}).
+
+También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{sec:Sledgehammer}) para completar la prueba, quien sugirió utilizar la ultima linea de la prueba.
+
+El estado de prueba en el que se invocó a \textit{Sledgehammer} (el cual se puede visualizar colocando el cursor sobre el segundo \textit{auto}) es el siguiente:
+
+\begin{lstlisting}[style=Isabelle]
+proof (prove)
+goal (1 subgoal):
+ 1. $\bigwedge$ a list.
+       (case applyInput env sta a COM4 of
+        Applied applyWarn newState cont $\Rightarrow$
+          applyAllLoop True env newState cont list
+           ([] @
+            convertReduceWarnings [] @
+            convertApplyWarning applyWarn)
+           ([] @ [])
+        | ApplyNoMatchError $\Rightarrow$
+            ApplyAllNoMatchError) =
+       ApplyAllSuccess reduced warnings payments
+        newstate cont $\Longrightarrow$
+       reduceContractStep env sta COM4 =
+       NotReduced $\Longrightarrow$
+       inputList = a # list $\Longrightarrow$
+       minSlot sta $\leq$ minSlot newstate
+\end{lstlisting}
+
+\subsection{Prueba de \textit{minSlot} no decreciente en PAM}
+
+En el caso del contrato PAM, una vez que se incluye el módulo \textit{ValidState} y se pone a un estado valido como precondición de la prueba, se logra la siguiente prueba:
+
+\begin{lstlisting}[style=Isabelle]
+lemma applyAllLoopDoesNotDecreaseMinSlot :
+"validAndPositive_state sta $\Longrightarrow$
+  applyAllLoop reduced env sta PAM inp wa pa = 
+  ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
+  (minSlot sta) $\leq$ (minSlot newstate)"
+    by (simp add: applyAllLoop_preserves_minSlot)
+\end{lstlisting}
+
+La misma demuestra que aplicar el \texit{loop} sobre el contrato PAM no hace decrecer el \textit{minSlot}.
 
 \section{Probando la ausencia de Warnings en el contrato Auction}
 

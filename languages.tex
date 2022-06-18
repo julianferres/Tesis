@@ -2,11 +2,6 @@
   language     = Haskell,
   morekeywords = {Close, Pay, Assert, If, When, Let, Case, Constant, Value, Contract, ValueEQ},
 }
-\lstdefinelanguage{Isabelle}{%
-  language     = ML,
-  morecomment=[s]{(*}{*)},
-  morekeywords = {theory, imports, begin, end},
-}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -39,12 +34,12 @@
 \definecolor{isargreen}{HTML}{009966}
 \definecolor{isarred}{HTML}{cc0000}
 \lstdefinelanguage{isabelle}{%
-    keywords=[1]{type_synonym,datatype,fun,abbreviation,definition,proof,lemma,theorem, theory,corollary},
-    morecomment=[s]{(*}{*)},
+    keywords=[1]{type_synonym,datatype,fun,abbreviation,definition,proof,lemma,theorem,theory,corollary,apply,done,by,env,sta,reduce,warnings,payments,newstate,inputList,reduced},
+    morecomment=[s]{(*}{*)}, % chktex 9
     keywordstyle=[1]\bfseries\color{isarblue},
-    keywords=[2]{where,assumes,shows,and, imports, begin, end},
+    keywords=[2]{where,assumes,shows,and,imports,begin,end,a,list,applyWarn,newState,cont},
     keywordstyle=[2]\bfseries\color{isargreen},
-    keywords=[3]{if,then,else,case,of,SOME,let,in,O},
+    keywords=[3]{if,then,else,of,SOME,let,in,O},
     keywordstyle=[3]\color{isarblue},
     commentstyle=\color{isarred}
 }
