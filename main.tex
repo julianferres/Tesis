@@ -1131,7 +1131,7 @@ A continuación, se muestran fragmentos de las 3 tablas para el contrato, extra�
 
 \chapter{Verificación de programas}
 
-En este capítulo abordaremos los conceptos teóricos en los cuales se basan los distintos sistemas automáticos de `Demostración de teoremas'.
+En este capítulo abordaremos los conceptos teóricos en los cuales se basan los distintos sistemas automáticos de demostración de teoremas.
 
 En particular, nos centraremos en Isabelle, uno de los más reconocidos y utilizados en la industria.
 
@@ -1179,125 +1179,15 @@ En resumidas palabras, HOL puede ser definido como:
 
 Isabelle permite expresar fórmulas matemáticas en un lenguaje formal y proporciona herramientas para probar dichas fórmulas. Entre otras, las aplicaciones principales son la formalización de pruebas matemáticas y, en particular, la verificación formal.
 
-Isabelle/HOL acuñó su éxito debido a su facilidad de uso y potente automatización. Gran parte de la misma la realizan herramientas externas: el meta-probador Sledgehammer se basa en probadores de resolución y el solver SMT para su búsqueda de pruebas, el generador de contra-ejemplos Quickcheck usa el compilador ML como un rápido evaluador para fórmulas básicas. Junto coon el formato de prueba estructurada de Isar y una nueva interfaz de usuario asincrónica, estas herramientas han transformado radicalmente la experiencia del usuario de Isabelle.
+Isabelle/HOL acuñó su éxito debido a su facilidad de uso y potente automatización. Gran parte de la misma la realizan herramientas externas: el meta-probador \textit{Sledgehammer} se basa en probadores de resolución y en el solver SMT para su búsqueda de pruebas, el generador de contra-ejemplos \textit{Quickcheck} usa el compilador ML como un rápido evaluador para fórmulas básicas. Junto con el formato de prueba estructurada de Isar y una nueva interfaz de usuario asincrónica, estas herramientas han transformado radicalmente la experiencia del usuario de Isabelle.
 
-\subsection{Métodos de prueba en Isabelle}
-
-Isabelle proporciona una serie de métodos de prueba (de propósito general) que realizan la búsqueda de las mismas~\cite{proof_and_disproof}. En esta sección, discutiremos los más importantes.
-
-\subsubsection{Simplificación}
-
-La simplificación es el principal caballo de batalla en Isabelle. El sistema puede reescribir y simplificar fácil y eficientemente expresiones. También tolera hooks para personalizar las mismas:
-
-\begin{itemize}
-	\item \textit{Procedimientos de simplificación basados en patrones} que derivan y aplican reglas de reescritura de forma dinámica. Muchos de estos procedimientos están pre-instalados, en particular los de simplificación aritmética para números y términos simbólicos.
-	\item \textit{Solvers especiales para reglas de reescritura condicional}. Los ejemplos típicos son: fragmentos de aritmética lineal y un prover de clausuras para relaciones transitivas arbitrarias.
-	\item \textit{\textit{Loopers} especiales} que advierten el objetivo luego de cada ronda de simplificación. Los separadores de casos se proveen de esta manera.
-\end{itemize}
-
-El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
-
-
-\subsubsection{Auto}\label{sec:auto}
-
-Desde el lado del usuario, invocado con la keyword \textit{auto}, podemos mencionar a un método de prueba que intercala la simplificación con una pequeña cantidad de búsqueda dentro del espacio de pruebas.
-
-Es imposible describir sucintamente al método \textit{auto} debido a su naturaleza heurística, de tipo ad-hoc.
-
-Su gran fortaleza es la capacidad para resolver las partes simples de un objetivo y dejar al usuario las más difíciles. Esto ayuda a concentrarse rápidamente en el núcleo de un problema.
-
-Versiones mejoradas de \textit{auto} realizan búsquedas de pruebas más sofisticadas, al mismo tiempo que intercalan simplificación. Estos métodos suelen ser útiles, pero dado que cierto tipo de búsqueda está involucrada, no solo son más lentos que el
-simplificador y \textit{auto}, los mismos no brindan ninguna pista cuando no logran demostrar el objetivo.
-
-
-\subsubsection{Blast y Metis}
-Las versiones más sofisticadas de \textit{auto} mencionadas anteriormente pueden ser lentas debido a que cada paso de inferencia es ejecutado directamente en el estado de la prueba, mediante el kernel de Isabelle.
-Para mayor performance, los usuarios pueden usar blast, un prover de tipo tableau~\cite{tableau_provers} escrito directamente en ML~\cite{ML_programming_language} que evita el kernel.
-
-Una vez que la prueba fue encontrada, es ejecutada nuevamente en el kernel para validarla. El método blast supera a la implementación de tableau basado en el kernel por un amplio margen, pero no es rival de los mejores probadores automáticos. Tampoco explota el concepto de simplificación, lo cual es una gran pérdida.
-
-Yendo un paso más allá, Metis es un probador de teoremas de resolución escrito en ML, con muy buenos resultados en competiciones de prueba de teoremas~\cite{CASC_competition}.
-
-Ha sido portado a Isabelle y sigue la misma filosofía que blast: la búsqueda de la prueba se realiza directamente en ML, y en caso de ser encontrada, se verifica en el kernel de Isabelle.
-El método blast se basa en una base de datos extensible de lemas que impulsa la búsqueda y que está pre-configurada para `razonar' sobre conjuntos, funciones y relaciones, lo que lo hace bastante fácil de usar. Por otro lado, la versión de Metis de Isabelle solo conoce la lógica pura y deriva su conocimiento sobre otros operadores de lemas proporcionados explícitamente.
-
-Aunque Metis se puede invocar directamente, en la práctica las llamadas a Metis casi siempre son generadas por Sledgehammer~\ref{sec:Sledgehammer}.
-
-
-\subsection{Sledgehammer: Descubriendo pruebas con la ayuda de otros provers}\label{sec:Sledgehammer}
-
-Sledgehammer es el subsistema de Isabelle que concentra el poder de los probadores automáticos de teoremas de primer orden.
-
-Dada una conjetura, selecciona de forma heurística unos cientos de hitos relevantes (lemas, definiciones o axiomas) de las bibliotecas de Isabelle, los traduce a lógica de primer orden junto con la conjetura y delega la búsqueda de pruebas a probadores de resolución externos (E, SPASS, y Vampire) y solvers SMT (CVC3, Yices y Z3~\cite{Z3}).
-
-Sledgehammer es muy eficaz y ha alcanzado una gran popularidad entre usuarios, novatos (entre los que me incluyo) y expertos por igual.
-
-\subsubsection{Filtros por relevancia}
-
-La mayoría de los probadores automáticos funcionan mal en presencia de miles de axiomas. Sledgehammer emplea un filtro de relevancia simple para extraer unos pocos cientos de datos de las bibliotecas de Isabelle que podrían ser relevantes para el problema en cuestión.
-
-A pesar de su sencillez, este filtro mejora en gran medida la tasa de éxito de Sledgehammer. El filtro funciona de forma iterativa. La primera iteración selecciona hechos que comparten todas, o casi todas, sus constantes (símbolos) con la conjetura. Las iteraciones posteriores incluyen hechos que comparten constantes con hechos previos, hasta alcanzar el número deseado de hechos. Al observar que algunos provers manejan mejor las bases de axiomas grandes que otros, ese número se optimizó de forma independiente para cada prover.
-
-\subsubsection{Traducción a lógica de primer orden}
-
-El formalismo de Isabelle, con lógica polimórfica de orden superior (polymorphic HOL) y clases tipadas~\cite{proof_processing_Isabelle}, es mucho más complejo que la lógica de primer orden soportada por los provers automáticos.
-
-Sledgehammer se basa en diferentes traducciones dependiendo de la clase de probador.
-
-Para los probadores de resolución, se emplean técnicas estándar para traducir fórmulas HOL a lógica clásica de primer orden: las abstracciones $\lambda$ se reescriben a combinadores y las funciones currificadas son traducidas variando el número de argumentos, mediante operador de \texttt{apply} explícito.
-
-Hasta hace poco, la traducción de tipos no era sólida: proporcionaba suficiente información de tipos para hacer cumplir el razonamiento de clase de tipos correcto, pero no para especificar el tipo de cada término. (Esto se debía a que el kernel de inferencia de Isabelle vuelve a verificar las demostraciones, pero la solidez no era crucial). La implementación actual soluciona de forma segura la mayoría de la problemas de información de tipos infiriendo la monotonicidad de los mismos~\cite{monotonicity_inference_for_hol}, la cual brinda una codificación sólida y eficiente.
-
-Para los solvers de SMT, la traducción asigna operadores aritméticos y de igualdad a conceptos correspondientes en SMT-LIB~\cite{SMT-LIB}. La lógica de SMT-LIB está ordenada de forma múltiple, lo que la hace más apropiada para codificar información de escritura HOL que la lógica clásica de primer orden, pero no admite polimorfismo. La solución para este inconveniente es monomorfizar las fórmulas: las fórmulas polimórficas se instancian de forma iterativa con `instancias fundamentales' de sus constantes polimórficas. Este proceso se itera para obtener el problema monomorfizado. Las aplicaciones parciales se traducen usando un operador de \textit{apply}, pero en contraste con el enfoque de combinación que se usa cuando se comunica con probadores de resolución, las abstracciones $\lambda$ se elevan a nuevas reglas, introduciendo así nuevas constantes.
-
-\subsubsection{Invocación de probadores externos}
-
-Sledgehammer permite que los probadores externos se ejecuten en paralelo, tanto de forma local como remota. En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.de/}}, E, SPASS, y Z3 son ejecutados localmente, mientras que Vampire y el metaprover SInE son utilizados mediante SystemOnTPTP remoto. Los usuarios pueden también habilitar CVC3 y Yices.
-
-La siguiente figura representa la arquitectura, omitiendo la reconstrucción y minimización de la prueba. En la misma, se puede apreciar que se ejecutan dos instancias del filtro de relevancia para tener en cuenta diferentes conjuntos de constantes integradas. Los hechos relevantes y la conjetura se traducen a la versión TPTP o SMT (lógica de primer orden), y los problemas resultantes se delegan a los probadores. La traducción de Z3 se realiza de forma ligeramente diferente a la de CVC3 e Yices, para beneficiarse del soporte de Z3 en aritmética no lineal.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
-	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture}
-\end{figure}
-
-Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
-
-Los servidores remotos son ideales para la búsqueda de pruebas, al menos cuando están funcionando y el usuario tiene acceso a Internet. También ayudan a distribuir la carga: a menos que la máquina del usuario posea un procesador de ocho núcleos procesador, sería imprudente lanzar cuatro probadores de resolución y tres solvers SMT y esperar que la interfaz de usuario de Isabelle siga respondiendo. La invocación paralela de probadores es invaluable: ejecutar E, SPASS y Vampire juntos durante cinco segundos resuelve tantos problemas como ejecutar un solo probador durante dos minutos~\cite{sledgehammer_judgement_day}.
-
-\subsubsection{Reconstruyendo la prueba}
-
-Para probadores de resolución, Sledgehammer realiza una reconstrucción de prueba ejecutando el probador de resolución integrado de Isabelle, Metis, brindando la breve lista de hechos utilizados en la prueba encontrada por el prover. Dado solo unos pocos hechos, Metis generalmente tiene éxito en milisegundos. Dado que Metis tiene que volver a encontrar la prueba, los provers externos se utilizan esencialmente como filtros de relevancia de gran precisión.
-
-Las pruebas generadas usualmente requieren una edición a posteriori para volverlas sintácticamente correctas. Las nuevas actualizaciones siempre realizan esfuerzos para hacer que el resultado generado sea más robusto y conciso.
-
-Con respecto a SMT, las pruebas que no involucran razonamiento aritmético generalmente pueden ser reproducidas por Metis; de lo contrario, se admite la reproducción de la prueba, paso a paso, para Z3. Mientras que CVC3 e Yices se pueden invocar como oráculos. La repetición de la prueba Z3 se basa en gran medida en los procedimientos de decisión aritmética, simplificador y probador de tipo tableau de Isabelle.
-
-\subsubsection{Minizando la prueba}
-
-Los probadores externos usualmente usan muchos más hechos de los necesarios. La herramienta de minimización de Sledgehammer toma el conjunto de hechos usados retornados por un prover e invoca repetidamente al mismo con subconjuntos de los hechos para encontrar un conjunto mínimo.
-
-Dependiendo del número de hechos iniciales, se basa en un algoritmo lineal \textit{naive} que intenta eliminar un hecho a la vez o en un algoritmo binario que biseca recursivamente los hechos~\cite{sledgehammer_judgement_day}.
-
-La minimización frecuentemente mejora el rendimiento y la tasa de éxito de Metis, y al mismo tiempo elimina el desorden de las formalizaciones de Isabelle. Para algunos provers, es difícil o imposible extraer la lista de hechos usados de la prueba; la minimización es entonces la única opción. Por ejemplo, las pruebas detalladas devueltas por CVC3 siempre se refieren a todos los hechos, sean realmente necesarios o no, y no existe un criterio fácil para aislar los hechos necesarios.
-
-\subsection{Quickcheck: Generación de contraejemplos}
-
-Los métodos de prueba de Isabelle y Sledgehammer son efectivos frente a conjeturas válidas, pero dada una conjetura inválida, normalmente no detectan la invalidez de la misma, y mucho menos producen un contraejemplo relevante.
-
-Aquí es donde entra en escena Quickcheck. Quickcheck se modeló originalmente a partir de la herramienta QuickCheck para Haskell~\cite{quickcheck_haskell}, que prueba las propiedades proporcionadas por el usuario de un programa Haskell para valores generados aleatoriamente. Recientemente Quickcheck se ha ampliado con pruebas exhaustivas y basadas en restricciones como complemento a las pruebas aleatorias.
-
-Las pruebas exhaustivas verifican la fórmula para cada posible conjunto de valores hasta un límite dado, y por lo tanto encuentran contraejemplos que las pruebas aleatorias podrían pasar por alto. La reducción puede ser más precisa y eficiente que los otros dos enfoques porque considera la fórmula simbólicamente, en lugar de probar un conjunto finito de valores fundamentales. Gracias a un análisis de flujo de datos estáticos, inspirado en la programación lógica, Quickcheck deriva generadores de datos de prueba que tienen en cuenta las premisas para ayudar a evitar los casos de prueba vacíos que afectan a la mayoría de las herramientas de prueba de especificaciones.
-
-
-\section{Programando y probando en Isabelle/HOL}
+\subsection{Programando y probando en Isabelle/HOL}
 
 Esta sección introduce a HOL como un lenguaje de programación funcional y muestra como probar propiedades de programas funcionales mediante inducción~\cite{prog-prove-isabelle}.
 
-\subsection{Definiciones básicas}
+\subsubsection{Definiciones básicas}
 
-\subsubsection{Tipos, términos y fórmulas}
+\paragraph{Tipos, términos y fórmulas:}
 
 HOL es considerado una lógica tipada, cuyo sistema de tipos se asemeja al de los lenguajes de programación funcional. Esto implica la existencia de:
 
@@ -1320,7 +1210,7 @@ Isabelle automáticamente computa el tipo de cada variable en un término. Esto 
 
 Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implicación $\Longrightarrow$. Estos son parte del framework Isabelle, no de HOL.\@
 
-\subsection{Teorías}
+\subsubsection{Teorías}
 
 Una teoría es una colección de tipos, funciones y teoremas, similar a un módulo en un lenguaje de programación. Todo el contenido que escribamos en Isabelle debe pertenecer a una teoría. El formato general de una teoría T es:
 
@@ -1337,10 +1227,10 @@ donde $T_1 \ldots T_n$ son los nombres de teorías existentes en las que $T$ est
 Ademas de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\url{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\url{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
 
 
-\subsubsection{Comillas}
+\paragraph{Comillas:}
 La definición textual de una teoría sigue una sintaxis especifica incluyendo keywords como \textbf{begin} y \textbf{datatype}. En esta sintaxis están embebidos los tipos y fórmulas de HOL.\@ Para distinguir los dos niveles, todo lo específico de HOL (términos y tipos) debe estar entre comillas: \texttt{"\ldots"}. Las comillas alrededor de un único identificador se pueden eliminar. Cuando Isabelle imprime un mensaje de error de sintaxis, se refiere a la sintaxis HOL como la sintaxis interna y al lenguaje teórico adjunto como la sintaxis externa.% chktex 18 // intencionalmente usando "" en lugar de ``''
 
-\subsubsection{Estado de la prueba} 
+\paragraph{Estado de la prueba:} 
 
 En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.de/}}, con el cursor en un \textit{lemma} o \textit{theorem}, es posible ver en la pestaña \textit{state}, los \textit{subgoals} y estado parcial de nuestra prueba en proceso.
 
@@ -1351,11 +1241,11 @@ En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.d
 \end{figure}
 
 
-\subsection{Algunos tipos y pruebas básicas}
+\subsubsection{Algunos tipos y pruebas básicas}
 
 En esta sección detallaremos los tipos \textit{bool}, \textit{nat} y \textit{list}, los más importantes y utilizados en Isabelle/HOL.\@ Mostremos algunos ejemplos de pruebas sencillas y las probaremos con inducción y simplificación.
 
-\subsubsection{bool}
+\paragraph{bool}
 
 Este tipo esta predefinido mediante:
 
@@ -1373,8 +1263,9 @@ El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funcion
 
 Las definiciones de datatype y funciones siguen la sintaxis de lenguajes de programación funcional.
 
-\subsubsection{nat}
-Los números naturales y otros datatypes predefinidos.
+\paragraph{nat}
+
+Los números naturales:
 
 \begin{lstlisting}[style=Isabelle]
 datatype nat = 0 | Suc nat
@@ -1403,13 +1294,13 @@ La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre
 	2. $\bigwedge$ m. add m 0 = m $\Longrightarrow$ add (Suc m) 0 = Suc m	
 \end{lstlisting}
 
-Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{sec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos subgoals, Isabelle puede manejarlos con las teorías incluidas por defecto. 
+Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{sec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos \textit{subgoals}, Isabelle puede manejarlos con las teorías incluidas por defecto. 
 
-El caso base \texttt{add 0 0 = 0} se prueba por la definición de \texttt{add} y el paso inductivo es casi tan simple: \texttt{add (Suc m) 0 = Suc (add m 0) = Suc m} usando la definición de \texttt{add} y la hipótesis inductiva respectivamente. En resumen, ambas `sub-pruebas' se basan en la simplificación mediante la definición y la hipótesis inductiva. Como resultado de la keyword `\texttt{done}', Isabelle asocia el lema a su identificador.
+El caso base \texttt{add 0 0 = 0} se prueba por la definición de \texttt{add} y el paso inductivo es bastante simple: \texttt{add (Suc m) 0 = Suc (add m 0) = Suc m} usando la definición de \texttt{add} y la hipótesis inductiva respectivamente. En resumen, ambas `sub-pruebas' se basan en la simplificación mediante la definición y la hipótesis inductiva. Como resultado de la keyword `\texttt{done}', Isabelle asocia el lema a su identificador.
 
-De ahora en más dicho lema podría ser utilizado como algún paso de prueba por lemas subsiguientes.
+De ahora en más dicho lema podría ser utilizado como paso de prueba por lemas subsiguientes.
 
-\subsubsection{Listas}
+\paragraph{Listas}
 
 Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede ser encontrada en \url{https://isabelle.in.tum.de/library/HOL/HOL/List.html}}, pero su definición puede ser simplificada como:
 
@@ -1423,27 +1314,137 @@ datatype 'a list = Nil | Cons 'a "'a list"
 	\item Las listas tienen dos constructores: \texttt{Nil}, la lista vacía y \texttt{Cons}, que agrega un elemento de tipo \texttt{'a} en el comienzo de la misma (de tipo \texttt{'a list}). Esto provoca que todas las listas sean de la forma \texttt{Nil}, \texttt{(Cons x Nil)}, \texttt{(Cons x (Cons y Nil))}, etc.
 \end{itemize}
 
+
+\section{Métodos de prueba en Isabelle}
+
+Isabelle proporciona una serie de métodos de prueba (de propósito general) que realizan la búsqueda de las mismas~\cite{proof_and_disproof}. En esta sección, discutiremos los más importantes.
+
+\subsection{Simplificación}
+
+La simplificación es el principal caballo de batalla en Isabelle. El sistema puede reescribir y simplificar fácil y eficientemente expresiones. También tolera \textit{hooks} para personalizar las mismas:
+
+\begin{itemize}
+	\item \textit{Procedimientos de simplificación basados en patrones} que derivan y aplican reglas de reescritura de forma dinámica. Muchos de estos procedimientos están pre-instalados, en particular los de simplificación aritmética para números y términos simbólicos.
+	\item \textit{Solvers especiales para reglas de reescritura condicional}. Los ejemplos típicos son: fragmentos de aritmética lineal y un \textit{prover} de clausuras para relaciones transitivas arbitrarias.
+	\item \textit{\textit{Loopers} especiales} que advierten el objetivo luego de cada ronda de simplificación. Los separadores de casos se proveen de esta manera.
+\end{itemize}
+
+El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
+
+
+\subsection{Auto}\label{sec:auto}
+
+Desde el lado del usuario, invocado con la keyword \textit{auto}, podemos mencionar a un método de prueba que intercala la simplificación con una pequeña cantidad de búsqueda dentro del espacio de pruebas.
+
+Es imposible describir sucintamente al método \textit{auto} debido a su naturaleza heurística, de tipo ad-hoc.
+
+Su gran fortaleza es la capacidad para resolver las partes simples de un objetivo y dejar al usuario las más difíciles. Esto ayuda a concentrarse rápidamente en el núcleo de un problema.
+
+Versiones mejoradas de \textit{auto} realizan búsquedas de pruebas más sofisticadas, al mismo tiempo que intercalan simplificación. Estos métodos suelen ser útiles, pero dado que implican cierto tipo de búsqueda, no solo son más lentos que el simplificador y \textit{auto}, sino que además no brindan ninguna pista cuando no logran demostrar el objetivo.
+
+
+\subsection{Blast y Metis}
+Las versiones más sofisticadas de \textit{auto} mencionadas anteriormente pueden ser lentas debido a que cada paso de inferencia es ejecutado directamente en el estado de la prueba, mediante el kernel de Isabelle.
+Para mayor performance, los usuarios pueden usar \textit{blast}, un prover de tipo tableau~\cite{tableau_provers} escrito directamente en ML~\cite{ML_programming_language} que evita el kernel.
+
+Una vez que la prueba fue encontrada, es ejecutada nuevamente en el kernel para validarla. El método blast supera a la implementación de tableau basada en el kernel por un amplio margen, pero no es rival de los mejores probadores automáticos. Tampoco explota el concepto de simplificación, lo cual es una gran pérdida.
+
+Yendo un paso más allá, Metis es un probador de teoremas de resolución escrito en ML, con muy buenos resultados en competiciones de prueba de teoremas~\cite{CASC_competition}.
+
+Ha sido portado a Isabelle y sigue la misma filosofía que blast: la búsqueda de la prueba se realiza directamente en ML, y en caso de ser encontrada, se verifica en el kernel de Isabelle.
+El método blast se basa en una base de datos extensible de lemas que impulsa la búsqueda y que está pre-configurada para `razonar' sobre conjuntos, funciones y relaciones, lo que lo hace bastante fácil de usar. Por otro lado, la versión de Metis de Isabelle solo conoce la lógica pura y deriva su conocimiento sobre otros operadores de lemas proporcionados explícitamente.
+
+Aunque Metis se puede invocar directamente, en la práctica las llamadas a Metis casi siempre son generadas por \textit{Sledgehammer}.
+
+
+\subsection{Sledgehammer: Descubriendo pruebas con la ayuda de otros provers}\label{sec:Sledgehammer}
+
+Sledgehammer es el subsistema de Isabelle que concentra el poder de los probadores automáticos de teoremas de primer orden.
+
+Dada una conjetura, selecciona de forma heurística unos cientos de hitos relevantes (lemas, definiciones o axiomas) de las bibliotecas de Isabelle, los traduce a lógica de primer orden junto con la conjetura y delega la búsqueda de pruebas a probadores de resolución externos (E, SPASS, y Vampire) y solvers SMT (CVC3, Yices y Z3~\cite{Z3}).
+
+Sledgehammer es muy eficaz y ha alcanzado una gran popularidad entre usuarios, novatos y expertos por igual.
+
+\subsubsection{Filtros por relevancia}
+
+La mayoría de los probadores automáticos funcionan mal en presencia de miles de axiomas. Sledgehammer emplea un filtro de relevancia simple para extraer unos pocos cientos de datos de las bibliotecas de Isabelle que podrían ser relevantes para el problema en cuestión.
+
+A pesar de su sencillez, este filtro mejora en gran medida la tasa de éxito de Sledgehammer. El filtro funciona de forma iterativa. La primera iteración selecciona hechos que comparten todas, o casi todas, sus constantes (símbolos) con la conjetura. Las iteraciones posteriores incluyen hechos que comparten constantes con hechos previos, hasta alcanzar el número deseado de hechos. Al observar que algunos provers manejan mejor las bases de axiomas grandes que otros, ese número se optimizó de forma independiente para cada prover.
+
+\subsubsection{Traducción a lógica de primer orden}
+
+El formalismo de Isabelle, con lógica polimórfica de orden superior (polymorphic HOL) y clases tipadas~\cite{proof_processing_Isabelle}, es mucho más complejo que la lógica de primer orden soportada por los provers automáticos.
+
+Sledgehammer se basa en diferentes traducciones dependiendo de la clase de probador.
+
+Para los probadores de resolución, se emplean técnicas estándar para traducir fórmulas HOL a lógica clásica de primer orden: las abstracciones $\lambda$ se reescriben a combinadores y las funciones currificadas son traducidas variando el número de argumentos, mediante operador de \texttt{apply} explícito.
+
+Hasta hace poco, la traducción de tipos no era sólida: proporcionaba suficiente información de tipos para hacer cumplir el razonamiento de clase de tipos correcto, pero no para especificar el tipo de cada término. La implementación actual soluciona de forma segura la mayoría de la problemas de información de tipos infiriendo la monotonicidad de los mismos~\cite{monotonicity_inference_for_hol}, la cual brinda una codificación sólida y eficiente.
+
+Para los solvers de SMT, la traducción asigna operadores aritméticos y de igualdad a conceptos correspondientes en SMT-LIB~\cite{SMT-LIB}. La lógica de SMT-LIB está ordenada de forma múltiple, lo que la hace más apropiada para codificar información de escritura HOL que la lógica clásica de primer orden, pero no admite polimorfismo. La solución para este inconveniente es monomorfizar las fórmulas: las fórmulas polimórficas se instancian de forma iterativa con `instancias fundamentales' de sus constantes polimórficas. Este proceso se itera para obtener el problema monomorfizado. Las aplicaciones parciales se traducen usando un operador de \textit{apply}, pero en contraste con el enfoque de combinación que se usa cuando se comunica con probadores de resolución, las abstracciones $\lambda$ se elevan a nuevas reglas, introduciendo así nuevas constantes.
+
+\subsubsection{Invocación de probadores externos}
+
+Sledgehammer permite que los probadores externos se ejecuten en paralelo, tanto de forma local como remota. En una instalación habitual de Isabelle\footnote{\url{https://isabelle.in.tum.de/}}, E, SPASS, y Z3 son ejecutados localmente, mientras que Vampire y el metaprover SInE son utilizados mediante SystemOnTPTP remoto. Los usuarios pueden también habilitar CVC3 y Yices.
+
+La siguiente figura representa la arquitectura, omitiendo la reconstrucción y minimización de la prueba. En la misma, se puede apreciar que se ejecutan dos instancias del filtro de relevancia para tener en cuenta diferentes conjuntos de constantes integradas. Los hechos relevantes y la conjetura se traducen a la versión TPTP o SMT (lógica de primer orden), y los problemas resultantes se delegan a los probadores. La traducción de Z3 se realiza de forma ligeramente diferente a la de CVC3 e Yices, para beneficiarse del soporte de Z3 en aritmética no lineal.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
+	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture}
+\end{figure}
+
+Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
+
+Los servidores remotos son ideales para la búsqueda de pruebas, al menos cuando están funcionando y el usuario tiene acceso a Internet. También ayudan a distribuir la carga: a menos que la máquina del usuario posea un procesador de ocho núcleos, sería imprudente lanzar cuatro probadores de resolución y tres solvers SMT y esperar que la interfaz de usuario de Isabelle siga respondiendo. La invocación paralela de probadores es invaluable: ejecutar E, SPASS y Vampire juntos durante cinco segundos resuelve tantos problemas como ejecutar un solo probador durante dos minutos~\cite{sledgehammer_judgement_day}.
+
+\subsubsection{Reconstruyendo la prueba}
+
+Para probadores de resolución, Sledgehammer realiza una reconstrucción de prueba ejecutando el probador de resolución integrado de Isabelle, Metis, brindando la breve lista de hechos utilizados en la prueba encontrada por el prover. Dado solo unos pocos hechos, Metis generalmente tiene éxito en milisegundos. Dado que Metis tiene que volver a encontrar la prueba, los provers externos se utilizan esencialmente como filtros de relevancia de gran precisión.
+
+Las pruebas generadas usualmente requieren una edición a posteriori para volverlas sintácticamente correctas. Las nuevas actualizaciones siempre realizan esfuerzos para hacer que el resultado generado sea más robusto y conciso.
+
+Con respecto a SMT, las pruebas que no involucran razonamiento aritmético generalmente pueden ser reproducidas por Metis; de lo contrario, se admite la reproducción de la prueba, paso a paso, para Z3. Mientras que CVC3 e Yices se pueden invocar como oráculos. La repetición de la prueba Z3 se basa en gran medida en los procedimientos de decisión aritmética, simplificador y probador de tipo tableau de Isabelle.
+
+\subsubsection{Minizando la prueba}
+
+Los probadores externos usualmente usan muchos más hechos de los necesarios. La herramienta de minimización de Sledgehammer toma el conjunto de hechos usados retornados por un prover e invoca repetidamente al mismo con subconjuntos de los hechos para encontrar un conjunto mínimo.
+
+Dependiendo del número de hechos iniciales, se basa en un algoritmo lineal \textit{naive} que intenta eliminar un hecho a la vez o en un algoritmo binario que biseca recursivamente los hechos~\cite{sledgehammer_judgement_day}.
+
+La minimización frecuentemente mejora el rendimiento y la tasa de éxito de Metis, y al mismo tiempo elimina el desorden de las formalizaciones de Isabelle. Para algunos provers, es difícil o imposible extraer la lista de hechos usados de la prueba; la minimización es entonces la única opción. Por ejemplo, las pruebas detalladas devueltas por CVC3 siempre se refieren a todos los hechos, sean realmente necesarios o no, y no existe un criterio fácil para aislar los hechos necesarios.
+
+\subsection{Quickcheck: Generación de contraejemplos}
+
+Los métodos de prueba de Isabelle y Sledgehammer son efectivos frente a conjeturas válidas, pero dada una conjetura inválida, normalmente no detectan la invalidez de la misma, y mucho menos producen un contraejemplo relevante.
+
+Aquí es donde entra en escena Quickcheck. Quickcheck se modeló originalmente a partir de la herramienta QuickCheck para Haskell~\cite{quickcheck_haskell}, que prueba las propiedades proporcionadas por el usuario de un programa Haskell para valores generados aleatoriamente. Recientemente Quickcheck se ha ampliado con pruebas exhaustivas y basadas en restricciones como complemento a las pruebas aleatorias.
+
+Las pruebas exhaustivas verifican la fórmula para cada posible conjunto de valores hasta un límite dado, y por lo tanto encuentran contraejemplos que las pruebas aleatorias podrían pasar por alto. La reducción puede ser más precisa y eficiente que los otros dos enfoques porque considera la fórmula simbólicamente, en lugar de probar un conjunto finito de valores fundamentales. Gracias a un análisis de flujo de datos estáticos, inspirado en la programación lógica, Quickcheck deriva generadores de datos de prueba que tienen en cuenta las premisas para ayudar a evitar los casos de prueba vacíos que afectan a la mayoría de las herramientas de prueba de especificaciones.
+
+
 \section{Semántica de Marlowe en Isabelle}\label{sec:Semantica_marlowe_isabelle}
 
 Antes de comenzar a realizar pruebas sobre cualquier contrato escrito en Marlowe, es necesario definir formalmente en Isabelle los pilares del DSL.\@
 
-Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba traducida a Isabelle~\cite{implementing_financial_contracts_on_blockchain, efficient-static-analysis-marlowe-isabelle} (junto con algunos \textit{lemmas} y teoremas correspondientes). El mayor responsable de dicha traducción es Pablo Lamela\footnote{\url{https://iohk.io/en/team/pablo-lamela-seijas}}, quien colaboró durante todo el desarrollo de este trabajo, en particular durante la escritura de mis pruebas.
+Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba traducida a Isabelle~\cite{implementing_financial_contracts_on_blockchain, efficient-static-analysis-marlowe-isabelle} (junto con algunos \textit{lemmas} y teoremas correspondientes). El mayor responsable de dicha traducción es Pablo Lamela\footnote{\url{https://iohk.io/en/team/pablo-lamela-seijas}}, quien colaboró con la supervisión de este trabajo, en particular durante la escritura de mis pruebas.
 
 Debido a que no existen actualmente traductores de Haskell~\cite{translating-haskell-to-isabelle}, dicho trabajo debe realizarse manualmente. 
 
-Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando una definición es escrita, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
+Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando se escribe una definición, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
 
-La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}. Algunas de las teorías ya probadas se detallan a continuación. En~\cite{implementing_financial_contracts_on_blockchain} se menciona que las versiones tan similares como sea posible, pero que diferencian en dos prinicpales aspectos:
+La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}. Algunas de las teorías ya probadas se detallan a continuación. En~\cite{implementing_financial_contracts_on_blockchain} se menciona que se intentará mantener las versiones (escritas Haskell e Isabelle) tan similares como sea posible. Sin embargo, tomaron la decisión de implementar de forma diferente dos aspectos:
 
 \begin{itemize}
-    \item Se usaron \textit{enteros como identificadores} ya que son mas sencillos para manejar que las strings.
-    \item Se usaron \textit{implementaciones personalizadas de map y set}, basadas en listas, debido a que Isabelle ya provee un extenso arsenal de teoremas probados en listas.
+    \item \textit{Enteros como identificadores}, ya que son mas sencillos para manejar que las strings.
+    \item \textit{Implementaciones personalizadas de map y set}, basadas en listas, debido a que Isabelle ya provee un extenso arsenal de teoremas probados en listas.
 \end{itemize}
 
-Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a continuación:
+Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a continuación.
 
 \subsection{Prueba de Terminación (\textit{Termination proof})}
-Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}. Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \texttt{NotReduced}, por lo tanto la probar terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
+Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}. Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \texttt{NotReduced}, por lo tanto la terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
 
 \begin{lstlisting}[style=Isabelle]
 fun evalBound :: "State $\Rightarrow$ Contract $\Rightarrow$ nat" where
@@ -1451,17 +1452,17 @@ fun evalBound :: "State $\Rightarrow$ Contract $\Rightarrow$ nat" where
 \end{lstlisting}
 donde \texttt{size} es una medida generada automáticamente por Isabelle. 
 
-Fue requerida la cantidad de cuentas en \texttt{State} porque el tamaño del contrato \texttt{Close} no disminuirá al llamar a \texttt{reduceContractStep}, pero la cantidad de cuentas sí lo hará, a menos que estén todas vacías.
+Se requirió indicar la cantidad de cuentas en \texttt{State} porque el tamaño del contrato \texttt{Close} no disminuirá al llamar a \texttt{reduceContractStep}, pero la cantidad de cuentas sí lo hará, a menos que estén todas vacías.
 
-Adicionalmente, necesitaron multiplicar el tamaño del \textit{Contrato} por dos porque el \texttt{Deposit} puede aumentar el número de cuentas en uno, entonces necesitaban multiplicar el efecto de la reducción del tamaño del contrato para compensarlo.
+Adicionalmente, se debió multiplicar el tamaño del \textit{Contrato} por dos porque el \texttt{Deposit} puede aumentar el número de cuentas en uno, por lo que hubo que multiplicar el efecto de la reducción del tamaño del contrato para compensarlo.
 
-\subsection{Estado valido y preservación de cuentas en positivo}
-Hay algunos valores para \texttt{State} que están permitidos por su tipo pero no tienen sentido, especialmente en el caso de la semántica de Isabelle donde usamos listas en lugar de mapas:
+\subsection{Estado válido y preservación de cuentas en positivo}
+Hay algunos valores para \texttt{State} que están permitidos por su tipo pero que no tienen sentido, especialmente en el caso de la semántica de Isabelle donde usamos listas en lugar de mapas:
 
 \begin{enumerate}
     \item Las listas representan mapas, por lo tanto no deberían tener claves repetidas.
-    \item Es deseable que dos mapas iguales sean representados de la misma forma, entonces fuerzan a las claves a estar en orden ascendiente.
-    \item Es requerido almacenar solamente las cuentas con una valor positivo.
+    \item Es deseable que dos mapas iguales sean representados de la misma forma, entonces se forzó a las claves a estar en orden ascendiente.
+    \item Solo se requiere almacenar las cuentas con una valor positivo.
 \end{enumerate}
 
 Se define a un valor de \texttt{State} como \textit{valido} si las dos primeras propiedades son verdaderas. Y decimos que tiene cuentas positivas si la tercer propiedad es verdadera.
@@ -1469,27 +1470,27 @@ Se define a un valor de \texttt{State} como \textit{valido} si las dos primeras 
 Se demostró que las funciones en la semántica conservan las tres propiedades.
 
 \subsubsection{Resultado inactivo (Quiescent result)}
-Un contrato es inactivo o \texttt{quiescent} si y solo si el constructor raíz es \texttt{When} (esperando \textit{inputs} de usuario), o si el contrato es \texttt{Close} y todas las cuentas están vacías. Fue probado que, si un \texttt{State} de entrada es válido y las cuentas son positivas, entonces la salida sera inactiva.
+Un contrato es inactivo o \textit{quiescent} si y solo si el constructor raíz es \texttt{When} (esperando \textit{inputs} de usuario), o si el contrato es \texttt{Close} y todas las cuentas están vacías. Fue probado que, si un \texttt{State} de entrada es válido y las cuentas son positivas, entonces la salida será inactiva.
 
 \subsection{Preservación del dinero y \textit{timeout} del contrato}
 
-Uno de los peligros de usar \textit{smart contracts} es que uno mal escrito puede potencialmente bloquear sus fondos para siempre. Al final del contrato, todo el dinero retenido en el contrato debe distribuirse, de alguna manera, a un subconjunto de los participantes del mismo. Para asegurarse de que este sea el caso, probamoron dos propiedades:
+Uno de los peligros de usar \textit{smart contracts} es que uno mal escrito puede potencialmente bloquear sus fondos para siempre. Al final del contrato, todo el dinero retenido en el contrato debe distribuirse, de alguna manera, a un subconjunto de los participantes del mismo. Para asegurarse de que este sea el caso, se probaron dos propiedades:
 
 \subsubsection{Preservación del dinero}
-El dinero no se crea ni se destruye por la semántica. Concretamente, el dinero que ingresa más el dinero en el contrato antes de la transacción debe ser igual al dinero que sale más el dinero en el contrato después de la transacción, salvo en casos que ocurra un error.
+El dinero no se crea ni se destruye por la semántica. Concretamente, el dinero que ingresa más el dinero en el contrato antes de la transacción debe ser igual al dinero que sale más el dinero en el contrato después de la transacción, salvo en casos en que ocurra un error.
 
 \subsubsection{Un \textit{timeout} cierra un contrato} 
 Por cada contrato en Marlowe hay un \textit{slot} después del cual se puede emitir una transacción vacía que cerrará el mismo y reembolsará todo el dinero en sus cuentas.
 
 Un límite superior conservador para el \textit{slot} de vencimiento se puede calcular de manera eficiente utilizando la función \texttt{maxTime} (o \texttt{maxTimeContract} en la semántica de Isabelle), que simplemente toma el máximo de todos los \textit{timeouts} en el contrato.
 
-Han probado que este límite superior conservador es lo suficientemente general para cada contrato, mostrando que, si el contrato no está cerrado y vacío, entonces una transacción vacía enviada después de \texttt{maxTime} cerrará el contrato y vaciará las cuentas.
+Se ha probado que este límite superior conservador es lo suficientemente general para cada contrato, mostrando que, si el contrato no está cerrado y vacío, entonces una transacción vacía enviada después de \texttt{maxTime} cerrará el contrato y vaciará las cuentas.
 
-\subsection{Limite en el número máximo de transacciones}
+\subsection{Límite en el número máximo de transacciones}
 
 Otra propiedad de Marlowe es que cualquier \texttt{Contract} tiene un límite finito implícito en el número máximo de \texttt{Transaccions} que acepta. Esta es una propiedad conveniente por dos razones:
 
-En primer lugar, reduce el peligro de ataques de denegación de servicio (DoS), ya que el número de entradas válidas es limitado, un participante atacante no puede bloquear arbitrariamente el contrato mediante la emisión de una cantidad ilimitada de transacciones inútiles.
+En primer lugar, reduce el peligro de ataques de denegación de servicio (DoS): ya que el número de entradas válidas es limitado, un participante atacante no puede bloquear arbitrariamente el contrato mediante la emisión de una cantidad ilimitada de transacciones inútiles.
 
 En segundo lugar, el número de transacciones limita la longitud de los rastros que necesita explorar la ejecución simbólica (consultar la Sección 4 de~\cite{implementing_financial_contracts_on_blockchain}). Establecemos la propiedad de la siguiente manera:
 
@@ -1511,16 +1512,20 @@ Por lo tanto, no perdemos generalidad al explorar solo \textit{traces} más cort
 %##########################
 
 \chapter[Verificación de contratos financieros en Isabelle]{Desarrollo: Verificación de contratos financieros usando Isabelle}
+
+% TODO: Completar resumen de capítulo
+En este capítulo se describirán los aportes realizados en la presente tésis. Por una parte, "...". WIP
+
 \section{Escritura de contratos ACTUS para Cardano}
 
-En esta sección, veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, en conjunto con IOHK.\@
+En esta sección, veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, bajo la supervisión de IOHK.\@
 
 Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 \newpage
 \subsection{Descripción de la estructura del proyecto}\label{sec:estructura}
 
-En la siguiente sub-sección, describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
+En la siguiente sub-sección describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
 
 \begin{figure}[H]
 \begin{tikzpicture}
@@ -1569,7 +1574,7 @@ En la siguiente sub-sección, describiremos brevemente algunos de las entidades 
 \caption{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}.}\label{fig:Marlowe_dirtree}
 \end{figure}
 
-Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el código necesario para modelar los contratos ACTUS, generar contratos el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
+Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el código necesario para modelar los contratos ACTUS, y generar el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
 
 \subsubsection{Domain}
 
@@ -2564,7 +2569,7 @@ lemma applyAllLoopDoesNotDecreaseMinSlot :
     by (simp add: applyAllLoop_preserves_minSlot)
 \end{lstlisting}
 
-La misma demuestra que aplicar el \texit{loop} sobre el contrato PAM no hace decrecer el \textit{minSlot}.
+La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace decrecer el \textit{minSlot}.
 
 \section{Probando la ausencia de Warnings en el contrato Auction}
 
