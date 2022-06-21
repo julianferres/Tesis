@@ -1432,7 +1432,7 @@ Al momento de comenzar a realizar pruebas, la semántica de Marlowe estaba tradu
 
 Debido a que no existen actualmente traductores de Haskell~\cite{translating-haskell-to-isabelle}, dicho trabajo debe realizarse manualmente. 
 
-Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando se escribe una definición, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
+Esto implica la traducción (por momentos debiendo reestructurar la organización de las funciones en Haskell, debido a que no hay una biyección trivial entre los lenguajes) y la prueba de terminación y exclusión mutua de las funciones. Debido a que HOL es una lógica de funciones totales\footnote{Una función se conoce como total cuando está definida para todos los valores posibles de entrada.}, la terminación es un requisito fundamental para prevenir inconsistencias. Isabelle intenta probar la terminación automáticamente cuando se escribe una definición, pero en casos complejos es posible que el usuario tenga que proveerla utilizando técnicas de prueba.
 
 La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlowe-isabelle-repo}. Algunas de las teorías ya probadas se detallan a continuación. En~\cite{implementing_financial_contracts_on_blockchain} se menciona que se intentará mantener las versiones (escritas Haskell e Isabelle) tan similares como sea posible. Sin embargo, tomaron la decisión de implementar de forma diferente dos aspectos:
 
@@ -1519,7 +1519,7 @@ En primer lugar, la escritura de contratos financieros ACTUS para la blockchain 
 
 En segudo lugar, la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mimos.
 
-Finalmente, probaremos la ausencia de \textit{warnings} en el contrato \textit{Auction}. Para esto, traduciremos el contrato a Isabelle, demostraremos la terminación del mismo y algunos lemas auxiliares que nos ayudan en la prueba del teorema.
+Finalmente, probaremos la ausencia de \textit{warnings} en el contrato \textit{Auction}~\cite{auction_haskell}. Para esto, traduciremos el contrato a Isabelle, demostraremos la terminación del mismo y algunos lemas auxiliares que nos ayudan en la prueba del teorema.
 
 \section{Escritura de contratos ACTUS para Cardano}
 
@@ -2565,7 +2565,7 @@ goal (1 subgoal):
 
 En el caso del contrato PAM, una vez que se incluye el módulo \textit{ValidState} y se pone a un estado valido como precondición de la prueba, se logra la siguiente prueba:
 
-\begin{lstlisting}[style=Isabelle]
+\begin{lstlisting}[style=Isabelle, caption=Prueba del lema de \textit{minSlot} para el contrato PAM]
 lemma applyAllLoopDoesNotDecreaseMinSlot :
 "validAndPositive_state sta $\Longrightarrow$
   applyAllLoop reduced env sta PAM inp wa pa = 
@@ -2578,15 +2578,86 @@ La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace de
 
 \section{Probando la ausencia de Warnings en el contrato Auction}
 
+En esta sección detallaremos el trabajo realizado para probar la ausencia de \textit{warnings} en el contrato \textit{Auction}~\cite{auction_haskell}.
+
+Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
+
+\begin{lstlisting}[style=Isabelle, caption=Ausencia de \textit{warnings} para el contrato \texttt{Close} en sintaxis de Isabelle/HOL.]
+theorem closeIsSafe : "computeTransaction tra sta Close = 
+                       TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
+\end{lstlisting}
+
+\subsection{Traducción del contrato \textit{Auction} a Isabelle}
+
+
+\subsubsection{Recursión mutua}\label{sec:recursion_mutua}
+
 % TODO: WIP
 
-\subsection{Traducción del contrato Auction a Isabelle}
 
-\subsection{Probando terminación del contrato}
+\subsubsection{\textit{fun} vs. \textit{function}}
+
+El comando \texttt{fun} provee una notación abreviada, conveniente para definiciones de funciones simples. En este modo, Isabelle trata de resolver automáticamente todas las obligaciones necesarias en la definición. Si alguna prueba falla, la definición es rechazada. Esto puede significar que la definición en sí es defectuosa, o que los procedimientos utilizados no son suficientes para manejar la definición. Una definición que utiliza \textit{fun} sigue el siguiente formato:
+
+\begin{lstlisting}[style=Isabelle, caption=Definición de una función mediante \textit{fun}]
+fun f :: $\tau$
+where
+    equations
+    .
+    .
+    .
+\end{lstlisting}
+
+Al expandir la \textit{fun} al commando más detallado \textit{function}, estas obligaciones de prueba se vuelven visibles y se pueden analizar o resolver manualmente. La notación de \textit{function} es la siguiente:
+
+\begin{lstlisting}[style=Isabelle]
+function (sequential) f :: $\tau$
+where
+    equations
+    .
+    .
+    .
+by pat_completeness auto
+termination by lexicographic_order
+\end{lstlisting}
+
+Algunos detalles ahora se han hecho explícitos:
+\begin{enumerate}
+    \item La opción \textit{secuential} permite el preprocesamiento con superposicion de patrones\footnote{Los mismos definen el comportamiento de la función ante determinadas entradas, y obedecen reglas de \textit{pattern matching}}. Sin esta opción, las ecuaciones ya deben estar disjuntas y completas.
+    \item La definición de una función produce una obligación de prueba, que expresa la completitud y la compatibilidad de los patrones. La combinación de los métodos \textit{pat\_completeness} y \textit{auto} se usa para resolver esta obligación de prueba.
+    \item Una prueba de terminación finaliza la definición, iniciada por el comando \textit{termination}. Cada vez que falla un comando \textit{fun}, generalmente es una buena idea expandir la sintaxis a la forma de \textit{function}, para ver qué está sucediendo realmente.
+\end{enumerate}
+
+Los detalles de la prueba de terminación del contrato \textit{Auction} podrán verse en la siguiente sección.
+
+
+\subsection{Probando la terminación del contrato}
+
+Dado que HOL es una lógica de funciones totales\footnote{Una función se conoce como total cuando está definida para todos los valores posibles de entrada.}, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
+
+La terminación no solo es una propiedad deseable en los contratos, sino que también le permite a Isabelle utilizar teoremas adicionales, como por ejemplo el de inducción. Esto es de gran importancia a la de probar teoremas que puedan utilizar las funciones.
+
+\subsubsection{Probando terminación mediante el uso de \textit{relation}}
+
+Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellos, podemos especificar la relación de terminación manualmente.
+
+El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva, con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
+
+Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
+
+El argumento de terminación las funciones se basa en los siguientes hechos:
+
+\begin{enumerate}
+    \item
+    \item
+    \item
+    \item
+    \item
+    \item
+\end{enumerate}
+
 
 % TODO: WIP
-
-\cite{termination-isabelle}
 
 
 %##########################
