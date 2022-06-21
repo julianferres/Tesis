@@ -1513,8 +1513,13 @@ Por lo tanto, no perdemos generalidad al explorar solo \textit{traces} más cort
 
 \chapter[Verificación de contratos financieros en Isabelle]{Desarrollo: Verificación de contratos financieros usando Isabelle}
 
-% TODO: Completar resumen de capítulo
-En este capítulo se describirán los aportes realizados en la presente tesis. Por una parte, WIP
+En este capítulo se describirán los aportes realizados en la presente tesis. 
+
+En primer lugar, la escritura de contratos financieros ACTUS para la blockchain Cardano, junto con la creación de casos de prueba y validación con los tests oficiales del estándar~\cite{ACTUS_Tests}.
+
+En segudo lugar, la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mimos.
+
+Finalmente, probaremos la ausencia de \textit{warnings} en el contrato \textit{Auction}. Para esto, traduciremos el contrato a Isabelle, demostraremos la terminación del mismo y algunos lemas auxiliares que nos ayudan en la prueba del teorema.
 
 \section{Escritura de contratos ACTUS para Cardano}
 
