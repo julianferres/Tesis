@@ -2826,7 +2826,7 @@ Además, como las funciones fueron definidas mediante \textit{recursión mutua}~
 Debemos entonces encontrar una medida que sea decreciente (similar a \textit{evalBound} en~\ref{lst:evalBound}), para cada ejecución de nuestras funciones. Teniendo en cuenta los requerimientos, se utilizaron las siguientes propiedades del contrato para la funcion \textit{evalBoundAuction}.
 
 \begin{itemize}
-    \item Las funciones auxiliares (por ejemplo \textit{settle}, \textit{choice} y \textit{remove} terminan trivialmente.
+    \item Las funciones auxiliares (por ejemplo \textit{settle}, \textit{choice} y \textit{remove}) terminan trivialmente.
     \item La función \textit{contractLoop} termina trivialmente cuando las listas \textit{ps} y \textit{qs} están vacías.
     \item La función \textit{handleChoose} remueve un elemento \textit{p} de \textit{qs} (si se encuentra en la lista) y lo agrega a \textit{ps}.
     \item La función \textit{handleChoose} es llamada en \textit{contractLoop}, siempre con elementos de \textit{qs}. Consecuentemente siempre se cumple que $p \in qs$, sin embargo, Isabelle no es capaz de determinar dicha propiedad, y nuestra función de medida debe decrecer incluso el caso en el que $p \notin qs$.
