@@ -2642,13 +2642,7 @@ Cabe mencionar que el contrato acumuló algunos \textit{deposits} (de las person
 
 La traducción del contrato en Haskell se realizó manualmente, teniendo en cuenta algunas características y consideraciones teóricas.
 
-
-\subsubsection{Recursión mutua}\label{sssec:recursion_mutua}
-
-% TODO: WIP
-
-
-\subsubsection{\textit{fun} vs. \textit{function}}
+\subsubsection{\textit{fun} vs. \textit{function}}\label{sssec:fun_function}
 
 El comando \texttt{fun} provee una notación abreviada, conveniente para definiciones de funciones simples. En este modo, Isabelle trata de resolver automáticamente todas las obligaciones necesarias en la definición. Si alguna prueba falla, la definición es rechazada. Esto puede significar que la definición en sí es defectuosa, o que los procedimientos utilizados no son suficientes para manejar la definición. Una definición que utiliza \textit{fun} sigue el siguiente formato:
 
@@ -2681,7 +2675,40 @@ Algunos detalles ahora se han hecho explícitos:
     \item Una prueba de terminación finaliza la definición, iniciada por el comando \textit{termination}. Cada vez que falla un comando \textit{fun}, generalmente es una buena idea expandir la sintaxis a la forma de \textit{function}, para ver qué está sucediendo realmente.
 \end{enumerate}
 
-Los detalles de la prueba de terminación del contrato \textit{Auction} podrán verse en la siguiente sección.
+Los detalles de la prueba de terminación del contrato \textit{Auction} podrán verse al final de la sección.
+
+\subsubsection{Recursión mutua}\label{sssec:recursion_mutua}
+
+Como mencionamos anteriormente, las funciones \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} se llaman mutuamente, esto provoca un error al intentar definirlas de forma independiente en Isabelle, debido a que las definiciones se procesan y conocen en orden.
+
+Veamos un ejemplo más sencillo para entender la solución que propone Isabelle en estos casos:
+
+\begin{lstlisting}[style=Isabelle]
+function even :: "nat $\Rightarrow$ bool"
+and odd :: "nat $\Rightarrow$ bool"
+where
+"even 0 = True"
+| "odd 0 = False"
+| "even (Suc n) = odd n"
+| "odd (Suc n) = even n"
+by pat_completeness auto
+\end{lstlisting}
+
+En este caso, las funciones \textit{even} y \textit{odd} (que reciben un número natural y retornan si es par o impar respectivamente) hacen uso de la recursión mutua.
+
+La defición consta del constructor \textit{function}, seguido por las firmas de ambas funciones (separadas por \textit{and}) y luego por la definición de todas las funciones, para todos los parametros de entrada posibles.
+
+Al utilizar \textit{function}, las obligaciones de la definición se deben probar manualmente.
+
+Para eliminar las dependencias mutuas, Isabelle crea internamente una sola función, operando en el tipo \textit{suma}: \textit{nat + nat}\footnote{La documentación de funciones en Isabelle se pueden encontrar en \url{https://isabelle.in.tum.de/library/Doc/Functions/Functions.html}}. Luego \textit{Functions.even} y \textit{Functions.odd} son definidas como proyecciones. Consecuentemente, la terminación tiene que se probada simultáneamente para ambas funciones, especificando una medida en el tipo especifico:
+
+\begin{lstlisting}[style=Isabelle]
+termination
+by (relation "measure ($\lambda$ x. case x of Inl n $\Rightarrow$ n | Inr n $\Rightarrow$ n)") auto
+\end{lstlisting}
+
+Podríamos haber usado \textit{lexicographic\_order} para la prueba de terminación, que soporta terminación en recursión mutua hasta cierto punto. 
+
 
 \subsubsection{Contrato Auction en Isabelle}
 
