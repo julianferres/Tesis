@@ -1446,7 +1446,7 @@ Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a
 \subsection{Prueba de Terminación (\textit{Termination proof})}
 Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}. Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \texttt{NotReduced}, por lo tanto la terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
 
-\begin{lstlisting}[style=Isabelle]
+\begin{lstlisting}[style=Isabelle, caption=Función que será utilizada por \textit{measure} para probar la terminación de \textit{reductionLoop}., label={lst:evalBound}]
 fun evalBound :: "State $\Rightarrow$ Contract $\Rightarrow$ nat" where
 "evalBound sta cont = length (accounts sta) + 2 * (size cont)"
 \end{lstlisting}
@@ -2804,22 +2804,139 @@ La terminación no solo es una propiedad deseable en los contratos, sino que tam
 
 Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellos, podemos especificar la relación de terminación manualmente.
 
-El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva, con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
+El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
 
 Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sssec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
 
-El argumento de terminación las funciones se basa en los siguientes hechos:
+Debemos entonces encontrar una medida que sea decreciente (similar a \textit{evalBound} en~\ref{lst:evalBound}), para cada ejecución de nuestras funciones. Teniendo en cuenta los requerimientos, se utilizaron las siguientes propiedades del contrato para la funcion \textit{evalBoundAuction}.
 
-% TODO: WIP
+\begin{itemize}
+    \item Las funciones auxiliares (por ejemplo \textit{settle}, \textit{choice} y \textit{remove} terminan trivialmente.
+    \item La función \textit{contractLoop} termina trivialmente cuando las listas \textit{ps} y \textit{qs} están vacías.
+    \item La función \textit{handleChoose} remueve un elemento \textit{p} de \textit{qs} (si se encuentra en la lista) y lo agrega a \textit{ps}.
+    \item La función \textit{handleChoose} es llamada en \textit{contractLoop}, siempre con elementos de \textit{qs}. Consecuentemente siempre se cumple que $p \in qs$, sin embargo, Isabelle no es capaz de determinar dicha propiedad, y nuestra función de medida debe decrecer incluso el caso en el que $p \notin qs$.
+    \item La función \textit{handleDeposit} remueve un elemento \textit{p} de \textit{ps} (si se encuentra en la lista).
+    \item La función \textit{handleDeposit} es llamada en \textit{contractLoop}, siempre con elementos de \textit{ps}. Consecuentemente siempre se cumple que $p \in ps$. De forma análoga a lo sucedido con \textit{handleChoose}, Isabelle no es capaz de determinar dicha propiedad, y nuestra función de medida debe decrecer incluso el caso en el que $p \notin ps$.
+\end{itemize}
 
-\begin{enumerate}
-    \item
-    \item
-    \item
-    \item
-    \item
-    \item
-\end{enumerate}
+Teniendo en cuenta la sintaxis de recursión mutua definimos los tipos necesarios y la funcion \textit{evalBoundAuction}, que respeta las propiedades deseadas.
+
+Como Isabelle transforma nuestra definición triple en una funcion de tipo \textit{suma de tres funciones}, el mismo será de la forma $\tau_1 + (\tau_2 + \tau_3)$ (para mas funciones, los tipos de las nuevas definiciones se anidan a derecha). 
+
+Para compactar la sintaxis, definimos los tipos especificos para nuestras funciones:
+
+\begin{lstlisting}[style=Isabelle]
+type_synonym contractLoopType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
+                                 AuctionTerms"
+type_synonym handleChooseType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
+                                 AuctionTerms $\times$ Party"
+type_synonym handleDepositType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
+                                  AuctionTerms $\times$ Party"
+\end{lstlisting}
+
+Para finalmente definir nuestra función de medida:
+
+\begin{lstlisting}[style=Isabelle, caption=Función que será utilizada por \textit{measure} para probar la terminación del contrato \textit{Auction}., label={lst:evalBoundAuction}]
+fun evalBoundAuction :: 
+    "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
+"evalBoundAuction (Inl (_, ps, qs, _)) =
+        2 * length ps + 4 * length qs + 1" |
+"evalBoundAuction (Inr (Inl (_, ps, qs, _, p))) =
+        2 * length ps + 4 * length qs + (if p $\in$ set qs then 0 else 8)" |
+"evalBoundAuction (Inr (Inr (_, ps, qs, _, p))) =
+        2 * length ps + 4 * length qs + (if p $\in$ set ps then 0 else 8)"
+\end{lstlisting}
+
+Como se puede apreciar, utilizamos \texttt{Inl} y \texttt{Inr}\footnote{Definidos, junto con otras funciones para el manejo de estos tipos, en \url{https://isabelle.in.tum.de/library/HOL/HOL/Sum_Type.html}} para extraer las diferentes funciones durante el pattern matching. Según el orden en el que las definimos, \texttt{(Inl)} correponde a \textit{contractLoop}, \texttt{(Inr (Inl))} a \textit{handleChoose} y \texttt{(Inr (Inr))} a \textit{handleDeposit}.
+
+Luego de aplicar la función de medida y un \textit{auto} para simplicar (entre otras cosas), nos encontramos con los siguientes \textit{subgoals}:
+
+\begin{lstlisting}[style=Isabelle]
+proof (prove)
+goal (8 subgoals):
+ 1. $\bigwedge$qs p.
+       p $\in$ set qs $\Rightarrow$
+       3 +
+       4 *
+       length (filter (($\neq$) p) qs)
+       < 4 * length qs
+ 2. $\bigwedge$qs p.
+       p $\notin$ set qs $\Rightarrow$
+       4 *
+       length (filter (($\neq$) p) qs)
+       < 5 + 4 * length qs
+ 3. $\bigwedge$ps p.
+       p $\in$ set ps $\Rightarrow$
+       Suc (2 *
+            length
+             (filter (($\neq$) p) ps))
+       < 2 * length ps
+ 4. $\bigwedge$ps p.
+       p $\notin$ set ps $\Rightarrow$
+       2 *
+       length (filter (($\neq$) p) ps)
+       < 7 + 2 * length ps
+ 5. $\bigwedge$ps p.
+       p $\in$ set ps $\Rightarrow$
+       Suc (2 *
+            length
+             (filter (($\neq$) p) ps))
+       < 2 * length ps
+ 6. $\bigwedge$ps p.
+       p $\notin$ set ps $\Rightarrow$
+       2 *
+       length (filter (($\neq$) p) ps)
+       < 7 + 2 * length ps
+ 7. $\bigwedge$ps p.
+       p $\in$ set ps $\Rightarrow$
+       Suc (2 *
+            length
+             (filter (($\neq$) p) ps))
+       < 2 * length ps
+ 8. $\bigwedge$ps p.
+       p $\notin$ set ps $\Rightarrow$
+       2 *
+       length (filter (($\neq$) p) ps)
+       < 7 + 2 * length ps
+\end{lstlisting}
+
+Todos los subgoals se solucionan observando que la funcion \textit{filter} cumple con las siguientes propiedades:
+
+\begin{itemize}
+    \item Si $p \in ps$, entonces \texttt{(filter (($\neq$) p) ps)} tiene menor longitud que \texttt{ps}. 
+    \item Si $p \notin ps$, entonces \texttt{(filter (($\neq$) p) ps)} tiene la misma longitud que \texttt{ps}. 
+\end{itemize}
+
+Probamos dichos \textit{lemmas} de forma auxiliar:
+
+\begin{lstlisting}[style=Isabelle]
+lemma removePresentElementReducesSize :
+    "p $\in$ set ls $\Rightarrow$ length (filter (($\neq$) p) ls) < length ls"
+  by (simp add: length_filter_less)
+
+lemma removeAbsentElementMantainsSize : 
+    "p $\notin$ set ls $\Rightarrow$ length (filter (($\neq$) p) ls) = length ls"
+  by (metis (mono_tags, lifting) filter_True)
+\end{lstlisting}
+
+
+Para incluir dichos \textit{lemmas} a un probador automático, usamos \textit{using}. Con esto, podemos probar todos los \textit{subgoals}. La prueba de terminación queda completada:
+
+\begin{lstlisting}[style=Isabelle]
+termination 
+  apply (relation "measure (evalBoundAuction)")
+  apply auto 
+  using removePresentElementReducesSize apply fastforce
+  using removeAbsentElementMantainsSize apply fastforce
+  using removePresentElementReducesSize apply fastforce
+  using removeAbsentElementMantainsSize apply fastforce
+  using removePresentElementReducesSize apply fastforce
+  using removeAbsentElementMantainsSize apply fastforce
+  using removePresentElementReducesSize apply fastforce
+  using removeAbsentElementMantainsSize by fastforce
+\end{lstlisting}
+
+Todo lo referido a mi implementación y pruebas en el contrato \textit{Auction} puede encontrarse en \url{https://github.com/julianferres/marlowe/blob/master/isabelle/Auction.thy} (visto por última vez el \today).
 
 
 \subsection{Ausencia de \textit{warnings}}
