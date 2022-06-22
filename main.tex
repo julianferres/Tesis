@@ -408,11 +408,11 @@ En particular, un contrato no puede esperar indefinidamente una acción: si la m
 
 Los contratos de Marlowe pueden ramificarse en función de alternativas y tienen una vida finita, al final de la cual el dinero restante retenido por el mismo se devuelve a los participantes. Esta característica garantiza que el dinero no se puede bloquear para siempre en un contrato. Dependiendo del estado actual de un contrato, se puede elegir entre dos cursos de acción alternativos, que son en sí mismos contratos. Cuando no se requieran más acciones, el contrato se cerrará y se reembolsará cualquier moneda restante en el contrato.
 
-\subsection{El modelo de Marlowe}\label{sec:Modelo_de_marlowe}
+\subsection{El modelo de Marlowe}\label{ssec:Modelo_de_marlowe}
 
 Marlowe está diseñado para soportar la ejecución de contratos financieros en la blockchain, específicamente en Cardano. Los contratos se construyen reuniendo una pequeña cantidad de constructores que se pueden combinar para describir muchos tipos diferentes de contratos financieros.
 
-Antes de describir estos constructores en~\ref{sec:constructores_marlowe}, debemos analizar el enfoque general para modelar contratos en Marlowe, y el contexto en el que se ejecutan los mismos (la blockchain de Cardano). Al hacer esto, también presentamos parte de la terminología que usaremos, indicando las definiciones en cursiva.
+Antes de describir estos constructores en~\ref{ssec:constructores_marlowe}, debemos analizar el enfoque general para modelar contratos en Marlowe, y el contexto en el que se ejecutan los mismos (la blockchain de Cardano). Al hacer esto, también presentamos parte de la terminología que usaremos, indicando las definiciones en cursiva.
 
 \subsubsection{Contratos}
 Los contratos en Marlowe se ejecutan en una blockchain, pero deben interactuar con el mundo fuera de la misma. Las partes (\textit{parties}) del contrato, a las que también llamamos participantes, pueden realizar diversas acciones: se les puede pedir que depositen dinero o que elijan entre varias alternativas. Una notificación de un valor externo (también llamado valor de oráculo), como el precio actual de un producto en particular, es la otra forma posible de entrada.\footnote{Podemos pensar a los oráculos como otro tipo de \textit{party} del contrato; bajo este punto de vista, las notificaciones se convierten en las elecciones (\textit{choices}) realizadas por esa \textit{party}.}
@@ -496,7 +496,7 @@ En la simulación omnisciente disponible en el \textit{Playground}, podemos abst
 \end{figure}
 
 
-\subsection{Piezas fundamentales de un contrato en Marlowe}\label{sec:constructores_marlowe}
+\subsection{Piezas fundamentales de un contrato en Marlowe}\label{ssec:constructores_marlowe}
 Un contrato en Marlowe se obtiene combinando una pequeña cantidad de sentencias o \textit{building blocks}. Las mismas pueden llegar a describir muchos tipos de contratos financieros, como hacer un pago, hacer una observación, esperar hasta que cierta condición se cumpla, etc. Luego, el contrato se ejecuta en una cadena de bloques, como Cardano, e interactúa con el mundo exterior.
 
 Marlowe en sí mismo está embebido en Haskell, y se modela como una colección de tipos de datos algebraicos en Haskell~\cite{Algebraic_data_type}. A continuación mostramos la definición más general de un contrato en Marlowe:
@@ -530,7 +530,7 @@ Un contrato de pago \texttt{(Pay acc payee tok val cont)} realizará un pago de 
 
 Se generarán \textit{warnings} si el valor \texttt{val} no es positivo, o si no hay recursos suficientes en \texttt{acc} para realizar el pago en su totalidad (incluso si hay balances positivos de otros tokens en la misma). En este último caso, se realizará un pago parcial (conteniendo todo el dinero disponible). El contrato en el que continuará la ejecución es \texttt{cont}.
 
-\subsubsection{Close}\label{sec:Close}
+\subsubsection{Close}\label{sssec:Close}
 
 Un contrato \texttt{Close} prevé que el contrato sea cerrado (o rescindido). La única acción que realiza es reembolsar a los titulares de cuentas que contienen un saldo positivo. Esto se realiza de a una cuenta a la vez, pero todas las cuentas se reembolsarán en una sola transacción.
 
@@ -632,7 +632,7 @@ When [ Case aliceChoice
 
 El \texttt{When} más externo requiere que Alice haga la primera elección. Si Alice no ha hecho una elección luego del \texttt{slot}\footnote{Los \textit{slots} representan la unidad básica de tiempo en la cadena de bloques.} 40, el contrato se cierra y se reembolsan todos los fondos del mismo.
 
-El contrato \texttt{Close} suele ser el último paso en cada `camino' a través de un contrato en Marlowe, y su efecto es el de reembolsar el dinero del contrato a los participantes. Describiremos esto con más detalle en~\ref{sec:Close}. En este caso particular, el reembolso se realizará en el \textit{slot} número 40.
+El contrato \texttt{Close} suele ser el último paso en cada `camino' a través de un contrato en Marlowe, y su efecto es el de reembolsar el dinero del contrato a los participantes. Describiremos esto con más detalle en~\ref{sssec:Close}. En este caso particular, el reembolso se realizará en el \textit{slot} número 40.
 
 Viendo los constructores internos, si se ha hecho la elección de Alice, entonces esperamos una de Bob. Si eso no está disponible para el \textit{slot} 60, entonces se llama a Carol para que arbitre. 
 
@@ -665,7 +665,7 @@ Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se 
 Hay un \textit{timeout} en el \textit{slot} número 10 para realizar el depósito; si se alcanza sin que se haya realizado el mismo, el contrato se cierra y se reembolsa todo el dinero que ya estaba en el contrato. En este caso, no hay ningún reembolso pendiente y simplemente finaliza del contrato.
 
 \subsubsection{Completando las funciones}
-En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprovechan de la capacidad de Marlowe de ser embebido en Haskell~\ref{sec:constructores_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ}) para hacer algunas descripciones y cuentas mas concisas.
+En la descripción del contrato, hemos utilizado variables como \texttt{agreement}, \texttt{arbitrate} y \texttt{price}. Las mismas se aprovechan de la capacidad de Marlowe de ser embebido en Haskell~\ref{ssec:constructores_marlowe}, y por lo tanto es posible dar definiciones abreviadas. También se utilizó sobrecarga de cadenas (en el caso de \texttt{ValueEQ}) para hacer algunas descripciones y cuentas mas concisas.
 
 Las funciones restantes pueden ser escritas en Haskell de la siguiente manera:
 
@@ -1294,7 +1294,7 @@ La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre
 	2. $\bigwedge$ m. add m 0 = m $\Longrightarrow$ add (Suc m) 0 = Suc m	
 \end{lstlisting}
 
-Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{sec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos \textit{subgoals}, Isabelle puede manejarlos con las teorías incluidas por defecto. 
+Las lineas numeradas son conocidas como subgoals. El primer subgoal es el caso base, y el segundo es el paso inductivo. El prefijo $\bigwedge$ \texttt{m. }es la forma en la que Isabelle nos comunica ``para un m arbitrario, pero fijo''. El símbolo $\Longrightarrow$ separa las suposiciones de la conclusión. El comando \texttt{apply (auto)} (mencionado por primera vez en~\ref{ssec:auto}) le indica a Isabelle que intente probar todos los subgoals automáticamente, en este caso simplemente mediante simplificación. Debido a la sencillez de ambos \textit{subgoals}, Isabelle puede manejarlos con las teorías incluidas por defecto. 
 
 El caso base \texttt{add 0 0 = 0} se prueba por la definición de \texttt{add} y el paso inductivo es bastante simple: \texttt{add (Suc m) 0 = Suc (add m 0) = Suc m} usando la definición de \texttt{add} y la hipótesis inductiva respectivamente. En resumen, ambas `sub-pruebas' se basan en la simplificación mediante la definición y la hipótesis inductiva. Como resultado de la keyword `\texttt{done}', Isabelle asocia el lema a su identificador.
 
@@ -1332,7 +1332,7 @@ La simplificación es el principal caballo de batalla en Isabelle. El sistema pu
 El poder del simplificador se debe principalmente a la reescritura, junto a la inmensa (y en constante crecimiento) librería de reglas preexistentes en la plataforma.
 
 
-\subsection{Auto}\label{sec:auto}
+\subsection{Auto}\label{ssec:auto}
 
 Desde el lado del usuario, invocado con la keyword \textit{auto}, podemos mencionar a un método de prueba que intercala la simplificación con una pequeña cantidad de búsqueda dentro del espacio de pruebas.
 
@@ -1357,7 +1357,7 @@ El método blast se basa en una base de datos extensible de lemas que impulsa la
 Aunque Metis se puede invocar directamente, en la práctica las llamadas a Metis casi siempre son generadas por \textit{Sledgehammer}.
 
 
-\subsection{Sledgehammer: Descubriendo pruebas con la ayuda de otros provers}\label{sec:Sledgehammer}
+\subsection{Sledgehammer: Descubriendo pruebas con la ayuda de otros provers}\label{ssec:Sledgehammer}
 
 Sledgehammer es el subsistema de Isabelle que concentra el poder de los probadores automáticos de teoremas de primer orden.
 
@@ -1528,7 +1528,7 @@ En esta sección, veremos como se desarrolló la escritura de tres contratos ACT
 Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 \newpage
-\subsection{Descripción de la estructura del proyecto}\label{sec:estructura}
+\subsection{Descripción de la estructura del proyecto}\label{ssec:estructura}
 
 En la siguiente sub-sección describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
 
@@ -1854,7 +1854,7 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
 
 Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
 
-Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{sec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizás sea necesario agregar alguna función en Utility.
+Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{ssec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizás sea necesario agregar alguna función en Utility.
 
 Con respecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
 
@@ -2503,7 +2503,7 @@ value "reduceContractStep base_env (emptyState 0) COM4"
 *)
 \end{lstlisting}
 
-Con estas ejecuciones se puede ver el funcionamiento del modelo de Marlowe (detallado en~\ref{sec:Modelo_de_marlowe}). Esto nos podrá ayudar a probar algunas propiedades sobre los contratos.
+Con estas ejecuciones se puede ver el funcionamiento del modelo de Marlowe (detallado en~\ref{ssec:Modelo_de_marlowe}). Esto nos podrá ayudar a probar algunas propiedades sobre los contratos.
 
 \subsection{Prueba de \textit{minSlot} no decreciente en COM}
 
@@ -2536,7 +2536,7 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
 
 En el mismo se pueden ver distintas técnicas de prueba, algunas ya mencionadas, como \textit{auto}; otras, como \textit{cases}, que permiten separar la prueba según casos en alguna variable (en este caso \texttt{inputList}).
 
-También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{sec:Sledgehammer}) para completar la prueba, quien sugirió utilizar la ultima linea de la prueba.
+También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{ssec:Sledgehammer}) para completar la prueba, quien sugirió utilizar la ultima linea de la misma.
 
 El estado de prueba en el que se invocó a \textit{Sledgehammer} (el cual se puede visualizar colocando el cursor sobre el segundo \textit{auto}) es el siguiente:
 
@@ -2578,19 +2578,82 @@ La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace de
 
 \section{Probando la ausencia de Warnings en el contrato Auction}
 
-En esta sección detallaremos el trabajo realizado para probar la ausencia de \textit{warnings} en el contrato \textit{Auction}~\cite{auction_haskell}.
+En esta sección detallaremos el trabajo realizado para probar la ausencia de \textit{warnings} en el contrato \textit{Auction}(subasta)~\cite{auction_haskell}.
 
-Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
+% TODO: WIP
 
-\begin{lstlisting}[style=Isabelle, caption=Ausencia de \textit{warnings} para el contrato \texttt{Close} en sintaxis de Isabelle/HOL.]
-theorem closeIsSafe : "computeTransaction tra sta Close = 
-                       TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
+\subsection{El contrato \textit{Auction}}
+
+El mismo se encuentra escrito en Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
+
+% TODO: Armar algun diagrama de secuencia y explicar didacticamente la idea de Auction en general
+
+\begin{lstlisting}[style=Haskell-cardano, caption=Contrato \textit{Auction} escrito en Marlowe]
+{-# LANGUAGE OverloadedStrings #-}
+module Language.Marlowe.Examples.Auction where
+
+import           Data.Map.Strict  (Map)
+import qualified Data.Map.Strict  as M
+import           Data.String      (IsString (..) )
+import           Language.Marlowe
+main :: IO ()
+main = print . pretty $ contract "Alice" 100 1000 ["Bob", "Charlie", "Dora"] 10
+contract :: Party -> Integer -> Integer -> [String] -> Slot -> Contract
+contract owner minBid maxBid bidders deadline = go Nothing [] $ map fromString bidders
+  where
+    go :: Maybe (Value, Party) -> [Party] -> [Party] -> Contract
+    go m [] [] = settle m
+    go m ps qs = When (map choose qs ++ map deposit ps) deadline $ settle m
+      where
+        --choose :: Party -> Case
+        choose p = Case (Choice (choice p) [Bound minBid maxBid]) $
+            Let (value p) (ChoiceValue (choice p)) $
+                go m (p : ps) $ filter (/= p) qs
+        --deposit :: Party -> Case
+        deposit p =
+            let v   = UseValue $ value p
+                ps' = filter (/= p) ps
+            in  Case (Deposit p p ada v) $ case m of
+                    Nothing       -> go (Just (v, p)) ps' qs
+                    Just (v', p') -> If (ValueGT v v')
+                        (go (Just (v, p)) ps' qs)
+                        (go m ps' qs)
+    settle :: Maybe (Value, Party) -> Contract
+    settle Nothing       = Close
+    settle (Just (v, p)) = Pay p (Party owner) ada v Close
+    choice :: Party -> ChoiceId
+    choice = ChoiceId "Bid"
+    value :: Party -> ValueId
+    value p = head [fromString q | q <- bidders, fromString q == p]
 \end{lstlisting}
+
+El mismo posee varias funciones auxiliares, y tres funciones que se llaman mutuamente:
+
+\begin{itemize}
+    \item \texttt{go}: Maneja el contrato en general, y se ocupa de llenar los \textit{cases} de un constructor \texttt{When} de Marlowe con \textit{deposits} y \textit{choices}. Popula el resto de los parametros del constructor con la información provista por los terminos del contrato.
+    \item \texttt{choose}: Recibe una \textit{Party} (que \texttt{go} toma de la lista \texttt{qs}) y retorna un \textit{Case} populado adecuadamente. Dicha \textit{Party} se remueve de la lista de \textit{choices} (\texttt{qs}) y se agrega a la de \textit{deposits} (\texttt{ps}). Para popular los campos del \texttt{Case}, se llama nuevamente a \texttt{go}. Para popular los campos del ttCase, se llama nuevamente a ttgo.
+    \item \texttt{deposit}: Si la oferta más alta hasta el momento (\texttt{m}) es menor al valor del depósito que se está procesando, se actualiza \texttt{m} con el nuevo valor y dueño. También se realiza la actualiza si nadie ha ofertado aún (simbolizado con el valor \texttt{Nothing} para \texttt{m}). Se remueve a la \textit{Party} de la lista \texttt{ps} y se retorna el \texttt{Case} correspondiente (que termina de ser populado llamando recursivamente a \texttt{go}).
+\end{itemize}
+
+El contrato también tiene algunas funciones auxiliares para poder resolver la finalización. Por ejemplo, \texttt{settle} se ocupa de construir el \texttt{Pay} desde el ganador de la subasta (en el caso de exista) hacia el dueño (\texttt{owner}) de la misma.
+
+Cabe mencionar que el contrato acumuló algunos \textit{deposits} (de las personas que participaron). Todos los mismos (expecto el del ganador), serán devueltos por un \texttt{Close} eventualmente.
+
 
 \subsection{Traducción del contrato \textit{Auction} a Isabelle}
 
+La traducción del contrato en Haskell se realizó manualmente, teniendo en cuenta algunas características y consideraciones:
 
-\subsubsection{Recursión mutua}\label{sec:recursion_mutua}
+\begin{itemize}
+    \item 
+    \item
+\end{itemize}
+
+
+
+
+
+\subsubsection{Recursión mutua}\label{sssec:recursion_mutua}
 
 % TODO: WIP
 
@@ -2643,7 +2706,7 @@ Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \tex
 
 El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva, con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
 
-Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
+Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sssec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
 
 El argumento de terminación las funciones se basa en los siguientes hechos:
 
@@ -2655,6 +2718,16 @@ El argumento de terminación las funciones se basa en los siguientes hechos:
     \item
     \item
 \end{enumerate}
+
+
+\subsection{Ausencia de \textit{warnings}}
+
+Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
+
+\begin{lstlisting}[style=Isabelle, caption=Ausencia de \textit{warnings} para el contrato \texttt{Close} en sintaxis de Isabelle/HOL.]
+theorem closeIsSafe : "computeTransaction tra sta Close = 
+                       TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
+\end{lstlisting}
 
 
 % TODO: WIP
