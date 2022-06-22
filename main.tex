@@ -1517,7 +1517,7 @@ En este capítulo se describirán los aportes realizados en la presente tesis.
 
 En primer lugar, la escritura de contratos financieros ACTUS para la blockchain Cardano, junto con la creación de casos de prueba y validación con los tests oficiales del estándar~\cite{ACTUS_Tests}.
 
-En segudo lugar, la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mimos.
+En segundo lugar, la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mimos.
 
 Finalmente, probaremos la ausencia de \textit{warnings} en el contrato \textit{Auction}~\cite{auction_haskell}. Para esto, traduciremos el contrato a Isabelle, demostraremos la terminación del mismo y algunos lemas auxiliares que nos ayudan en la prueba del teorema.
 
@@ -2580,8 +2580,6 @@ La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace de
 
 En esta sección detallaremos el trabajo realizado para probar la ausencia de \textit{warnings} en el contrato \textit{Auction}(subasta)~\cite{auction_haskell}.
 
-% TODO: WIP
-
 \subsection{El contrato \textit{Auction}}
 
 El mismo se encuentra escrito en Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
@@ -2642,15 +2640,7 @@ Cabe mencionar que el contrato acumuló algunos \textit{deposits} (de las person
 
 \subsection{Traducción del contrato \textit{Auction} a Isabelle}
 
-La traducción del contrato en Haskell se realizó manualmente, teniendo en cuenta algunas características y consideraciones:
-
-\begin{itemize}
-    \item 
-    \item
-\end{itemize}
-
-
-
+La traducción del contrato en Haskell se realizó manualmente, teniendo en cuenta algunas características y consideraciones teóricas.
 
 
 \subsubsection{Recursión mutua}\label{sssec:recursion_mutua}
@@ -2693,6 +2683,89 @@ Algunos detalles ahora se han hecho explícitos:
 
 Los detalles de la prueba de terminación del contrato \textit{Auction} podrán verse en la siguiente sección.
 
+\subsubsection{Contrato Auction en Isabelle}
+
+\begin{itemize}
+    \item Renombramos las funciones \textit{go}, \textit{choose} y \textit{deposit} a \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} respectivamente.
+
+    \item Los identificadores son números enteros en lugar de \textit{String}, como se mencionó en~\ref{sec:Semantica_marlowe_isabelle}.
+
+    \item Debido a que las funciones \textit{go}, \textit{handleChoose} y \textit{handleDeposit} son mutuamente recursivas~\ref{sssec:recursion_mutua}, no pueden definirse secuencialmente (debido a que la primer función que se defina no podrá acceder a las siguientes). 
+
+    \item A diferencia de Haskell, Isabelle no soporta definiciones anidadas de funciones, por lo que las funciones auxiliares tuvieron que ser extraidas (las variables que obtenia del \textit{scope} se convierten en parametros de las mismas).
+
+    \item Extrajimos funciones \textit{lambda} para poder facilitar pruebas posteriores (por ejemplo \textit{remove}).
+
+    \item Reemplazamos el tipo \textit{Maybe} de Haskell con \textit{option} de Isabelle (para la variable \texttt{m}).
+    \item Para comprimir la notación, todos los términos del contrato (\textit{owner}, \textit{minBid}, \textit{maxBid} y \textit{deadline}) encapsulamos en una variable de tipo \textit{AuctionTerms} (que es un \textit{record}, y puede contener varios tipos de datos).
+
+    \item El pattern matching para definir las funciones según los datos de entrada es similar al de Haskell.
+         
+\end{itemize}
+
+
+\begin{lstlisting}[style=Isabelle]
+[...]
+
+definition bid :: ByteString where
+"bid = [1]"
+
+definition token_ada :: Token where
+"token_ada = Token [] []"
+
+type_synonym AuctionWinner = "(Value $\times$ Party) option"
+
+record AuctionTerms = owner :: Party
+                      minBid :: int
+                      maxBid :: int
+                      deadline :: Slot
+
+fun settle :: "AuctionWinner $\Rightarrow$ AuctionTerms $\Rightarrow$ Contract" where
+  "settle None _ = Close" |
+  "settle (Some (v, p)) terms = (Pay p (Party (owner terms)) 
+                                     token_ada v Close)"
+
+fun choice :: "Party $\Rightarrow$ ChoiceId" where
+  "choice p = (ChoiceId bid p)"
+
+(* Los bidders directamente como parties en lugar de String *)
+fun partyToValueId :: "Party $\Rightarrow$ ValueId" where
+  "partyToValueId (PubKey pk) = ValueId pk" | 
+  "partyToValueId (Role r) = ValueId r"
+
+fun remove :: "Party $\Rightarrow$ Party list $\Rightarrow$ Party list" where
+"remove p ls = filter (($\neq$) p) ls"
+
+function (sequential) contractLoop :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$
+                                       Party list $\Rightarrow$ AuctionTerms $\Rightarrow$ Contract"
+and handleChoose :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$
+                     AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case"
+and handleDeposit :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ 
+                      AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case" 
+where
+"handleChoose m ps qs terms p = 
+                Case (Choice (choice p) [(minBid terms, maxBid terms)])
+                     (Let (partyToValueId p)
+                     (ChoiceValue (choice p))
+                     (contractLoop m (p # ps) (remove p qs) terms))" |
+"handleDeposit m ps qs terms p = 
+   (let v = (UseValue (partyToValueId p)) in
+    let ps' = (remove p ps) in
+    (Case (Deposit p p token_ada v)
+          (case m of
+              None          $\Rightarrow$ contractLoop (Some (v, p)) ps' qs terms
+            | Some (v', p') $\Rightarrow$ If (ValueGT v v') 
+                                  (contractLoop (Some (v, p)) ps' qs terms) 
+                                  (contractLoop m ps' qs terms))))" |
+
+"contractLoop m [] [] terms = settle None terms" |
+"contractLoop m ps qs terms = (When ( (map (handleChoose m ps qs terms) qs) @ 
+                                      (map (handleDeposit m ps qs terms) ps)) 
+                                      (deadline terms) (settle m terms))"  
+  [...]
+\end{lstlisting}
+
+Se omitieron las definiciones necesarias para las distintas pruebas, así como tambien las pruebas de exclusión mútua, completitud y terminación en \textit{function}.
 
 \subsection{Probando la terminación del contrato}
 
@@ -2709,6 +2782,8 @@ El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato 
 Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sssec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
 
 El argumento de terminación las funciones se basa en los siguientes hechos:
+
+% TODO: WIP
 
 \begin{enumerate}
     \item
