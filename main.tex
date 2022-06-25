@@ -2725,7 +2725,9 @@ by (relation "measure ($\lambda$ x. case x of Inl n $\Rightarrow$ n | Inr n $\Ri
 Podríamos haber usado \textit{lexicographic\_order} para la prueba de terminación, que soporta terminación en recursión mutua hasta cierto punto. 
 
 
-\subsubsection{Contrato Auction en Isabelle}
+\subsubsection{Contrato \textit{Auction} en Isabelle}
+
+Teniendo en cuenta las siguientes técnicas de traducción:
 
 \begin{itemize}
     \item Renombramos las funciones \textit{go}, \textit{choose} y \textit{deposit} a \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} respectivamente.
@@ -2745,7 +2747,9 @@ Podríamos haber usado \textit{lexicographic\_order} para la prueba de terminaci
          
 \end{itemize}
 
+podemos ver a continuación la traducción del contrato \textit{Auction} a Isabelle:
 
+\newpage
 \begin{lstlisting}[style=Isabelle]
 [...]
 
@@ -2851,6 +2855,7 @@ type_synonym handleDepositType = "AuctionWinner $\times$ Party list $\times$ Par
 
 Para finalmente definir nuestra función de medida:
 
+\newpage
 \begin{lstlisting}[style=Isabelle, caption=Función que será utilizada por \textit{measure} para probar la terminación del contrato \textit{Auction}., label={lst:evalBoundAuction}]
 fun evalBoundAuction :: 
     "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
@@ -2866,6 +2871,7 @@ Como se puede apreciar, utilizamos \texttt{Inl} y \texttt{Inr}\footnote{Definido
 
 Luego de aplicar la función de medida y un \textit{auto} para simplicar (entre otras cosas), nos encontramos con los siguientes \textit{subgoals}:
 
+\newpage
 \begin{lstlisting}[style=Isabelle]
 proof (prove)
 goal (8 subgoals):
@@ -3001,7 +3007,7 @@ Otra limitación aparente surge de la traducción de los contratos completos des
 Esto dificulta no solo la lectura, sino la traducción manual a Isabelle de decenas de términos del contrato, haciendo compleja extraer propiedades para posteriores verificaciones.
 
 
-\subsubsection{Líneas de trabajo a futuro}
+\subsubsection{Líneas de trabajo futuro}
 
 Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han terminado de escribir todos los contratos especificados por el estándar.
 
