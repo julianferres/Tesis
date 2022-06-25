@@ -1955,7 +1955,7 @@ contractFromFile f = eitherDecode <$> B.readFile f
 El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
 
 % Contrato COM
-\subsection{Contrato COM (\textit{Commodity})}
+\subsection{Contrato COM (\textit{Commodity})}\label{ssec:contrato_com}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
@@ -2004,7 +2004,7 @@ El contrato COM tiene una implementación similar al contrato STK (Stock), debid
 
 
 % Contrato CSH
-\subsection{CSH (\textit{Cash})}
+\subsection{CSH (\textit{Cash})}\label{ssec:contrato_csh}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
@@ -2044,12 +2044,12 @@ A continuación adjunto la especificación técnica del contrato CSH~\cite{ACTUS
 
 
 % Contrato CLM
-\subsection{CLM (\textit{Call Money})}
+\subsection{CLM (\textit{Call Money})}\label{ssec:contrato_clm}
 
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote}
-``Este tipo de contrato modela préstamos que se renuevan, mientras no sean notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.''
+``Este tipo de contrato modela préstamos que se renuevan, mientras no sea notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.''
 \end{quote}
 
 \subsubsection{Especificación técnica}
@@ -2973,7 +2973,42 @@ theorem closeIsSafe : "computeTransaction tra sta Close =
 
 \chapter{Conclusión}
 
-% TODO: WIP
+En esta tesis hemos estudiado cómo validar propiedades de contratos financieros escritos en Marlowe y Haskell para la blockchain Cardano. Para ello ha sido necesario traducir contratos al lenguaje de Isabelle, y en este contexto hemos propuesto distintos pasos y técnicas para la conversión de tipos de dato, funciones y estructuras características de los lenguajes a traducir.
+
+
+En particular, hemos probado formalmente las siguientes propiedades:
+
+\begin{itemize}
+    \item Terminación de todos los contratos traducidos, entre ellos el contrato \textit{Pay}, \textit{Swap}, algunos contratos COM y PAM y el contrato \textit{Auction}.
+    \item Prueba de \textit{minSlot} no decreciente para los contratos COM y PAM.\@
+    \item Ausencia de \textit{warnings} para el contrato \textit{Auction}. Este el primer contrato no simple (distinto de \texttt{Close}) en el que se ha verificado formalmente la ausencia de \textit{warnings}.
+\end{itemize}
+
+Además, hemos escrito contratos financieros basados en el estándar ACTUS, que ya se encuentran disponibles en la rama principal del repositorio de Marlowe Cardano. Dichos contratos podrán ser ejecutados tanto en Marlowe, como en las demás alternativas de lenguajes ofrecidas por el \textit{Playground}~\cite{marlowe_playground}. En particular, durante el desarrollo de esta tesis hemos escrito:
+
+\begin{itemize}
+    \item Contrato COM(\textit{Commodity}) en~\ref{ssec:contrato_com}: Realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden utilizarse servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.
+    \item Contrato CSH(\textit{Cash}) en~\ref{ssec:contrato_csh}: Representa tenencias de dinero en efectivo.
+    \item Contrato COM(\textit{Call Money}) en~\ref{ssec:contrato_clm}: Modela préstamos que se renuevan, mientras no sea notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.
+\end{itemize}
+
+\subsubsection{Dificultades encontradas}
+
+Debido a que la escritura de los contratos ACTUS en Haskell sigue en etapa de desarrollo por parte de IOHK, no se factible tratar de traducir los mismos a Isabelle, debido a que sería necesario traducir completamente la estructura del generador
+
+Otra limitación aparente surge de la traducción de los contratos completos desde Haskell a Marlowe (y consecuentemente a Isabelle). Debido a la complejidad de algunos contratos ACTUS y a la naturaleza de Marlowe de anidar sub-contratos, las traducciones suelen tener decenas (y hasta cientos) de niveles de indentación.
+
+Esto dificulta no solo la lectura, sino la traducción manual a Isabelle de decenas de términos del contrato, haciendo compleja extraer propiedades para posteriores verificaciones.
+
+
+\subsubsection{Líneas de trabajo a futuro}
+
+Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han terminado de escribir todos los contratos especificados por el estándar.
+
+En cuanto a la verificación de programas, es posible tomar algunos contratos (por ejemplo entre los ejemplos del \textit{Playground}) en los que no se esperan warnings y verificarlos mediante Isabelle. Dichas verificaciones podrán beneficiarse de los lemas probados previamente para el contrato \textit{Auction} y el contrato \textit{Close}.
+
+Una última linea de trabajo podría abarcar la traducción automática de algunas sentencias de código fuente Haskell a Isabelle. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
+
 
 %##########################
 % Apéndice
