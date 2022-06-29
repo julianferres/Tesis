@@ -37,10 +37,13 @@
 \input{actus-techspecs-format.tex}
 \input{dirtree.tex}
 
-\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistingname}{Código} % Cambio 'Listing 4.1:' por 'Código 4.1:'
 
 \begin{document}
 
+% Tiene que ir si o si dentro del begin{document} porque sino `blend into = listings'
+% como parametro del newtcblisting no funciona. Esto funciona para que la numeración
+% en los listings sea uniforme
 \input{languages.tex}
 
 \begin{titlepage}
