@@ -39,11 +39,12 @@
 \input{dirtree.tex}
 
 \renewcommand{\lstlistingname}{Código} % Cambio 'Listing 4.1:' por 'Código 4.1:'
+\renewcommand*{\lstlistlistingname}{Lista de cuadros de código}
 
 \begin{document}
 
 % Tiene que ir si o si dentro del begin{document} porque sino `blend into = listings'
-% como parametro del newtcblisting no funciona. Esto funciona para que la numeración
+% como parámetro del newtcblisting no funciona. Esto funciona para que la numeración
 % en los listings sea uniforme
 \input{languages.tex}
 
@@ -72,10 +73,10 @@
 \maketitle
 
 
-\chapter*{Agredecimientos}
+\chapter*{Agradecimientos}
 \thispagestyle{empty} % Saco el numero de página en los agradecimientos
 
-I like to acknowledge ...
+I like to acknowledge.
 
 \clearpage 
 
@@ -83,6 +84,8 @@ I like to acknowledge ...
 {
 	\hypersetup{linkcolor=black}
 	\tableofcontents
+    \listoffigures
+    \lstlistoflistings
 }
 
 %  Capítulos
@@ -129,7 +132,7 @@ Como una cadena de bloques almacena datos de manera descentralizada, es independ
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\textwidth]{Bloques.png}
-	\caption{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}.}\label{fig:Bloques}
+    \caption[Representación simplificada de los datos en un bloque de la cadena.]{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}.}\label{fig:Bloques}
 \end{figure}
 
 Las cadenas de bloques no solo proporcionan una base de datos inmutable y segura, sino que también actúan como un entorno funcional para realizar transacciones de fondos, crear monedas digitales y procesar transacciones complejas mediante acuerdos digitales, conocidos como \textit{smart contracts}.
@@ -182,7 +185,7 @@ Cardano se concibe como la cadena de bloques de tercera generación, ya que comb
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.5\textwidth]{Cardano_logo.png}
-	\caption{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardano}.}\label{fig:Cardano_logo}
+    \caption[Logo de la cadena de bloques Cardano.]{Logo de la cadena de bloques Cardano. Extraído de la \href{https://en.wikipedia.org/wiki/Cardano_(blockchain_platform)}{página de Wikipedia de Cardano}.}\label{fig:Cardano_logo}
 \end{figure}
 
 
@@ -285,7 +288,7 @@ Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestr
 \begin{figure}
 	\centering
 	\includegraphics[width=0.7\textwidth]{UTXO_Funds_Flow_Example.png}
-	\caption{Flujo de dinero en el modelo UTXO.\@ Extraído de~\cite{plutus-smart-contracts}.}\label{fig:UTXO_Funds_Flow_Example}
+    \caption[Flujo de dinero en el modelo UTXO.]{Flujo de dinero en el modelo UTXO.\@ Extraído de~\cite{plutus-smart-contracts}.}\label{fig:UTXO_Funds_Flow_Example}
 \end{figure}
 
 El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecúa a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
@@ -507,8 +510,8 @@ En la simulación omnisciente disponible en el \textit{Playground}, podemos abst
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Transaccion.png}
-    \caption{Diagrama de ejemplo de una transacción. Extraído de \url{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
+    \includegraphics[width=\textwidth]{Transaccion.png}
+    \caption[Diagrama de ejemplo de una transacción.]{Diagrama de ejemplo de una transacción. Extraído de \url{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
 \end{figure}
 
 
@@ -581,7 +584,7 @@ Supongamos que Alice quiere comprarle un libro a Bob, pero ninguno de los dos co
 \begin{code}[title=Primer pseudocódigo del contrato Escrow.]{Haskell-Cardano}
 When aliceChoice
      (When bobChoice
-           (If (aliceChosen `ValueEQ` $\backtick$ bobChosen)
+           (If (aliceChosen `ValueEQ` bobChosen)
                agreement
                arbitrate))
 \end{code}
@@ -596,13 +599,13 @@ En general, \texttt{When} ofrece una lista de casos\footnote{Las listas en Marlo
 
 \begin{code}[title=Pseudocódigo agnóstico al orden de las elecciones.]{Haskell-Cardano}
 When [ Case aliceChoice
-            (When [ Case bobChoice
+            When [ Case bobChoice
                         (If (aliceChosen `ValueEQ` bobChosen)
                            agreement
                            arbitrate) ],
       Case bobChoice
-            (When [ Case aliceChoice
-                        (If (aliceChosen `ValueEQ` bobChosen)
+            When [ Case aliceChoice
+                      (If (aliceChosen `ValueEQ` bobChosen)
                             agreement
                             arbitrate) ]
      ]
@@ -642,8 +645,8 @@ When [ Case aliceChoice
                   60            -- AGREGADO
                   arbitrate)    -- AGREGADO
       ]
-      40           -- AGREGADO
-      Close        -- AGREGADO
+      40                        -- AGREGADO
+      Close                     -- AGREGADO
 \end{code}
 
 El \texttt{When} más externo requiere que Alice haga la primera elección. Si Alice no ha hecho una elección luego del \texttt{slot}\footnote{Los \textit{slots} representan la unidad básica de tiempo en la cadena de bloques.} 40, el contrato se cierra y se reembolsan todos los fondos del mismo.
@@ -671,8 +674,8 @@ When [Case (Deposit "alice" "alice" ada price)   -- AGREGADO
        40
        Close)
    ]
-   10                                      -- AGREGADO
-   Close                                   -- AGREGADO
+   10       -- AGREGADO
+   Close    -- AGREGADO
 \end{code}
 
 Se solicita un depósito de valor \texttt{price} de \texttt{"{}alice"{}}: si se da, entonces se mantiene en una cuenta, también llamada \texttt{"{}alice"{}}. Cuentas como esta existen solo durante la vigencia del contrato; cada cuenta pertenece a un solo contrato. % chktex 18
@@ -1229,7 +1232,7 @@ Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implica
 
 Una teoría es una colección de tipos, funciones y teoremas, similar a un módulo en un lenguaje de programación. Todo el contenido que escribamos en Isabelle debe pertenecer a una teoría. El formato general de una teoría T es:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Estructura general de un archivo de prueba]{Isabelle}
 theory $T$
 imports $T_1, \cdots, T_n$
 begin
@@ -1264,13 +1267,13 @@ En esta sección detallaremos los tipos \textit{bool}, \textit{nat} y \textit{li
 
 Este tipo esta predefinido mediante:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Tipo de dato \textit{bool}]{Isabelle}
 datatype bool = True | False
 \end{code}
 
 El mismo cuenta con los valores \texttt{True} y \texttt{False} y algunas funciones predefinidas,\\ como:  $\neg,\ \vee,\ \wedge,\ \rightarrow$, etc. El siguiente ejemplo muestra como puede definirse la conjunción lógica (conocida también como intersección en teoría de conjuntos) mediante \textit{pattern matching}:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Definición de la función \textit{conjunción lógica} (también conocida como \textit{and})]{Isabelle}
   fun conj :: "bool $\Rightarrow$ bool $\Rightarrow$ bool" where
   "conj True True = True" |
   "conj _ _ = False"
@@ -1283,13 +1286,13 @@ Las definiciones de datatype y funciones siguen la sintaxis de lenguajes de prog
 Los números naturales:
 
 
-\begin{code}{Isabelle}
+\begin{code}[title=Tipo de dato que representa los números naturales.]{Isabelle}
 datatype nat = 0 | Suc nat
 \end{code}
 
 Todos los valores de tipo \texttt{nat} son generados por los constructores \texttt{0} y \texttt{Suc}. Por lo tanto, los valores de tipo nat son \texttt{0}, \texttt{Suc 0}, \texttt{Suc (Suc 0)}, etc. Algunas de las funciones predefinidas son: +, *, $\leq$, etc. A continuación, vemos como podríamos definir nuestra propia operación de suma:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Definición de la suma para dos números naturales.]{Isabelle}
   fun add :: "nat $\Rightarrow$ nat $\Rightarrow$ nat" where
   "add 0 n = n" |
   "add (Suc m) n = Suc(add m n)"
@@ -1297,7 +1300,7 @@ Todos los valores de tipo \texttt{nat} son generados por los constructores \text
 
 Y a continuación vemos una prueba de \texttt{add m 0 = m}:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Prueba de la neutralidad del cero frente a la suma.]{Isabelle}
   lemma add_02: "add m 0 = m"
   apply(induction m)
   apply(auto)	  
@@ -1306,7 +1309,7 @@ Y a continuación vemos una prueba de \texttt{add m 0 = m}:
 
 La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre, por ejemplo `\texttt{add\_02}'. Las propiedades definidas recursivamente suelen ser probadas por inducción en la mayoría de las ocasiones. El commando \texttt{apply (induction m)} le indica a Isabelle que debe comenzar una prueba por inducción, en la variable \texttt{m}. Como respuesta, va a mostrar el siguiente `estado de prueba':
 
-\begin{code}{Isabelle}
+\begin{code}[title=Subgoals para la prueba de neutralidad del cero luego de aplicar inducción estructural.] {Isabelle}
 	1. add 0 0 = 0
 	2. $\bigwedge$ m. add m 0 = m $\Longrightarrow$ add (Suc m) 0 = Suc m	
 \end{code}
@@ -1321,7 +1324,7 @@ De ahora en más dicho lema podría ser utilizado como paso de prueba por lemas 
 
 Las listas ya están predefinidas por Isabelle\footnote{Dicha definición puede ser encontrada en \url{https://isabelle.in.tum.de/library/HOL/HOL/List.html}}, pero su definición puede ser simplificada como:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Tipo de datos \textit{lista}.]{Isabelle}
 datatype 'a list = Nil | Cons 'a "'a list"
 \end{code}
 
@@ -1409,7 +1412,7 @@ La siguiente figura representa la arquitectura, omitiendo la reconstrucción y m
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{Sledgehammer_arquitecture.png}
-	\caption{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture}
+    \caption[Arquitectura de Sledgehammer.]{Arquitectura de Sledgehammer. Extraída de~\cite{proof_and_disproof}.}\label{fig:Sledgehammer_arquitecture}
 \end{figure}
 
 Idealmente, los probadores de terceros se incluyen en un paquete con Isabelle y están listos para usarse sin necesidad de configuración. Isabelle incluye ejecutables CVC3, E, SPASS y Z3 para las principales plataformas de hardware; los usuarios pueden descargar Yices y Vampire, cuyas licencias prohíben la redistribución, pero la mayoría simplemente ejecuta Vampire de forma remota en SystemOnTPTP.\@
@@ -1461,7 +1464,9 @@ La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlow
 Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a continuación.
 
 \subsection{Prueba de Terminación (\textit{Termination proof})}
-Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}. Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \texttt{NotReduced}, por lo tanto la terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
+Isabelle prueba la terminación de forma automática para la mayoría de las funciones.Sin embargo, este no es el caso de \texttt{reductionLoop}.
+
+Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \textit{NotReduced}, por lo tanto la terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
 
 \begin{code}[title=Función que será utilizada por \textit{measure} para probar la terminación de \textit{reductionLoop}, label=lst:evalBound]{Isabelle}
 fun evalBound :: "State $\Rightarrow$ Contract $\Rightarrow$ nat" where
@@ -1512,7 +1517,7 @@ En primer lugar, reduce el peligro de ataques de denegación de servicio (DoS): 
 
 En segundo lugar, el número de transacciones limita la longitud de los rastros que necesita explorar la ejecución simbólica (consultar la Sección 4 de~\cite{implementing_financial_contracts_on_blockchain}). Establecemos la propiedad de la siguiente manera:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Lema que verifica que \textit{playTrace} no supere el número máximo de transacciones.]{Isabelle}
 lemma playTrace_only_accepts_maxTransactionsInitialState :
 "playTrace sl c l = TransactionOutput txOut
     $\Longrightarrow$ length l $\leq$ maxTransactionsInitialState c"
@@ -1594,7 +1599,7 @@ En la siguiente sub-sección describiremos brevemente algunos de las entidades r
       }
     };
 \end{tikzpicture}
-\caption{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}.}\label{fig:Marlowe_dirtree}
+\caption[Árbol de archivos en el repositorio del lenguaje Marlowe.]{Árbol de archivos en el repositorio del lenguaje Marlowe. Extraído de~\cite{marlowe-language-repo}.}\label{fig:Marlowe_dirtree}
 \end{figure}
 
 Para comenzar, podemos observar los cuatro directorios principales: \texttt{Domain}, \texttt{Generator}, \texttt{Model} y \texttt{Utility}. En los mismos es posible encontrar el código necesario para modelar los contratos ACTUS, y generar el código de los mismos en Marlowe o en Haskell para luego ser ejecutados.
@@ -1882,7 +1887,7 @@ En los tests propuestos por ACTUS, un conjunto de términos de contrato y evento
 A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:\@
 
 
-\begin{code}[title=Test propuesto por ACTUS para el contrato COM. Se pueden ovservar tanto los términos como eventos observados y los eventos que se esperá que la implementación genere.]{Haskell-Cardano}
+\begin{code}[title=Test propuesto por ACTUS para el contrato COM.\@ Se pueden ovservar tanto los términos como eventos observados y los eventos que se esperá que la implementación genere.]{Haskell-Cardano}
 "com04": {
         "identifier": "com04",
         "terms": {
@@ -2197,7 +2202,7 @@ En el contrato \textit{Swap}, traducido de uno de los ejemplos del \textit{Playg
 
 Se puede destacar la definición del tipo de datos \textit{SwapParty}, junto con sus \textit{getters}, que hacen uso de parte del poderoso \textit{Pattern matching} que provee Isabelle:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Definición del tipo de dato \textit{SwapParty}.]{Isabelle}
 datatype SwapParty = SwapParty Party Token Value
 \end{code}
 
@@ -2383,7 +2388,7 @@ De la misma forma, se generó un contrato PAM con los términos del primer contr
 
 Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@Esto tuvo como consecuencia la traducción manual de los contratos generados:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Teoría COM.]{Isabelle}
 theory COM 
 imports Semantics StaticAnalysis
 begin
@@ -2459,7 +2464,7 @@ definition COM4 :: Contract where
 \subsection{Algunas ejecuciones de prueba}
 
 
-\begin{code}{Isabelle}
+\begin{code}[title=Algunas ejecuciones al contrato COM.]{Isabelle}
 definition COMTransactionList :: "Transaction list" where
 "COMTransactionList  = [ (| interval = (0, 1), 
                             inputs = [IDeposit party party token_ada 1400] 
@@ -2528,7 +2533,7 @@ En esta sección detallaremos el proceso de prueba de la siguiente propiedad par
 
 Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podrían llevar a caminos de ejecución no deseados.
 
-\begin{code}{Isabelle}
+\begin{code}[title=Prueba del lema de \textit{minSlot} no decreciente para un contrato COM.]{Isabelle}
 lemma applyAllInputsDoesNotDecreaseMinSlot :
 "applyAllInputs env sta COM4 inputList = 
     ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
@@ -2553,7 +2558,7 @@ También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{ssec:Sledgehamm
 
 El estado de prueba en el que se invocó a \textit{Sledgehammer} (el cual se puede visualizar colocando el cursor sobre el segundo \textit{auto}) es el siguiente:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Estado parcial del lemma de \textit{minSlot} no decreciente para el contrato COM.]{Isabelle}
 proof (prove)
 goal (1 subgoal):
  1. $\bigwedge$ a list.
@@ -2685,7 +2690,7 @@ where
 
 Al expandir la \textit{fun} al commando más detallado \textit{function}, estas obligaciones de prueba se vuelven visibles y se pueden analizar o resolver manualmente. La notación de \textit{function} es la siguiente:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Definición de una función mediante \textit{function}]{Isabelle}
 function (sequential) f :: $\tau$
 where
     equations
@@ -2711,7 +2716,7 @@ Como mencionamos anteriormente, las funciones \textit{contractLoop}, \textit{han
 
 Veamos un ejemplo más sencillo para entender la solución que propone Isabelle en estos casos:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Definición de funciones \textit{odd} y \textit{even} mediante recursión mutua.]{Isabelle}
 function even :: "nat $\Rightarrow$ bool"
 and odd :: "nat $\Rightarrow$ bool"
 where
@@ -2730,7 +2735,7 @@ Al utilizar \textit{function}, las obligaciones de la definición se deben proba
 
 Para eliminar las dependencias mutuas, Isabelle crea internamente una sola función, operando en el tipo \textit{suma}: \textit{nat + nat}\footnote{La documentación de funciones en Isabelle se pueden encontrar en \url{https://isabelle.in.tum.de/library/Doc/Functions/Functions.html}}. Luego \textit{Functions.even} y \textit{Functions.odd} son definidas como proyecciones. Consecuentemente, la terminación tiene que se probada simultáneamente para ambas funciones, especificando una medida en el tipo especifico:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Prueba de terminación de las funciones \textit{odd} y \textit{even}.]{Isabelle}
 termination
 by (relation "measure ($\lambda$ x. case x of Inl n $\Rightarrow$ n | Inr n $\Rightarrow$ n)") auto
 \end{code}
@@ -2763,7 +2768,7 @@ Teniendo en cuenta las siguientes técnicas de traducción:
 podemos ver a continuación la traducción del contrato \textit{Auction} a Isabelle:
 
 \newpage
-\begin{code}{Isabelle}
+\begin{code}[title=Contracto \textit{Auction} traducido a Isabelle.]{Isabelle}
 [...]
 
 definition bid :: ByteString where
@@ -2795,12 +2800,9 @@ fun partyToValueId :: "Party $\Rightarrow$ ValueId" where
 fun remove :: "Party $\Rightarrow$ Party list $\Rightarrow$ Party list" where
 "remove p ls = filter (($\neq$) p) ls"
 
-function (sequential) contractLoop :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$
-                                       Party list $\Rightarrow$ AuctionTerms $\Rightarrow$ Contract"
-and handleChoose :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$
-                     AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case"
-and handleDeposit :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ 
-                      AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case" 
+function (sequential) contractLoop :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ AuctionTerms $\Rightarrow$ Contract"
+and handleChoose :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case"
+and handleDeposit :: "AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ AuctionTerms $\Rightarrow$ Party $\Rightarrow$ Case" 
 where
 "handleChoose m ps qs terms p = 
                 Case (Choice (choice p) [(minBid terms, maxBid terms)])
@@ -2817,10 +2819,13 @@ where
                                   (contractLoop (Some (v, p)) ps' qs terms) 
                                   (contractLoop m ps' qs terms))))" |
 
-"contractLoop m [] [] terms = settle None terms" |
-"contractLoop m ps qs terms = (When ( (map (handleChoose m ps qs terms) qs) @ 
-                                      (map (handleDeposit m ps qs terms) ps)) 
-                                      (deadline terms) (settle m terms))"  
+"contractLoop m [] [] terms = 
+                settle None terms" |
+"contractLoop m ps qs terms = 
+                (When ((map (handleChoose m ps qs terms) qs) @ 
+                       (map (handleDeposit m ps qs terms) ps)) 
+                      (deadline terms)
+                      (settle m terms))"  
   [...]
 \end{code}
 
@@ -2857,21 +2862,18 @@ Como Isabelle transforma nuestra definición triple en una funcion de tipo \text
 
 Para compactar la sintaxis, definimos los tipos especificos para nuestras funciones:
 
-\begin{code}{Isabelle}
-type_synonym contractLoopType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
-                                 AuctionTerms"
-type_synonym handleChooseType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
-                                 AuctionTerms $\times$ Party"
-type_synonym handleDepositType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$
-                                  AuctionTerms $\times$ Party"
+\begin{code}[title=Tipos de datos recibidos por la funciones mutuamente recursivas.]{Isabelle}
+type_synonym contractLoopType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$ AuctionTerms"
+type_synonym handleChooseType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$ AuctionTerms $\times$ Party"
+type_synonym handleDepositType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$ AuctionTerms $\times$ Party"
 \end{code}
 
 Para finalmente definir nuestra función de medida:
 
 \newpage
 \begin{code}[title=Función que será utilizada por \textit{measure} para probar la terminación del contrato \textit{Auction}., label=lst:evalBoundAuction]{Isabelle}
-fun evalBoundAuction :: 
-    "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
+fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
+
 "evalBoundAuction (Inl (_, ps, qs, _)) =
         2 * length ps + 4 * length qs + 1" |
 "evalBoundAuction (Inr (Inl (_, ps, qs, _, p))) =
@@ -2885,7 +2887,7 @@ Como se puede apreciar, utilizamos \texttt{Inl} y \texttt{Inr}\footnote{Definido
 Luego de aplicar la función de medida y un \textit{auto} para simplicar (entre otras cosas), nos encontramos con los siguientes \textit{subgoals}:
 
 \newpage
-\begin{code}{Isabelle}
+\begin{code}[title=Subgoals parciales en la prueba de terminación de \textit{contractLoop} y sus funciones auxiliares.]{Isabelle}
 proof (prove)
 goal (8 subgoals):
  1. $\bigwedge$qs p.
@@ -2944,7 +2946,7 @@ Todos los subgoals se solucionan observando que la funcion \textit{filter} cumpl
 
 Probamos dichos \textit{lemmas} de forma auxiliar:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Lemas auxiliares sobre \textit{filter} utilizados para la prueba de terminación.]{Isabelle}
 lemma removePresentElementReducesSize :
     "p $\in$ set ls $\Rightarrow$ length (filter (($\neq$) p) ls) < length ls"
   by (simp add: length_filter_less)
@@ -2957,7 +2959,7 @@ lemma removeAbsentElementMantainsSize :
 
 Para incluir dichos \textit{lemmas} a un probador automático, usamos \textit{using}. Con esto, podemos probar todos los \textit{subgoals}. La prueba de terminación queda completada:
 
-\begin{code}{Isabelle}
+\begin{code}[title=Prueba de terminación de \textit{contractLoop} y sus funciones recursivas.]{Isabelle}
 termination 
   apply (relation "measure (evalBoundAuction)")
   apply auto 
@@ -2979,8 +2981,7 @@ Todo lo referido a mi implementación y pruebas en el contrato \textit{Auction} 
 Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
 
 \begin{code}[title=Ausencia de \textit{warnings} para el contrato \texttt{Close} en sintaxis de Isabelle/HOL.]{Isabelle}
-theorem closeIsSafe : "computeTransaction tra sta Close = 
-                       TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
+theorem closeIsSafe : "computeTransaction tra sta Close = TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
 \end{code}
 
 
