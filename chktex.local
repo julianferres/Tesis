@@ -1,0 +1,6 @@
+VerbEnvir
+{
+    code 
+}
+
+# Ejecutar chktex como: chktex -n44 -n1 -n36 -l chktex.local main.tex 

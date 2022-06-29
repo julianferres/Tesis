@@ -54,6 +54,7 @@
   columns=fixed,
   extendedchars,
   captionpos=b,                    
+  breaklines=true,
   backgroundcolor=\color{backcolour},   
   basewidth={0.5em,0.45em},
   basicstyle=\ttfamily,
@@ -73,14 +74,14 @@
  boxed title style={enhanced jigsaw, colback=white, sharp corners, boxrule=0pt},
  coltitle=black,
  overlay first app={%
-   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west);%
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west); % chktex 8
   },
  overlay middle app={%
-   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west);
-   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west);%
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west); % chktex 8
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west); % chktex 8
   },
  overlay last app={%
-   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west);
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west); % chktex 8
   },
   #1
 }
