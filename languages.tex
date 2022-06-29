@@ -16,12 +16,11 @@
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
     breakatwhitespace=false,         
-    language=Haskell,
+    language=Marlowe,
     breaklines=true,                 
     upquote=true,
     captionpos=b,                    
     keepspaces=true,                 
-    frame=single,
     numbers=none,                    
     numbersep=5pt,                  
     showspaces=false,                
@@ -55,10 +54,33 @@
   columns=fixed,
   extendedchars,
   captionpos=b,                    
-  frame=single,
-  aboveskip=15pt,belowskip=15pt,
   backgroundcolor=\color{backcolour},   
   basewidth={0.5em,0.45em},
   basicstyle=\ttfamily,
   mathescape,
+}
+
+\newtcblisting[blend into = listings]{code}[2][]{%
+ breakable,
+ colback=backcolour,
+ boxrule=0.75pt,
+ listing options={ style={#2} },
+ listing only,
+ enhanced,
+ listing remove caption=false,
+ attach boxed title to bottom center={yshift=-8pt},
+ before skip=15pt plus 2pt,after skip=15pt plus 2pt,
+ boxed title style={enhanced jigsaw, colback=white, sharp corners, boxrule=0pt},
+ coltitle=black,
+ overlay first app={%
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west);%
+  },
+ overlay middle app={%
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west);
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west);%
+  },
+ overlay last app={%
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west);
+  },
+  #1
 }
