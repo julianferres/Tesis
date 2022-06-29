@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{indentfirst}
+\usepackage{here}
 \usepackage{titlesec}
 %\newcommand{\sectionbreak}{\clearpage}
 \DeclareGraphicsExtensions{.bmp,.png,.pdf,.jpg}
@@ -2565,7 +2566,9 @@ goal (1 subgoal):
 
 En el caso del contrato PAM, una vez que se incluye el módulo \textit{ValidState} y se pone a un estado valido como precondición de la prueba, se logra la siguiente prueba:
 
-\begin{lstlisting}[style=Isabelle, caption=Prueba del lema de \textit{minSlot} para el contrato PAM]
+\begin{table}[H]
+    \centering
+  \begin{lstlisting}[style=Isabelle, belowskip=-8pt]
 lemma applyAllLoopDoesNotDecreaseMinSlot :
 "validAndPositive_state sta $\Longrightarrow$
   applyAllLoop reduced env sta PAM inp wa pa = 
@@ -2573,6 +2576,8 @@ lemma applyAllLoopDoesNotDecreaseMinSlot :
   (minSlot sta) $\leq$ (minSlot newstate)"
     by (simp add: applyAllLoop_preserves_minSlot)
 \end{lstlisting}
+  \caption{\label{tab:my_label}Prueba del lema de \textit{minSlot} para el contrato PAM}
+\end{table}
 
 La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace decrecer el \textit{minSlot}.
 
