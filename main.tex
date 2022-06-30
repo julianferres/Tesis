@@ -3023,7 +3023,7 @@ Una vez que se definió el invariante, se procede a verificar la prueba para \te
 
 Para comenzar se utilizara inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
 
-\begin{code}[title=Ausencia de \textit{warnings} durante \textit{ApplyInput}.]{Isabelle}
+\begin{code}[title=Ausencia de \textit{warnings} durante \textit{applyInput}.]{Isabelle}
 lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyInput env curState head (contractLoop m ps qs terms) = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
 
   and applyInputHandleChooseNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ x $\in$ set qs $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleChoose m ps qs terms x ] = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
