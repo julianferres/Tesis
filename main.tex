@@ -1535,25 +1535,21 @@ Por lo tanto, no perdemos generalidad al explorar solo \textit{traces} más cort
 %##########################
 
 \chapter[Verificación de contratos financieros en Isabelle]{Desarrollo: Verificación de contratos financieros usando Isabelle}
-
-En este capítulo se describirán los aportes realizados en la presente tesis. 
-
-En primer lugar, la escritura de contratos financieros ACTUS para la blockchain Cardano, junto con la creación de casos de prueba y validación con los tests oficiales del estándar~\cite{ACTUS_Tests}.
-
-En segundo lugar, la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mimos.
+ 
+En este capítulo se describirán los aportes realizados en la presente tesis: en primer lugar, escribiremos contratos financieros ACTUS para la blockchain Cardano, junto con la creación de casos de prueba y validación con los tests oficiales del estándar~\cite{ACTUS_Tests}; en segundo lugar, realizaremos la traducción de algunos contratos financieros sencillos a Isabelle, junto con la ejecución y prueba de propiedades en los mismos.
 
 Finalmente, probaremos la ausencia de \textit{warnings} en el contrato \textit{Auction}~\cite{auction_haskell}. Para esto, traduciremos el contrato a Isabelle, demostraremos la terminación del mismo y algunos lemas auxiliares que nos ayudan en la prueba del teorema.
 
 \section{Escritura de contratos ACTUS para Cardano}
 
-En esta sección, veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, bajo la supervisión de IOHK.\@
+En esta sección veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, bajo la supervisión de IOHK.\@
 
-Cabe destacar que durante esta tarea, tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+Cabe destacar que durante esta tarea tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 \newpage
 \subsection{Descripción de la estructura del proyecto}\label{ssec:estructura}
 
-En la siguiente sub-sección describiremos brevemente algunos de las entidades relevantes para la implementación de un contrato. Para eso, es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
+En la siguiente subsección describiremos brevemente algunas de las entidades relevantes para la implementación de un contrato. Para eso es importante conocer la estructura de archivos del mismo, junto con la responsabilidad de algunos de ellos.
 
 \begin{figure}[H]
 \begin{tikzpicture}
@@ -1619,7 +1615,7 @@ El mismo está conformado por los archivos que modelan el dominio de los contrat
     };
 \end{tikzpicture}
 
-A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@ Como por ejemplo: \textit{EventType} o \textit{RiskFactorsPoly} en \texttt{BusinessEvents.hs} o \textit{ContractStatePoly} en\\ \texttt{ContractState.hs}.
+A lo largo de los mismos, se ven definiciones de tipos necesarios en ACTUS.\@ Como por ejemplo: \textit{EventType} o \textit{RiskFactorsPoly} en \texttt{BusinessEvents.hs}, o \textit{ContractStatePoly} en\\ \texttt{ContractState.hs}.
 
 A continuación vemos algunos fragmentos de algunas definiciones de tipos:
 
@@ -1742,7 +1738,7 @@ En este directorio se implementan los diferentes generadores y compatibilidad ha
 \end{tikzpicture}
 
 
-En el archivo \texttt{Analysis.hs}, se definen las funciones:
+En el archivo \texttt{Analysis.hs} se definen las funciones:
 
 \begin{itemize}
     \item \texttt{genProjectedCashflows}
@@ -1754,11 +1750,11 @@ En el archivo \texttt{Analysis.hs}, se definen las funciones:
 
 Las mismas, como sus nombres lo indican, generan los flujos de dinero proyectados, flujos de dinero, cronogramas, estados y pagos respectivamente. Los flujos de dinero pueden ser utilizados para generar los pagos en un contrato en Marlowe.
 
-En \texttt{GeneratorStatic.hs}, mediante la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS.\@En \texttt{genFsContract}, los \textit{risk factors} son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
+En \texttt{GeneratorStatic.hs}, la función \texttt{genFsContract} genera un contrato en Marlowe a partir de los términos de contrato ACTUS.\@ En \texttt{genFsContract} los \textit{risk factors} son agregados al contrato en Marlowe, en otras palabras, será `observado' durante la vida del mismo.
 
-La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder genera un contrato en Marlowe donde los \textit{risk factors} sean conocidos de antemano. Esta restricción desencadena en contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
+La función \texttt{genStaticContract}, en \texttt{GeneratorStatic.hs}, valida que los términos del contrato sean correctos, para poder generar un contrato en Marlowe donde los \textit{risk factors} sean conocidos de antemano. Esta restricción provoca la generación de contratos que solo consisten de transacciones, i.e. \texttt{Deposit} y \texttt{Pay}.
 
-Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función\\ \texttt{toMarlowe}, que se ocupa de recibir los términos del contrato en haskell y realizar la traducción a términos del contrato en Marlowe. 
+Con respecto a \texttt{MarloweCompat.hs}, contiene algunas funciones auxiliares y la función \textit{toMarlowe}, que se ocupa de recibir los términos del contrato en Haskell y realizar la traducción a términos del contrato en Marlowe. 
 
 A continuación se muestra el fragmento inicial de la misma:
 
@@ -1784,7 +1780,7 @@ toMarlowe ct =
 
 \subsubsection{Model}
 
-En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como Schedule, Inicialización de variables de estado y funciones de transición de estado y de pago.
+En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como el \textit{scheduling}, la inicialización de variables de estado y funciones de transición de estado y de pago.
 
 \begin{tikzpicture}
     \draw[color=black!60!white]
@@ -1797,11 +1793,11 @@ En este directorio se encuentran los archivos que modelan la lógica expuesta po
     };
 \end{tikzpicture}
 
-Las reglas de aplicabilidad\footnote{Especificadas en \url{https://www.actusfrf.org/aplicability}} son definidas, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y flujos de dinero puedan ser proyectados. Dicha condición es chequeada en \texttt{Applicability.hs}
+Además, se definen las reglas de aplicabilidad\footnote{Especificadas en \url{https://www.actusfrf.org/aplicability}}, para cada tipo de contrato. Las reglas revisan la consistencia de los atributos de contrato, para los términos de un contrato ACTUS dado. Si los términos son validados satisfactoriamente, se espera que el contrato sea significativo y que se puedan proyectar flujos de dinero. Dicha condición se controla en \texttt{Applicability.hs}
 
 Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateInitialization.hs} y\\ \texttt{StateTransition.hs}, se ocupan de ajustar el cronograma, los pagos, inicializar las variables de estado, y las transiciones sobre las mismas.
 
-Como ejemplo, puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
+Como ejemplo, a continuación puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
 
 \begin{code}[title=Parte de la función que modela la transicción de estados.]{Haskell-Cardano}
         [...]
@@ -1829,7 +1825,7 @@ Como ejemplo, puede verse reflejado el cambio de estado para el contrato PAM y e
         [...]
 \end{code}
 
-La misma refleja las variables siendo ajustadas de acuerdo al estándar:
+La misma refleja el ajuste de las variables de acuerdo al estándar:
 
 \begingroup
 \fontsize{9pt}{9pt}\selectfont
@@ -1856,7 +1852,7 @@ La misma refleja las variables siendo ajustadas de acuerdo al estándar:
 
 \subsubsection{Utility}
 
-En este directorio se encuentran algunos archivos con funciones que se utilizan para aislar la lógica del calculo de fechas, que suele tornarse complejo y repetitivo durante los contratos.
+En este directorio se encuentran algunos archivos con funciones que se utilizan para aislar la lógica del cálculo de fechas, que suele tornarse complejo y repetitivo durante los contratos.
 
 \begin{tikzpicture}
 	\draw[color=black!60!white]
@@ -1870,19 +1866,19 @@ En este directorio se encuentran algunos archivos con funciones que se utilizan 
     };
 \end{tikzpicture}
 
-\sloppy Funciones para calcular determinadas fechas, para cada tipo de convención de día hábil, son extraídas en el módulo \texttt{DateShift.hs}, como por ejemplo: \texttt{applyBDC}, \texttt{getPreceedingBusinessDay}, \texttt{moveToEndOfMonth}, etc.
+Las funciones para calcular determinadas fechas para cada tipo de convención de día hábil se encuentran en el módulo \texttt{DateShift.hs}, como por ejemplo: \textit{applyBDC}, \textit{getPreceedingBusinessDay}, \textit{moveToEndOfMonth}, etc.
 
 \subsection{Metodología de escritura de un Contrato ACTUS en Cardano}
 
-Para poder escribir un contrato, es necesario revisar los eventos que disparan acciones del contrato, las mismas están especificadas en~\cite{ACTUS_Techspecs}, también esta disponible una implementación oficial en Java de los mismos, en la cual es posible basarse. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
+Para poder escribir un contrato es necesario revisar los eventos que disparan acciones del contrato. Las mismas están especificadas en~\cite{ACTUS_Techspecs}, y también está disponible una implementación oficial en Java. Es conveniente utilizar ambos, ya que se reduce el esfuerzo de implementación en Haskell cuando se cuenta con ellos.
 
 Para cada contrato, se agregan casos a los archivos vistos previamente en~\ref{ssec:estructura}, tanto para el modelo como para el dominio. En algunos casos, quizás sea necesario agregar alguna función en Utility.
 
-Con respecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos, me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
+Con respecto a la implementación en Java, la misma no es pública, pero con fines de la implementación de los siguientes contratos me fue otorgado por parte de IOHK un token de acceso para poder clonarla y usarla durante la implementación.
 
 Todas las implementaciones son probadas usando algunos ejemplos\footnote{Disponibles en \url{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}}, así como también la batería de tests propuestos por ACTUS~\cite{ACTUS_Tests}.
 
-En los tests propuestos por ACTUS, un conjunto de términos de contrato y eventos disparadores son provistos, y se espera que ciertos eventos sean generados por la implementación. Debido a que ACTUS es agnóstica a la misma, los test solo reflejan los eventos esperados, pero no como serán ejecutados en la plataforma (en este caso, en la blockchain Cardano).
+En los tests propuestos por ACTUS se provee un conjunto de términos de contrato y eventos disparadores, y se espera que la implementación genere ciertos eventos. Debido a que ACTUS es agnóstica a la misma, los tests solo reflejan los eventos esperados, pero no cómo serán ejecutados en la plataforma (en este caso, en la blockchain Cardano).
 
 A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:\@
 
@@ -1937,7 +1933,7 @@ A continuación se muestra un test de ejemplo para el contrato COM, provisto por
 
 Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/TestFramework.hs}{TestFramework.hs}, donde se analiza gramaticalmente la entrada, se ejecuta el generador, y se comparan los campos del json inicial con los del objeto generado por la implementación.
 
-Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM 
+Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM:
 
 \begin{code}[title=Test de ejemplo escrito durante el desarrollo de la tesis para el contrato COM.]{Haskell-Cardano}
 -- |ex_com1 defines a contract of type COM
@@ -1982,7 +1978,7 @@ El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote} 
-``Este contrato no es de tipo financiero en el sentido estricto. Sin embargo, realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden utilizarse servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.''
+    \textit{``Este contrato no es de tipo financiero en el sentido estricto. Sin embargo, realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.''}
 \end{quote}
 
 \subsubsection{Especificación técnica}
@@ -2031,7 +2027,7 @@ El contrato COM tiene una implementación similar al contrato STK (Stock), debid
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote} 
-``Es un contrato simple, que representa tenencias de dinero en efectivo.''
+    \textit{``Es un contrato simple, que representa tenencias de dinero en efectivo.''}
 \end{quote}
 
 \subsubsection{Especificación técnica}
@@ -2071,7 +2067,7 @@ A continuación adjunto la especificación técnica del contrato CSH~\cite{ACTUS
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote}
-``Este tipo de contrato modela préstamos que se renuevan, mientras no sea notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.''
+\textit{``Este tipo de contrato modela préstamos que se renuevan, mientras no sea notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.''}
 \end{quote}
 
 \subsubsection{Especificación técnica}
@@ -2165,7 +2161,7 @@ A continuación adjunto la especificación técnica del contrato CLM~\cite{ACTUS
 
 \section{Traduciendo algunos contratos financieros a Isabelle (\textit{Pay} y \textit{Swap})}
 
-Con el fin de poder comprender mejor la Semantica de Marlowe escrita en Isabelle~\cite{marlowe-isabelle-repo}, procedí a traducir algunos contratos financieros relativamente sencillos de ejemplo.
+Con el fin de comprender mejor la semántica de Marlowe escrita en Isabelle~\cite{marlowe-isabelle-repo}, hemos traducido algunos contratos financieros relativamente sencillos como ejemplo.
 
 \subsection{Contrato \textit{Pay}}
 
@@ -2196,11 +2192,13 @@ definition payContract :: Contract where
 end
 \end{code}
 
+Este contrato paga 37 unidades de \textit{ada} desde la cuenta \textit{role\_borrower} hacia \textit{payee}, que es otra de las partes del contrato. El contrato de continuación es el de cierre o \texttt{Close}.
+
 \subsection{Contrato \textit{Swap}}
 
-En el contrato \textit{Swap}, traducido de uno de los ejemplos del \textit{Playground}\footnote{\url{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-playground-server/contracts/Swap.hs}}, hace uso de funciones, definiciones, datatypes, etc. 
+En el contrato \textit{Swap}, traducido de uno de los ejemplos del \textit{Playground}\footnote{\url{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-playground-server/contracts/Swap.hs}}, se hace uso de funciones, definiciones, datatypes, etc. 
 
-Se puede destacar la definición del tipo de datos \textit{SwapParty}, junto con sus \textit{getters}, que hacen uso de parte del poderoso \textit{Pattern matching} que provee Isabelle:
+Se puede destacar la definición del tipo de datos \textit{SwapParty}, junto con sus \textit{getters}, que hacen uso de parte del poderoso \textit{pattern matching} que provee Isabelle:
 
 \begin{code}[title=Definición del tipo de dato \textit{SwapParty}.]{Isabelle}
 datatype SwapParty = SwapParty Party Token Value
@@ -2325,12 +2323,17 @@ definition contract :: Contract where
               )"
 \end{code}
 
+El contrato traducido toma tokens de \textit{ada} desde una parte y tokens de dolar desde la otra y los intercambia atómicamente.
+
+
 \section{Probando una propiedad en un contrato COM y PAM}
 
-\subsection{Generación de codigo Marlowe de algunos contratos COM y PAM}
-Para poder obtener contratos una instancia de contrato Marlowe, es necesario modificar levemente el código del mismo. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
+En esta sección generaremos código en Marlowe de algunos contratos de tipo COM y PAM y los traduciremos a Isabelle. Luego realizaremos algunas ejecuciones de prueba usando las funciones preexistentes en Isabelle (como \textit{computeTransaction} o \textit{applyAllInputs}). Finalmente probaremos una propiedad sencilla sobre los mismos.
 
-Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \texttt{marlowe}:
+\subsection{Generación de codigo Marlowe de algunos contratos COM y PAM}
+Para poder obtener los contratos en Marlowe, es necesario modificar levemente el código del generador. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
+
+Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \textit{marlowe}:
 
 \begin{code}[title=Función para imprimir contratos en Marlowe.]{Haskell-Cardano}
 printCOM :: IO ()
@@ -3111,7 +3114,7 @@ En particular, hemos probado formalmente las siguientes propiedades:
 Además, hemos escrito contratos financieros basados en el estándar ACTUS, que ya se encuentran disponibles en la rama principal del repositorio de Marlowe Cardano. Dichos contratos podrán ser ejecutados tanto en Marlowe, como en las demás alternativas de lenguajes ofrecidas por el \textit{Playground}~\cite{marlowe_playground}. En particular, durante el desarrollo de esta tesis hemos escrito:
 
 \begin{itemize}
-    \item Contrato COM(\textit{Commodity}) en~\ref{ssec:contrato_com}: Realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden utilizarse servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.
+    \item Contrato COM(\textit{Commodity}) en~\ref{ssec:contrato_com}: Realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.
     \item Contrato CSH(\textit{Cash}) en~\ref{ssec:contrato_csh}: Representa tenencias de dinero en efectivo.
     \item Contrato COM(\textit{Call Money}) en~\ref{ssec:contrato_clm}: Modela préstamos que se renuevan, mientras no sea notificado. Una vez realizada, debe devolverse después del período de notificación estipulado.
 \end{itemize}
