@@ -2328,7 +2328,7 @@ El contrato traducido toma tokens de \textit{ada} desde una parte y tokens de do
 
 \section{Probando una propiedad en un contrato COM y PAM}
 
-En esta sección generaremos código en Marlowe de algunos contratos de tipo COM y PAM y los traduciremos a Isabelle. Luego realizaremos algunas ejecuciones de prueba usando las funciones preexistentes en Isabelle (como \textit{computeTransaction} o \textit{applyAllInputs}). Finalmente probaremos una propiedad sencilla sobre los mismos.
+En esta sección comenzaremos por escribir contratos COM y PAM en Marlowe, luego los traduciremos a Isabelle para poder realizar ejecuciones y pruebas formales sobre ellos.
 
 \subsection{Generación de codigo Marlowe de algunos contratos COM y PAM}
 Para poder obtener los contratos en Marlowe, es necesario modificar levemente el código del generador. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
