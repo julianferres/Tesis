@@ -1887,7 +1887,7 @@ En los tests propuestos por ACTUS, un conjunto de términos de contrato y evento
 A continuación se muestra un test de ejemplo para el contrato COM, provisto por ACTUS:\@
 
 
-\begin{code}[title=Test propuesto por ACTUS para el contrato COM.\@ Se pueden ovservar tanto los términos como eventos observados y los eventos que se esperá que la implementación genere.]{Haskell-Cardano}
+\begin{code}[title=Test propuesto por ACTUS para el contrato COM.]{Haskell-Cardano}
 "com04": {
         "identifier": "com04",
         "terms": {
@@ -2984,6 +2984,109 @@ Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Cl
 theorem closeIsSafe : "computeTransaction tra sta Close = TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
 \end{code}
 
+A lo largo de la prueba, se pueden ver multiples lemas auxiliares, por ejemplo para las funciones \textit{applyAllInputs}, \textit{reductionLoop}, \textit{reduceContractStep}, entre otras. 
+
+Las mismas ayudan a separar la dificultad del teorema principal. La detección y extracción, en forma de lemas, de las propiedades relevantes debe hacerse manualmente.
+
+\subsubsection{Invariante para la ausencia de \textit{warnings}}
+
+Las acciones de los usuarios son imprevesibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos en este contrato podrían ser: intentar ofertar un valor fuera del rango esperado, que se oferte una cantidad negativa, que en la cuenta no haya dinero suficiente para la oferta, entre otras.
+
+Es por eso que se formuló una serie de precondiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}:
+
+\begin{code}[title=Invariante para el contrato \textit{Auction}.]{Isabelle}
+definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ State $\Rightarrow$ bool" where
+"invariantHoldsForAuction terms m ps qs curState =
+
+     (($\forall$ x . x $\in$ set qs $\longrightarrow$ $\neg$ member (partyToValueId x) (boundValues curState))
+    $\land$ ($\forall$ x . x $\in$ set ps $\longrightarrow$ 
+        findWithDefault 0 (partyToValueId x) (boundValues curState) > 0)
+    $\land$ ($\forall$ x y . m = Some (x, y) $\longrightarrow$ ((lookup (y, token_ada) (accounts curState) = lookup (partyToValueId y) (boundValues curState))
+            $\land$ (findWithDefault 0 (partyToValueId y) (boundValues curState) > 0)
+            $\land$ (UseValue (partyToValueId y)) = x))
+    $\land$ (minBid terms > 0))"
+\end{code}
+
+Esta invariante garantiza la presencia de las siguientes propiedades, que generarían la ausencia de \textit{warnings} al aplicar un \textit{input}:
+\begin{itemize}
+    \item El identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
+    \item La cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
+    \item La cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
+    \item Que \textit{minBid} sea positivo, si no se producirán \textit{warnings} durante las reducciones.
+\end{itemize}
+
+\subsubsection{Ausencia de \textit{warnings} en \textit{applyInput}}
+
+Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción, se procesan sucesivamente los \textit{inptus} de la misma, y luego de cada uno se realizan \textit{reductionSteps} hasta que el contrato se encuentra en estado \textit{inactivo} (\textit{quiescent}). Probaremos que al aplicar un \textit{input} no se generan \textit{warnings}.
+
+Una vez que se definió el invariante, se procede a verificar la prueba para \textit{applyInput}. 
+
+Para comenzar se utilizara inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
+
+\begin{code}[title=Ausencia de \textit{warnings} durante \textit{ApplyInput}.]{Isabelle}
+lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyInput env curState head (contractLoop m ps qs terms) = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+
+  and applyInputHandleChooseNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ x $\in$ set qs $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleChoose m ps qs terms x ] = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+
+ and applyInputHandleDepositNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ x $\in$ set ps $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleDeposit m ps qs terms x ] = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+
+    apply (induction m ps qs terms and m ps qs terms x and m ps qs terms x rule:"contractLoop_handleChoose_handleDeposit.induct" )
+  subgoal
+    apply (elim applyCases.elims)
+             apply auto
+    by (metis ApplyResult.inject ApplyResult.simps(3) applyCases.simps(10))
+  subgoal
+    apply (simp only:handleDeposit.simps)
+    apply (elim applyCases.elims)
+             apply simp_all
+    apply (split if_split_asm)
+       apply (split if_split_asm)
+        apply (meson ApplyResult.inject)
+       apply (metis Action.inject(1) Case.inject evalValue.simps(12) invariantHoldsForAuction_def)
+      apply (metis ApplyResult.simps(3) applyCases.simps(10))
+     apply (meson Action.distinct(1) Case.inject)
+    by (meson Action.distinct(3) Case.inject)
+    apply simp
+   apply (smt (verit, best) applyCasesDistributiveAgainstAppend applyCasesOfMap applyInput.simps(1) contractLoop.simps(2))
+  by (smt (verit, ccfv_SIG) applyCasesDistributiveAgainstAppend applyCasesOfMap applyInput.simps(1) contractLoop.simps(3))
+\end{code}
+
+
+Luego de realizar las simplificaciones correspondientes, y aplicar los casos necesarios, se pueden probar los distintos \textit{subgoals}. Para poder resolver dicho lema, fueron necesarios dos lemas auxiliares, que se repetían en algunos de los \textit{subgoals}.
+
+\begin{code}[title=Lemas auxiliares para la prueba sobre \textit{applyInput}.]{Isabelle}
+lemma applyCasesOfMap : 
+    "($\bigwedge$ p applyWarn newState cont2. p $\in$ set ps $\Rightarrow$ applyCases env curState head [f p] =
+                Applied applyWarn newState cont2 $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+
+     (applyCases env curState head (map f ps) =
+                Applied applyWarn newState cont2 $\Rightarrow$ applyWarn = ApplyNoWarning)"
+
+  apply (induction ps)
+    apply simp
+  apply (elim applyCases.elims)
+           apply auto
+    apply (smt (verit, ccfv_SIG) ApplyResult.inject applyCases.simps(1))
+   apply (meson ApplyResult.inject)
+  by (metis applyCases.simps(3))
+
+
+lemma applyCasesDistributiveAgainstAppend : 
+    "($\bigwedge$ applyWarn newState cont . applyCases env curState head l1 =
+                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+     ($\bigwedge$ applyWarn newState cont . applyCases env curState head l2 =
+                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+
+     (applyCases env curState head (l1 @ l2) =
+                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+  apply (induction l1)
+   apply simp
+  apply (elim applyCases.elims)
+           apply auto
+    apply metis
+  apply metis
+  by metis
+\end{code}
 
 % TODO: WIP
 
