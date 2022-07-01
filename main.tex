@@ -1799,7 +1799,7 @@ Con respecto a \texttt{ContractSchedule.hs}, \texttt{Payoff.hs}, \texttt{StateIn
 
 Como ejemplo, a continuación puede verse reflejado el cambio de estado para el contrato PAM y evento IPCI (Interest Capitalization) en parte de la implementación de la función \texttt{stateTransition}:
 
-\begin{code}[title=Parte de la función que modela la transicción de estados.]{Haskell-Cardano}
+\begin{code}[title=Parte de la función que modela la transición de estados.]{Haskell-Cardano}
         [...]
         ------------------------------------
         -- Interest Capitalization (IPCI) --
@@ -1933,7 +1933,7 @@ A continuación se muestra un test de ejemplo para el contrato COM, provisto por
 
 Dicho \texttt{json} es procesado en \href{https://github.com/input-output-hk/marlowe-cardano/blob/main/marlowe-actus/test/Spec/Marlowe/ACTUS/TestFramework.hs}{TestFramework.hs}, donde se analiza gramaticalmente la entrada, se ejecuta el generador, y se comparan los campos del json inicial con los del objeto generado por la implementación.
 
-Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM:
+Por otro lado, podemos ver el test de ejemplo agregado para el contrato COM:\@
 
 \begin{code}[title=Test de ejemplo escrito durante el desarrollo de la tesis para el contrato COM.]{Haskell-Cardano}
 -- |ex_com1 defines a contract of type COM
