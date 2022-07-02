@@ -293,7 +293,7 @@ Vemos también que Charlie tiene 52 Ada provenientes de outputs previos a nuestr
 
 El modelo anterior muestra estrictamente el flujo de dinero entre varios participantes. En esta versión simplificada, por ejemplo, las transacciones ilustradas no pagan comisiones. Sin embargo, en este modelo simplificado, vemos que los outputs deben gastarse en su totalidad. Es decir, un registro de un output no gastado no puede ser modificado (esta acción se adecúa a los modelos contables basados en cuentas), solo podría utilizarse de forma completa.
 
-Para mantener la integridad de la contabilidad, las nuevas transacciones debe tener todas las outputs no gastados (totalizando la cantidad correcta de outputs no gastados) utilizados como entrada.
+Para mantener la integridad de la contabilidad, las nuevas transacciones deben tener todos los outputs no gastados (totalizando el valor de los mismos) utilizados como entrada.
 
 En nuestro ejemplo anterior, la nueva transacción elimina (utilizándolas como entrada) a los outputs no gastados de valor 42 de Alice y 10 de Bob, para un total de 52 Ada. Esto implica que la transacción esta obligada a totalizar 52 Ada como outputs sin gastar (que de hecho cumple, con 2 para Bob y 50 para Charlie).
 
@@ -353,7 +353,7 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 %     \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
 % \end{figure}
 
-Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \texttt{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
+Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \textit{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
 El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de \textit{outputs} dentro de una transacción.
 
@@ -364,13 +364,13 @@ Las claves del mapa son indices únicos dentro del contexto del mapa, de manera 
 En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto.
 
 
-Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@el dinero que se gasta solo referencia a los outputs no gastadas de transacciones previamente procesadas en el \textit{ledger} que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
+Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@ el dinero que se gasta solo referencia a los outputs no gastados de transacciones previamente procesadas en el \textit{ledger} que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
 
 Procesar una transacción implica actualizar el \texttt{UTXO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UTXO}.
 
 Adicionalmente, todos los valores de \texttt{TxOut} en el mapa finito de las salidas de la transacción se agregan a la \texttt{UTXO}, con la clave del mapa finito que consiste en el id de la transacción que se procesa, y el valor del índice es el mismo que en el mapa finito de salidas de esta transacción. Es decir, si \texttt{tx} contiene un par formado por el conjunto de entrada y el mapa de salidas \texttt{(ins, outs)} con id \texttt{id}, y \texttt{ix |-> (a, c)} es una entrada de \texttt{outs}, la \texttt{UTXO} va a tener la entrada \texttt{(id, ix) |-> (a, c)} agregada. En este párrafo, utilizamos la notación \texttt{k |-> v} para referirnos a una entrada del mapa finito con clave \texttt{k} y valor \texttt{v}.
 
-Veamos como se refleja dicha actualización del ledger en términos de notación matemática (que puede ser reflejada en código con relativa facilidad). Las siguientes son tres formas de filtrar el mapa finito de \texttt{UTXO}. El primero filtra dicho mapa mediante un subconjunto \texttt{ins} de las claves. El segundo filtro obtiene el complemento del resultado del primer filtro (en otras palabras, todas las entradas de la \texttt{UTXO} que no son indexadas por claves en la lista de inputs). El tercero filtra el mapa mediante los valores.
+Veamos como se refleja dicha actualización del ledger en términos de notación matemática (que puede ser reflejada en código con relativa facilidad). Las siguientes son tres formas de filtrar el mapa finito de \texttt{UTXO}. El primero filtra dicho mapa mediante un subconjunto \texttt{ins} de las claves. El segundo filtro obtiene el complemento del resultado del primer filtro (todas las entradas de la \texttt{UTXO} que no son indexadas por claves en la lista de inputs). El tercero filtra el mapa mediante los valores.
 
 \begin{center}
 	\begin{tabular}{ r @{} c @{} l r }
@@ -407,13 +407,13 @@ Usando esta notación, podemos definir la actualización del \texttt{UTXO}, debi
 
 \[ (\text{txins } tx\ntriangleleft\ utxo) \cup\text{outs } tx \]
 
-Hay que tener en cuenta que se debe realizar un cálculo explícito de la cantidad total de Aca en las salidas y el total de \textit{ada} en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas.
+Hay que tener en cuenta que se debe realizar un cálculo explícito de la cantidad total de \textit{ada} en las salidas y el total de \textit{ada} en todas las entradas de una transacción como parte de la validación de la transacción. También podría haber outputs en una transacción sin inputs correspondientes; estos se deben a la recolección de recompensas.
 
 Ahora, para validar una transacción, se realiza una serie de cálculos que involucran el Ada en la misma y el Ada en otras cuentas del ledger, para asegurarse de que no se crea ni se destruye dinero. Esto se conoce como `propiedad contable generalizada'. El modelo contable UTXO brinda protección integrada contra el `doble gasto' de un output determinado.
 
 Esta protección inherente, junto con la aplicación de la propiedad contable generalizada, asegura que no se permita que ocurra ningún gasto deshonesto. Esta es una propiedad crucial del sistema contable del ledger de Cardano, en particular porque existe una cantidad fija de Ada que nunca puede cambiar.
 
-Para finalizar, hay que tener en cuenta que una transacción incluye una gran cantidad de datos adicionales, como testigos, certificados, y scripts juntos con sus hashes. En esta sección no hemos entrado en los detalles de los tipos y cálculos específicos utilizados en la implementación del ledger de Cardano. Sin embargo, abarcamos suficiente información como para poder entender que sucede detrás de escena cuando se genera una transacción en la blockchain.
+Para finalizar, hay que tener en cuenta que una transacción incluye una gran cantidad de datos adicionales, como testigos, certificados, y scripts juntos con sus hashes. En esta sección no hemos entrado en los detalles de los tipos y cálculos específicos utilizados en la implementación del ledger de Cardano. Sin embargo, abarcamos suficiente información como para poder entender lo que sucede detrás de escena cuando se genera una transacción en la blockchain.
 
 
 \section{Marlowe como DSL}
@@ -453,11 +453,13 @@ Al ejecutar un contrato, debemos realizar un seguimiento del \textit{contrato ac
 
 \subsubsection{Blockchain}
 
-Si bien Marlowe está diseñado para trabajar con cadenas de bloques en general, algunos detalles de cómo interactúa con la misma son relevantes al describir la semántica y la implementación del lenguaje.
+Si bien Marlowe está diseñado para trabajar con cadenas de bloques en general, algunos detalles de cómo interactúa con la cadena son relevantes al describir la semántica y la implementación del lenguaje.
 
 Una cadena de bloques basada en UTXO~\ref{sec:UTXO} contiene una colección de transacciones. Cada transacción tiene un conjunto de entradas y salidas, y la cadena de bloques se construye vinculando las salidas de transacciones no gastadas (UTXO) a las entradas de una nueva transacción. Como máximo se puede generar un bloque en cada \textit{slot}, que tienen una duración de 1 segundo.
 
-Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento, pero los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques. Actualmente, utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en cadena usaremos el tiempo, adoptando el estándar de tiempo \textit{Posix}.
+Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento. Los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques.
+
+Actualmente, se utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en la blockchain usaremos el tiempo, adoptando el estándar de tiempo \textit{Posix}.
 
 \subsubsection{UTXO, billeteras y la aplicación Marlowe Run}
 El dinero dentro de la blockchain reside en los UTXO, que están protegidos criptográficamente por una clave privada en poder del propietario. Estas claves se pueden usar para canjear la salida y usarlas como entradas para nuevas transacciones. Los usuarios suelen realizar un seguimiento de sus claves privadas y los valores adjuntos a ellas en una billetera (o \textit{wallet}) criptográficamente segura.
@@ -468,7 +470,7 @@ Para interactuar con un contrato que se ejecuta en blockchain, los usuarios debe
 El Playground de Marlowe~\cite{marlowe_playground} admite la simulación de contratos. Esta es una simulación omnisciente, en la que el usuario puede realizar cualquier acción para cualquier rol y, por lo tanto, puede observar la ejecución desde la perspectiva de todos los usuarios simultáneamente. Esto contrasta con la experiencia de ejecutar un contrato en Marlowe Run, en el que cada participante ve el contrato desde su propio punto de vista. En particular, los participantes solo pueden interactuar con un contrato en ejecución que está esperando su entrada; si ese no es el caso, entonces verán que la ejecución del contrato está esperando la participación de otra persona.
 
 \subsubsection{Valores y \textit{tokens}}
-En los ejemplos de los capítulos posteriores, veremos que siempre que se requiere un \textit{valor}, hemos utilizado exclusivamente \textit{Ada}. Esto tiene sentido ya que \textit{Ada} es la moneda fundamental respaldada por Cardano.
+En los ejemplos de los capítulos posteriores, veremos que siempre que se requiere un \textit{valor}, hemos utilizado exclusivamente \textit{ada}. Esto tiene sentido ya que \textit{ada} es la moneda fundamental respaldada por Cardano.
 
 Sin embargo, Marlowe ofrece un concepto de \textit{valor} más general, que admite tokens \textit{nativos} personalizados, que pueden ser fungibles, no fungibles o mixtos:
 
@@ -480,12 +482,12 @@ newtype Value = Value
 Los tipos \texttt{CurrencySymbol} y \texttt{TokenName} son wrappers simples alrededor de \texttt{ByteString}.
 
 
-Esta noción de valor abarca a \textit{Ada}, tokens fungibles (como monedas), tokens no fungibles o NFT (tokens personalizados que no son intercambiables con otros tokens) y casos mixtos más exóticos:
+Esta noción de valor abarca a \textit{ada}, tokens fungibles (como monedas), tokens no fungibles o NFT (tokens personalizados que no son intercambiables con otros tokens) y casos mixtos más exóticos:
 
 \begin{itemize}
-    \item Ada usa la cadena de bytes vacía como \texttt{CurrencySymbol} y \texttt{TokenName}.
+    \item ada usa la cadena de bytes vacía como \texttt{CurrencySymbol} y \texttt{TokenName}.
 
-    \item Un \textit{token fungible} está representado por un \texttt{CurrencySymbol} (o símbolo de moneda) para el que existe exactamente un \texttt{TokenName} (nombre de token) que puede tener una cantidad entera arbitraria no negativa (del cual \textit{Ada} es un caso especial).
+    \item Un \textit{token fungible} está representado por un \texttt{CurrencySymbol} (o símbolo de moneda) para el que existe exactamente un \texttt{TokenName} (nombre de token) que puede tener una cantidad entera arbitraria no negativa (del cual \textit{ada} es un caso especial).
 
     \item Una clase de \textit{tokens no fungibles} es un \texttt{CurrencySymbol} con varios \texttt{TokenName}s, cada uno de los cuales tiene una cantidad de uno. Cada uno de estos nombres corresponde a un \textit{token único no fungible}.
 
@@ -494,7 +496,7 @@ Esta noción de valor abarca a \textit{Ada}, tokens fungibles (como monedas), to
 \end{itemize}
 
 \subsubsection{Ejecución de un contrato Marlowe}
-Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato. Si en un punto particular de ejecución, un contrato espera un depósito de \texttt{100 Ada} de Alice, solo esa transacción tendrá éxito, cualquier otra será rechazada.
+Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato. Si en un punto particular de ejecución, un contrato espera un depósito de \texttt{100 ada} de Alice, solo esa transacción tendrá éxito, cualquier otra será rechazada.
 
 Una transacción contiene una lista ordenada de \textit{entradas} o \textit{acciones}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. Primero, evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar ninguna entrada, una condición que se llama \textit{quiescent} (o inactiva). En esta etapa, avanza a través cualquier \texttt{When} con tiempos de espera que hayan pasado, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
 
@@ -530,7 +532,7 @@ data Contract = Close
 \end{code}
 
 Marlowe tiene seis maneras de construir contratos. Cinco de esos métodos ---
-\texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, y \texttt{Assert} --- construyen un contrato complejo a partir de contratos más simples, y el ultimo método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
+\texttt{Pay}, \texttt{Let}, \texttt{If}, \texttt{When}, y \texttt{Assert} --- construyen un contrato complejo a partir de contratos más simples, y el último método, \texttt{Close} es un contrato simple. En cada paso de la ejecución, además de modificar el estado y proceder hacia un nuevo contrato, podrían generarse pagos y advertencias (\textit{warnings}).
 
 Antes de describir los métodos exhaustivamente, es útil conocer la definición de valores, observaciones y acciones:
 
@@ -545,9 +547,9 @@ Antes de describir los métodos exhaustivamente, es útil conocer la definición
 
 
 \subsubsection{Pay}
-Un contrato de pago \texttt{(Pay acc payee tok val cont)} realizará un pago de valor \texttt{val} de un token \texttt{tok} desde una cuenta \texttt{acc} a un beneficiario \texttt{payee}, quien sera uno de los participantes del contrato, u otra cuenta en el mismo.
+Un contrato de pago \texttt{(Pay acc payee tok val cont)} realizará un pago de valor \texttt{val} de un token \texttt{tok} desde una cuenta \texttt{acc} a un beneficiario \texttt{payee}, quién será uno de los participantes del contrato, u otra cuenta en el mismo.
 
-Se generarán \textit{warnings} si el valor \texttt{val} no es positivo, o si no hay recursos suficientes en \texttt{acc} para realizar el pago en su totalidad (incluso si hay balances positivos de otros tokens en la misma). En este último caso, se realizará un pago parcial (conteniendo todo el dinero disponible). El contrato en el que continuará la ejecución es \texttt{cont}.
+Se generarán \textit{warnings} si el valor \texttt{val} no es positivo, o si no hay recursos suficientes en \texttt{acc} para realizar el pago en su totalidad (incluso si hay balances positivos de otros tokens en la misma). En este último caso, se realizará un pago parcial (conteniendo todo el dinero disponible). El contrato en el que seguirá la ejecución es \texttt{cont}.
 
 \subsubsection{Close}\label{sssec:Close}
 
@@ -557,7 +559,7 @@ Un contrato \texttt{Close} prevé que el contrato sea cerrado (o rescindido). La
 El conditional \texttt{If obs cont1 cont2} continuará en \texttt{cont1} o \texttt{cont2}, dependiendo de la observación \texttt{obs} cuando el mismo es ejecutado.
 
 \subsubsection{When}
-Es el constructor de contratos mas complejo, con la forma \texttt{When cases timeout cont}. El mismo es activado por acciones, que pueden o no ocurrir en un \textit{slot} en particular. Como continua el mismo tras una acción se declara en la sintaxis de \texttt{cases} del contrato.
+Es el constructor de contratos mas complejo, con la forma \texttt{When cases timeout cont}. El mismo es activado por acciones, que pueden o no ocurrir en un \textit{slot} en particular. Como continúa el mismo tras una acción se declara en la sintaxis de \texttt{cases} del contrato.
 
 En el contrato \texttt{When cases timeout cont}, la lista \texttt{cases} contiene una colección de casos. Cada caso es de la forma \texttt{Case ac co} donde \texttt{ac} es una acción y \texttt{co} un contrato de continuación. Cuando una acción en particular, por ejemplo \texttt{ac}, ocurre, el estado del contrato es actualizado correspondientemente y y mismo continuara su ejecución en \texttt{co}.
 
@@ -611,7 +613,7 @@ When [ Case aliceChoice
      ]
 \end{code}
 
-En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin perdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el código simétrico y repetido que cubriría el caso en el que Bob comienza).
+En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin pérdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el código simétrico y repetido que cubriría el caso en el que Bob comienza).
 
 A continuación, se incluye un diagrama de secuencia que ilustra el comportamiento esperado del contrato, descrito anteriormente en pseudocódigo:
 
@@ -823,7 +825,7 @@ Antes de adentrarnos en la especificación de un contrato, es necesario poder en
 	      En general, el `estado' representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. Las variables están escritas en su forma abreviada con la primera letra en mayúscula, en negrita e indexadas mediante el tiempo.
 	\item \textbf{Eventos}: Un evento de contrato (o simplemente evento) $e^k_t$ se refiere a cualquier evento programado o no programado en un momento determinado $t$ y de un tipo determinado $k$.
 
-	      Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos flujo de efectivo o se actualizan los estados del contrato. El diccionario de eventos~\cite{ACTUS_Dictionary_Events} enumera y describe todos los tipos de eventos $k$ definidos por el estándar ACTUS.\@
+	      Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos de efectivo o se actualizan los estados del contrato. El diccionario de eventos~\cite{ACTUS_Dictionary_Events} enumera y describe todos los tipos de eventos $k$ definidos por el estándar ACTUS.\@
 
 	\item \textbf{Funciones de transición de estado}: Dichas funciones, conocidas en Inglés como \textit{'State Transition Functions'} (STF) definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. Esto provoca que el  \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
 
@@ -3121,11 +3123,11 @@ Además, hemos escrito contratos financieros basados en el estándar ACTUS, que 
 
 \subsubsection{Dificultades encontradas}
 
-Debido a que la escritura de los contratos ACTUS en Haskell sigue en etapa de desarrollo por parte de IOHK, no se factible tratar de traducir los mismos a Isabelle, debido a que sería necesario traducir completamente la estructura del generador
+Debido a que la escritura de los contratos ACTUS en Haskell sigue en etapa de desarrollo por parte de IOHK, no es factible tratar de traducir los mismos a Isabelle, debido a que sería necesario realizarlo en la totalidad de la estructura del generador
 
 Otra limitación aparente surge de la traducción de los contratos completos desde Haskell a Marlowe (y consecuentemente a Isabelle). Debido a la complejidad de algunos contratos ACTUS y a la naturaleza de Marlowe de anidar sub-contratos, las traducciones suelen tener decenas (y hasta cientos) de niveles de indentación.
 
-Esto dificulta no solo la lectura, sino la traducción manual a Isabelle de decenas de términos del contrato, haciendo compleja extraer propiedades para posteriores verificaciones.
+Esto dificulta no solo la lectura, sino la traducción manual a Isabelle de decenas de términos del contrato, haciendo compleja la extracción de propiedades para verificar y las pruebas respectivas.
 
 
 \subsubsection{Líneas de trabajo futuro}
