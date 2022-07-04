@@ -76,7 +76,7 @@
 \chapter*{Agradecimientos}
 \thispagestyle{empty} % Saco el numero de página en los agradecimientos
 
-Al terminar esta tesis, quiero expresar mi gratidud a aquellas personas que tuvieron impacto en la misma:
+Al terminar esta tesis, quiero expresar mi gratitud a aquellas personas que tuvieron impacto en la misma:
 { \setlength{\parindent}{24pt}
 
     \textit{A mi director, Dr.\ Ing. Mariano G. Beiró, por la dedicación y apoyo que ha brindado a este trabajo, por el respeto y confianza a mis sugerencias e ideas y por la guía a lo largo de esta tesis.}
@@ -95,7 +95,7 @@ También en lo personal quiero agradecer:
 
     \textit{A Ana, quién me ha acompañado en incontables momentos mientras realizaba este trabajo.}
 
-    \textit{A mis amigos y compañeros de la facultad, por entender mis ausencias durante los largos momentos de estudio y desarrollo de este trabajo y por hacer aún más entretenido e interensante el transcurso de la carrera.}
+    \textit{A mis amigos y compañeros de la facultad, por entender mis ausencias durante los largos momentos de estudio y desarrollo de este trabajo y por hacer aún más entretenido e interesante el transcurso de la carrera.}
 
     \textit{Finalmente, reconocer a todas las personas que me han brindado su tiempo, paciencia, comprensión y solidaridad a lo largo de esta tesis y durante mis años de estudio y formación.}
 }
@@ -370,11 +370,6 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 	\end{tabular}
 \end{center}
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.9\textwidth]{Basic_UTXO_Definitions.png}
-%     \caption{Definiciones básicas en el modelo UTXO.\@ Extraído del libro `\textit{Plutus: Writing reliable smart contracts}'}\label{fig:Basic_UTXO_definitions}
-% \end{figure}
 
 Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \textit{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
@@ -2622,7 +2617,7 @@ lemma applyAllLoopDoesNotDecreaseMinSlot :
 
 La misma demuestra que aplicar el \textit{loop} sobre el contrato PAM no hace decrecer el \textit{minSlot}.
 
-\section{Probando la ausencia de Warnings en el contrato Auction}
+\section{Probando la ausencia de \textit{warnings} en el contrato \textit{Auction}}
 
 En esta sección detallaremos el trabajo realizado para probar la ausencia de \textit{warnings} en el contrato \textit{Auction}(subasta)~\cite{auction_haskell}.
 
@@ -3003,10 +2998,77 @@ termination
 
 Todo lo referido a mi implementación y pruebas en el contrato \textit{Auction} puede encontrarse en \url{https://github.com/julianferres/marlowe/blob/master/isabelle/Auction.thy} (visto por última vez el \today).
 
+\subsection{Modelo de reducciones de Marlowe}
+
+Para poder comprender las pruebas realizadas, es necesario conocer en detalle las diferentes funciones de reducción que son parte de la semántica de Marlowe. Las funciones que mencionamos en esta sección se encuentran traducidas completamente a Marlowe en el archivo \textit{Semantics.thy} de~\cite{marlowe-isabelle-repo}.
+
+En la sección~\ref{ssec:Modelo_de_marlowe} pudimos ver las diferentes acciones que se llevan a cabo al procesar una transacción sobre un contrato. Presentaremos superficialmente las funciones encargadas de llevar a cabo dicho procesamiento.
+
+La función \textit{playTrace} (mediante su función auxiliar \textit{playTraceAux}) procesa una lista de transacciones. Cada transacción se ejecuta mediantes la función \textit{computeTransaction}. La misma se ocupa de procesar una transacción en particular.
+
+Como hemos mencionado, una transacción contiene una lista ordenada de entradas o acciones (llamadas \textit{inputs} en la semántica). Dichos \textit{inputs} se analizan mediante la función \textit{applyAllInputs} (junto con su función recursiva auxiliar \textit{applyAllLoop}). A diferencia de las funciones previas, \textit{applyAllLoop} tiene dos tareas:
+
+\begin{enumerate}
+    \item Evalúa el contrato paso a paso hasta que no se puede cambiar más sin procesar ninguna entrada, en este momento se llama \textit{quiescent} (o inactivo). Dicha acción se realiza mediante la función \textit{reduceContractUntilQuiescent}.
+    \item Procesa la siguiente entrada (con ayuda de la función \textit{applyInput}).
+\end{enumerate}
+
+Este proceso del tipo `\textit{reducir hasta inactivo + aplicar la siguiente entrada}' se realiza con todos los \textit{inputs}. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
+
+Para reducir el contrato hasta inactivo se deben realizar sucesivas reducciones. Esto es posible ya que \textit{reduceContractUntilQuiescent} utiliza el ciclo de \textit{reductionLoop} para dicha tarea. La función \textit{reductionLoop} llama en cada paso a \textit{reduceContractStep}, hasta que el mismo es irreducible. Distintos constructores, como \textit{When}, \textit{Pay} o \textit{Close} obedecen distintas reglas de reducción.
+
+Por otro, cada \textit{input} se procesa en \textit{applyInput}, quien se encarga de invocar a \textit{applyCases}. Apply cases se ocupa de recibir una lista de \textit{Cases} (del tipo \textit{Choice}, \textit{Deposit} o \textit{Notify}) y ver si el input (del tipo \textit{IChoice}, \textit{IDeposit} o \textit{INotify}) coincide con su repectivo \textit{Case}. En caso de que haya una coincidencia, se realizan las modificaciones correspondientes (según el caso) al estado del contrato.
+
+El manejo de errores y \textit{warnings} y errores se realiza mediante tipos de datos específicos, que modelan los resultados de cada función. Por ejemplo, para la función \textit{reduceContractStep}, se introducen dos tipos de datos que ayudan a expresar su salida:
+
+\begin{code}[title=Tipos de datos \textit{ReduceWarning} y \textit{ReduceStepResult}.]{Isabelle}
+datatype ReduceWarning = ReduceNoWarning
+                       | ReduceNonPositivePay AccountId Payee Token Money
+                       | ReducePartialPay AccountId Payee Token Money Money
+                       ...
+
+datatype ReduceStepResult = Reduced ReduceWarning ReduceEffect State Contract
+                          | NotReduced
+                          | AmbiguousSlotIntervalReductionError
+
+\end{code}
+
+O por ejemplo, los siguientes tipos de datos que modelan una transacción, y el resultado de \textit{computeTransaction}:
+
+\begin{code}[title=Tipos de datos relacionados a una transacción en Marlowe.]{Isabelle}
+datatype TransactionError = TEAmbiguousSlotIntervalError
+                          | TEApplyNoMatchError
+                          | TEIntervalError IntervalError
+                          | TEUselessTransaction
+
+record TransactionOutputRecord = txOutWarnings :: "TransactionWarning list"
+                                 txOutPayments :: "Payment list"
+                                 txOutState :: State
+                                 txOutContract :: Contract
+
+datatype TransactionOutput = TransactionOutput TransactionOutputRecord
+                           | TransactionError TransactionError
+
+record Transaction = interval :: SlotInterval
+                     inputs :: "Input list"
+
+
+\end{code}
+
+A continuación se puede ver un diagrama de llamados entre las funciones de la semántica, en el momento de ejecutar un contrato:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=0.72\textheight]{Dependencias_semantica_marlowe.png}
+    \caption{Llamados entre funciones de la semántica de Marlowe.}\label{fig:Dependencias_semantica}
+\end{figure}
+
+
 
 \subsection{Ausencia de \textit{warnings}}
 
-Actualmente, el único contrato que posee dicha prueba es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
+
+Actualmente, el único contrato que posee dicha prueba para \textit{computeTransaction} es el contrato \textit{Close}, la misma se puede encontrar en el archivo \texttt{CloseSafe.thy}, en~\cite{marlowe-isabelle-repo}. El objetivo del mismo es probar el siguiente teorema:
 
 \begin{code}[title=Ausencia de \textit{warnings} para el contrato \texttt{Close} en sintaxis de Isabelle/HOL.]{Isabelle}
 theorem closeIsSafe : "computeTransaction tra sta Close = TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
