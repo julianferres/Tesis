@@ -2687,10 +2687,10 @@ Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado p
     \caption{Diagrama de secuencia del contrato \textit{Auction}.}\label{fig:Auction}
 \end{figure}
 
-Con el fin de mantener la claridad del diagrama. No se muestran casos donde las ofertas son menores a \textit{minBid} o mayores a \textit{maxBid}, las cuales deben ser rechazadas. Tampoco casos en los que se oferta menos del valor actual del líder, en los cuales se devuelve el deposito automáticamente y se mantiene el líder y valor actual.
+Con el fin de mantener la claridad del diagrama no se muestran casos donde las ofertas son menores a \textit{minBid} o mayores a \textit{maxBid}, las cuales deben ser rechazadas. Tampoco casos en los que se oferta menos del valor actual del líder, en los cuales se devuelve el depósito automáticamente y se mantiene el líder y valor actual.
 
 
-Con respecto a la implementación de IOHK, el mismo se encuentra escrito en Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
+Con respecto a la implementación de IOHK, la misma se encuentra escrita en Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
 
 \begin{code}[title=Contrato \textit{Auction} escrito en Marlowe]{Haskell-Cardano}
 {-# LANGUAGE OverloadedStrings #-}
@@ -2731,17 +2731,19 @@ contract owner minBid maxBid bidders deadline = go Nothing [] $ map fromString b
     value p = head [fromString q | q <- bidders, fromString q == p]
 \end{code}
 
-El mismo posee varias funciones auxiliares, y tres funciones que se llaman mutuamente:
+Posee varias funciones auxiliares, y tres funciones que se llaman mutuamente:
 
 \begin{itemize}
-    \item \texttt{go}: Maneja el contrato en general, y se ocupa de llenar los \textit{cases} de un constructor \texttt{When} de Marlowe con \textit{deposits} y \textit{choices}. Popula el resto de los parametros del constructor con la información provista por los terminos del contrato.
-    \item \texttt{choose}: Recibe una \textit{Party} (que \texttt{go} toma de la lista \texttt{qs}) y retorna un \textit{Case} populado adecuadamente. Dicha \textit{Party} se remueve de la lista de \textit{choices} (\texttt{qs}) y se agrega a la de \textit{deposits} (\texttt{ps}). Para popular los campos del \texttt{Case}, se llama nuevamente a \texttt{go}. Para popular los campos del ttCase, se llama nuevamente a ttgo.
-    \item \texttt{deposit}: Si la oferta más alta hasta el momento (\texttt{m}) es menor al valor del depósito que se está procesando, se actualiza \texttt{m} con el nuevo valor y dueño. También se realiza la actualiza si nadie ha ofertado aún (simbolizado con el valor \texttt{Nothing} para \texttt{m}). Se remueve a la \textit{Party} de la lista \texttt{ps} y se retorna el \texttt{Case} correspondiente (que termina de ser populado llamando recursivamente a \texttt{go}).
+    \item \texttt{go}: Maneja el contrato en general, y se ocupa de llenar los \textit{cases} de un constructor \texttt{When} de Marlowe con \textit{deposits} y \textit{choices}. Completa el resto de los parámetros del constructor con la información provista por los términos del contrato.
+
+    \item \texttt{choose}: Recibe un \textit{Party} (que \texttt{go} toma de la lista \texttt{qs}) y retorna un \textit{Case} completado adecuadamente. Dicha \textit{Party} se remueve de la lista de \textit{choices} (\texttt{qs}) y se agrega a la de \textit{deposits} (\texttt{ps}). Para completar los campos del \texttt{Case}, se llama nuevamente a \texttt{go}. Para completar los campos del \texttt{Case}, se llama nuevamente a \texttt{go}.
+
+    \item \texttt{deposit}: Si la oferta más alta hasta el momento (\texttt{m}) es menor al valor del depósito que se está procesando, se actualiza \texttt{m} con el nuevo valor y dueño. También se actualiza si nadie ha ofertado aún (simbolizado con el valor \texttt{Nothing} para \texttt{m}). Se remueve a la \textit{Party} de la lista \texttt{ps} y se retorna el \texttt{Case} correspondiente (que termina de ser completado llamando recursivamente a \texttt{go}).
 \end{itemize}
 
-El contrato también tiene algunas funciones auxiliares para poder resolver la finalización. Por ejemplo, \texttt{settle} se ocupa de construir el \texttt{Pay} desde el ganador de la subasta (en el caso de exista) hacia el dueño (\texttt{owner}) de la misma.
+El contrato también tiene algunas funciones auxiliares para poder resolver la finalización. Por ejemplo, \texttt{settle} se ocupa de construir el \texttt{Pay} desde el ganador de la subasta (en el caso de que exista) hacia el dueño (\texttt{owner}) de la misma.
 
-Cabe mencionar que el contrato acumuló algunos \textit{deposits} (de las personas que participaron). Todos los mismos (expecto el del ganador), serán devueltos por un \texttt{Close} eventualmente.
+Cabe mencionar que el contrato acumuló algunos \textit{deposits} (de las personas que participaron). Todos los mismos (excepto el del ganador), serán devueltos por un \texttt{Close} eventualmente.
 
 
 \subsection{Traducción del contrato \textit{Auction} a Isabelle}
@@ -2776,7 +2778,7 @@ termination by lexicographic_order
 
 Algunos detalles ahora se han hecho explícitos:
 \begin{enumerate}
-    \item La opción \textit{secuential} permite el preprocesamiento con superposicion de patrones\footnote{Los mismos definen el comportamiento de la función ante determinadas entradas, y obedecen reglas de \textit{pattern matching}}. Sin esta opción, las ecuaciones ya deben estar disjuntas y completas.
+    \item La opción \textit{secuential} permite el preprocesamiento con superposición de patrones\footnote{Los mismos definen el comportamiento de la función ante determinadas entradas, y obedecen reglas de \textit{pattern matching}}. Sin esta opción, las ecuaciones ya deben estar disjuntas y completas.
     \item La definición de una función produce una obligación de prueba, que expresa la completitud y la compatibilidad de los patrones. La combinación de los métodos \textit{pat\_completeness} y \textit{auto} se usa para resolver esta obligación de prueba.
     \item Una prueba de terminación finaliza la definición, iniciada por el comando \textit{termination}. Cada vez que falla un comando \textit{fun}, generalmente es una buena idea expandir la sintaxis a la forma de \textit{function}, para ver qué está sucediendo realmente.
 \end{enumerate}
@@ -2802,7 +2804,7 @@ by pat_completeness auto
 
 En este caso, las funciones \textit{even} y \textit{odd} (que reciben un número natural y retornan si es par o impar respectivamente) hacen uso de la recursión mutua.
 
-La defición consta del constructor \textit{function}, seguido por las firmas de ambas funciones (separadas por \textit{and}) y luego por la definición de todas las funciones, para todos los parametros de entrada posibles.
+La defición consta del constructor \textit{function}, seguido por las firmas de ambas funciones (separadas por \textit{and}) y luego por la definición de todas las funciones, para todos los parámetros de entrada posibles.
 
 Al utilizar \textit{function}, las obligaciones de la definición se deben probar manualmente.
 
@@ -2827,18 +2829,18 @@ Teniendo en cuenta las siguientes técnicas de traducción:
 
     \item Debido a que las funciones \textit{go}, \textit{handleChoose} y \textit{handleDeposit} son mutuamente recursivas~\ref{sssec:recursion_mutua}, no pueden definirse secuencialmente (debido a que la primer función que se defina no podrá acceder a las siguientes). 
 
-    \item A diferencia de Haskell, Isabelle no soporta definiciones anidadas de funciones, por lo que las funciones auxiliares tuvieron que ser extraidas (las variables que obtenia del \textit{scope} se convierten en parametros de las mismas).
+    \item A diferencia de Haskell, Isabelle no soporta definiciones anidadas de funciones, por lo que las funciones auxiliares tuvieron que ser extraídas (las variables que obtenía del \textit{scope} se convierten en parámetros de las mismas).
 
     \item Extrajimos funciones \textit{lambda} para poder facilitar pruebas posteriores (por ejemplo \textit{remove}).
 
     \item Reemplazamos el tipo \textit{Maybe} de Haskell con \textit{option} de Isabelle (para la variable \texttt{m}).
-    \item Para comprimir la notación, todos los términos del contrato (\textit{owner}, \textit{minBid}, \textit{maxBid} y \textit{deadline}) encapsulamos en una variable de tipo \textit{AuctionTerms} (que es un \textit{record}, y puede contener varios tipos de datos).
+    \item Para comprimir la notación, los términos del contrato (\textit{owner}, \textit{minBid}, \textit{maxBid} y \textit{deadline}) los encapsulamos en una variable de tipo \textit{AuctionTerms} (que es un \textit{record}, y puede contener varios tipos de datos).
 
     \item El pattern matching para definir las funciones según los datos de entrada es similar al de Haskell.
          
 \end{itemize}
 
-podemos ver a continuación la traducción del contrato \textit{Auction} a Isabelle:
+Podemos ver a continuación la traducción del contrato \textit{Auction} a Isabelle:
 
 \newpage
 \begin{code}[title=Contracto \textit{Auction} traducido a Isabelle.]{Isabelle}
@@ -2906,13 +2908,13 @@ Se omitieron las definiciones necesarias para las distintas pruebas, así como t
 
 \subsection{Probando la terminación del contrato}
 
-Dado que HOL es una lógica de funciones totales\footnote{Una función se conoce como total cuando está definida para todos los valores posibles de entrada.}, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
+Dado que HOL es una lógica de funciones totales\footnote{Una función se dice total cuando está definida para todos los valores posibles de entrada.}, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
 
-La terminación no solo es una propiedad deseable en los contratos, sino que también le permite a Isabelle utilizar teoremas adicionales, como por ejemplo el de inducción. Esto es de gran importancia a la de probar teoremas que puedan utilizar las funciones.
+La terminación no solo es una propiedad deseable en los contratos, sino que también le permite a Isabelle utilizar teoremas adicionales, como por ejemplo el de inducción. Esto es de gran importancia a la hora de probar teoremas que puedan utilizar las funciones.
 
 \subsubsection{Probando terminación mediante el uso de \textit{relation}}
 
-Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellos, podemos especificar la relación de terminación manualmente.
+Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellas, podemos especificar la relación de terminación manualmente.
 
 El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
 
@@ -2929,9 +2931,9 @@ Debemos entonces encontrar una medida que sea decreciente (similar a \textit{eva
     \item La función \textit{handleDeposit} es llamada en \textit{contractLoop}, siempre con elementos de \textit{ps}. Consecuentemente siempre se cumple que $p \in ps$. De forma análoga a lo sucedido con \textit{handleChoose}, Isabelle no es capaz de determinar dicha propiedad, y nuestra función de medida debe decrecer incluso el caso en el que $p \notin ps$.
 \end{itemize}
 
-Teniendo en cuenta la sintaxis de recursión mutua definimos los tipos necesarios y la funcion \textit{evalBoundAuction}, que respeta las propiedades deseadas.
+Teniendo en cuenta la sintaxis de recursión mutua definimos los tipos necesarios y la función \textit{evalBoundAuction}, que respeta las propiedades deseadas.
 
-Como Isabelle transforma nuestra definición triple en una funcion de tipo \textit{suma de tres funciones}, el mismo será de la forma $\tau_1 + (\tau_2 + \tau_3)$ (para mas funciones, los tipos de las nuevas definiciones se anidan a derecha). 
+Como Isabelle transforma nuestra definición triple en una función de tipo \textit{suma de tres funciones}, el mismo será de la forma $\tau_1 + (\tau_2 + \tau_3)$ (para más funciones, los tipos de las nuevas definiciones se anidan a derecha). 
 
 Para compactar la sintaxis, definimos los tipos especificos para nuestras funciones:
 
@@ -3030,7 +3032,7 @@ lemma removeAbsentElementMantainsSize :
 \end{code}
 
 
-Para incluir dichos \textit{lemmas} a un probador automático, usamos \textit{using}. Con esto, podemos probar todos los \textit{subgoals}. La prueba de terminación queda completada:
+Para incluir dichos \textit{lemmas} en un probador automático, usamos \textit{using}. Con esto, podemos probar todos los \textit{subgoals}. La prueba de terminación queda completada:
 
 \begin{code}[title=Prueba de terminación de \textit{contractLoop} y sus funciones recursivas.]{Isabelle}
 termination 
@@ -3132,7 +3134,7 @@ Las mismas ayudan a separar la dificultad del teorema principal. La detección y
 
 Las acciones de los usuarios son imprevesibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos en este contrato podrían ser: intentar ofertar un valor fuera del rango esperado, que se oferte una cantidad negativa, que en la cuenta no haya dinero suficiente para la oferta, entre otras.
 
-Es por eso que se formuló una serie de precondiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}:
+Es por eso que se formularon una serie de precondiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}:
 
 \begin{code}[title=Invariante para el contrato \textit{Auction}.]{Isabelle}
 definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ State $\Rightarrow$ bool" where
@@ -3149,19 +3151,17 @@ definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner
 
 Esta invariante garantiza la presencia de las siguientes propiedades, que generarían la ausencia de \textit{warnings} al aplicar un \textit{input}:
 \begin{itemize}
-    \item El identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
-    \item La cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
-    \item La cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
-    \item Que \textit{minBid} sea positivo, si no se producirán \textit{warnings} durante las reducciones.
+    \item Que el identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
+    \item Que la cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
+    \item Que la cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
+    \item Que \textit{minBid} sea positivo, sino se producirán \textit{warnings} durante las reducciones.
 \end{itemize}
 
 \subsubsection{Ausencia de \textit{warnings} en \textit{applyInput}}
 
-Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción, se procesan sucesivamente los \textit{inptus} de la misma, y luego de cada uno se realizan \textit{reductionSteps} hasta que el contrato se encuentra en estado \textit{inactivo} (\textit{quiescent}). Probaremos que al aplicar un \textit{input} no se generan \textit{warnings}.
+Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción se procesan sucesivamente los \textit{inptus} de la misma, y luego de cada uno se realizan \textit{reductionSteps} hasta que el contrato se encuentra en estado \textit{inactivo} (\textit{quiescent}). Probaremos que al aplicar un \textit{input} no se generan \textit{warnings}. Una vez que se definió el invariante, se procede a verificar la prueba para \textit{applyInput}. 
 
-Una vez que se definió el invariante, se procede a verificar la prueba para \textit{applyInput}. 
-
-Para comenzar se utilizara inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
+Para comenzar se utilizará inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
 
 \begin{code}[title=Ausencia de \textit{warnings} durante \textit{applyInput}.]{Isabelle}
 lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyInput env curState head (contractLoop m ps qs terms) = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
@@ -3192,7 +3192,7 @@ lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs
 \end{code}
 
 
-Luego de realizar las simplificaciones correspondientes, y aplicar los casos necesarios, se pueden probar los distintos \textit{subgoals}. Para poder resolver dicho lema, fueron necesarios dos lemas auxiliares, que se repetían en algunos de los \textit{subgoals}.
+Luego de realizar las simplificaciones correspondientes y aplicar los casos necesarios, se pueden probar los distintos \textit{subgoals}. Para resolver dicho lema fueron necesarios dos lemas auxiliares, que se repetían en algunos de los \textit{subgoals}.
 
 \begin{code}[title=Lemas auxiliares para la prueba sobre \textit{applyInput}.]{Isabelle}
 lemma applyCasesOfMap : 
@@ -3258,9 +3258,9 @@ Además, hemos escrito contratos financieros basados en el estándar ACTUS, que 
 
 \subsubsection{Dificultades encontradas}
 
-Debido a que la escritura de los contratos ACTUS en Haskell sigue en etapa de desarrollo por parte de IOHK, no es factible tratar de traducir los mismos a Isabelle, debido a que sería necesario realizarlo en la totalidad de la estructura del generador
+Debido a que la escritura de los contratos ACTUS en Haskell sigue en etapa de desarrollo por parte de IOHK, no es factible aún traducir los mismos a Isabelle, debido a que sería necesario realizarlo en la totalidad de la estructura del generador.
 
-Otra limitación aparente surge de la traducción de los contratos completos desde Haskell a Marlowe (y consecuentemente a Isabelle). Debido a la complejidad de algunos contratos ACTUS y a la naturaleza de Marlowe de anidar sub-contratos, las traducciones suelen tener decenas (y hasta cientos) de niveles de indentación.
+Otra limitación aparente surge de la traducción de los contratos completos desde Haskell a Marlowe (y consecuentemente a Isabelle). Debido a la complejidad de algunos contratos ACTUS y a la naturaleza de Marlowe de anidar subcontratos, las traducciones suelen tener decenas (y hasta cientos) de niveles de indentación.
 
 Esto dificulta no solo la lectura, sino la traducción manual a Isabelle de decenas de términos del contrato, haciendo compleja la extracción de propiedades para verificar y las pruebas respectivas.
 
