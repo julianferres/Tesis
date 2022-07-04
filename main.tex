@@ -679,6 +679,7 @@ When [ Case aliceChoice
 
 En este contrato, Alice o Bob pueden hacer la primera elección y el otro luego hará la siguiente. Si están de acuerdo, entonces se procede con el mismo; en caso contrario, Carol arbitra. En esta sección, y sin pérdida de generalidad, supondremos que Alice elige primero (esto nos permite omitir el código simétrico y repetido que cubriría el caso en el que Bob comienza).
 
+\newpage
 A continuación, se incluye un diagrama de secuencia que ilustra el comportamiento esperado del contrato, descrito anteriormente en pseudocódigo:
 
 \begin{figure}[H]
@@ -2455,7 +2456,7 @@ De la misma forma, se generó un contrato PAM con los términos del primer contr
 
 \subsubsection{Traducción del contrato a Isabelle}
 
-Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@Esto tuvo como consecuencia la traducción manual de los contratos generados:
+Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@ Esto obligo a que se debieran traducir manualmente los contratos generados:
 
 \begin{code}[title=Teoría COM.]{Isabelle}
 theory COM 
@@ -2532,6 +2533,8 @@ definition COM4 :: Contract where
 
 \subsection{Algunas ejecuciones de prueba}
 
+A continuación mostramos algunas ejecuciones de usando \textit{computeTransaction}, mostramos en color rojo la salida producida.
+
 
 \begin{code}[title=Algunas ejecuciones al contrato COM.]{Isabelle}
 definition COMTransactionList :: "Transaction list" where
@@ -2597,7 +2600,7 @@ Con estas ejecuciones se puede ver el funcionamiento del modelo de Marlowe (deta
 En esta sección detallaremos el proceso de prueba de la siguiente propiedad para el contrato COM4. Cabe destacar que se eligió este contrato en particular debido a que, entre todos los contratos generados a partir de los tests de ACTUS, es el que mayor anidación de constructores posee:
 
 \begin{quote} 
-``Evaluar \texttt{applyAllInputs} en el contrato COM4, para cualquiero \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
+``Evaluar \textit{applyAllInputs} en el contrato COM4, para cualquier \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
 \end{quote}
 
 Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podrían llevar a caminos de ejecución no deseados.
@@ -2675,6 +2678,7 @@ Tradicionalmente en la teoría se reconocen dos grandes tipos: la subasta en sob
 
 En una subasta basada en una \textit{blockchain}, cada postor debe declarar el dinero primero para convertirse en el mejor postor. Los mismos recuperan su dinero cuando se los supera.
 
+\newpage
 Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado por la subasta:
 
 \begin{figure}[H]
