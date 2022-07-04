@@ -18,6 +18,8 @@
 \graphicspath{{images/}}
 \usepackage{parskip}
 \usepackage{fancyhdr}
+\usepackage{makecell} 
+\usepackage{tabularx}
 \usepackage{vmargin}
 \setmarginsrb{2 cm}{2 cm}{2 cm}{2 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
 
@@ -41,6 +43,8 @@
 \renewcommand{\lstlistingname}{Código} % Cambio 'Listing 4.1:' por 'Código 4.1:'
 \renewcommand*{\lstlistlistingname}{Lista de cuadros de código}
 
+\title{\ttitlefirst} % Defines the thesis title - don't touch this
+
 \begin{document}
 
 % Tiene que ir si o si dentro del begin{document} porque sino `blend into = listings'
@@ -48,30 +52,73 @@
 % en los listings sea uniforme
 \input{languages.tex}
 
+%\begin{titlepage}
+
+	%\title{     \textbf{Tesis de Grado \\ de Ingeniería en Informática}\\[2.5ex]
+		%\textit{Verificación de smart contracts en Marlowe\\ para la blockchain Cardano}}
+
+	%\author{
+		%\textbf{Alumno:} Julián Ferres, \textit{(Padrón \#101.483)} \\
+		%\texttt{jferres@fi.uba.ar}\\[2.5ex]
+        %\textbf{Director:} Dr.\ Ing. Mariano G. Beiró \\
+        %\texttt{mbeiro@fi.uba.ar}\\[2.5ex]
+        %\textbf{Co-director:} Phd. Simon Thompson (Kent University, IOHK) \\
+        %\texttt{S.J.Thompson@kent.ac.uk}\\[2.5ex]
+		%\normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}  \\
+	%}
+	%\date{\today}
+
+%\end{titlepage}
+
+%----------------------------------------------------------------------------------------
+% TITLE PAGE
+%----------------------------------------------------------------------------------------
+\def\univname{Universidad de Buenos Aires}
+\def\HRule{\rule{\linewidth}{0.8pt}}
+\def\ttitlefirst{Verificación de smart contracts en}
+\def\ttitlesecond{Marlowe para la blockchain Cardano}
+\def\authornames{Julián Ferres}
+\def\supname{Dr.\ Ing. Mariano G. Beiró}
+
 \begin{titlepage}
+  \centering
+  \begin{tabularx}{\linewidth}{@{}lXr@{}}
+      \makecell{\includegraphics[height=3cm]{UBA_Logo.png}}
+      & &\makecell{\includegraphics[height=2.5cm]{FIUBA_Logo.png}}\\
+  \end{tabularx}\\%
+  \vfill
+  %
+  \textsc{\LARGE \univname}\\[1.5cm] % University name
+  \textsc{\large TESIS DE GRADO EN INGENIERÍA INFORMÁTICA}\\[0.5cm] % Thesis type
 
-	\title{     \textbf{Tesis de Grado \\ de Ingeniería en Informática}\\[2.5ex]
-		\textit{Verificación de smart contracts en Marlowe\\ para la blockchain Cardano}}
+  \HRule \\[0.667cm] % Horizontal line
+  {\huge \bfseries \ttitlefirst}\\[0.4cm] % Thesis title
+  {\huge \bfseries \ttitlesecond}\\[0.4cm] % Thesis title
+  \HRule \\[1.5cm] % Horizontal line
 
-	\author{
-		\textbf{Alumno:} Julián Ferres, \textit{(Padrón \#101.483)} \\
-		\texttt{jferres@fi.uba.ar}\\[2.5ex]
-        \textbf{Director:} Dr.\ Ing. Mariano G. Beiró \\
-        \texttt{mbeiro@fi.uba.ar}\\[2.5ex]
-        \textbf{Co-director:} Phd. Simon Thompson (Kent University, IOHK) \\
-        \texttt{S.J.Thompson@kent.ac.uk}\\[2.5ex]
-		\normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}  \\
-	}
-	\date{\today}
+  \begin{minipage}{0.4\textwidth}
+    \begin{flushleft} \Large
+      \emph{Autor:}\\
+      {\authornames} % Author name - remove the \href bracket to remove the link
+    \end{flushleft}
+  \end{minipage}
+  \begin{minipage}{0.4\textwidth}
+    \begin{flushright} \Large
+      \emph{Director:} \\
+      {\supname} % Supervisor name - remove the \href bracket to remove the link
+    \end{flushright}
+  \end{minipage}%
+  \vfill
+
+  \large \textit{Departamento de Computación \\ Facultad de Ingeniería}\\[0.3cm] % University requirement text
+  \vfill
+  {\large \today}\\[1ex] % Date
+  \vfill
 
 \end{titlepage}
 
-\maketitle
+
 \thispagestyle{empty}
-
-\maketitle
-
-
 \chapter*{Agradecimientos}
 \thispagestyle{empty} % Saco el numero de página en los agradecimientos
 
