@@ -772,7 +772,7 @@ arbitrate =
 
 Dentro de los contratos podemos usar abreviaciones como:
 
-\begin{code}[title=Funcion \texttt{price}.]{Haskell-Cardano}
+\begin{code}[title=Función \texttt{price}.]{Haskell-Cardano}
 price :: Value
 price = Constant 450
 \end{code}
@@ -1291,7 +1291,7 @@ La \textbf{igualdad} está disponible en la forma de la función infijo \textbf{
 
 Los \textbf{cuantificadores} se escriben como $\forall\ x.\ P$ y $\exists\ x.\ P$.
 
-Isabelle automáticamente computa el tipo de cada variable en un término. Esto se conoce popularmente como inferencia de tipos. A pesar de la inferencia de tipos, en ocasiones es necesario agregar el tipo explícito a una variable o término. La sintaxis es $t :: \tau$ como en $m + (n::nat)$. Las anotaciones explicitas de tipos son especialmente necesarias para desambiguar términos que incluyen funciones sobrecargadas como $+$.
+Isabelle automáticamente computa el tipo de cada variable en un término. Esto se conoce popularmente como inferencia de tipos. A pesar de la inferencia de tipos, en ocasiones es necesario agregar el tipo explícito a una variable o término. La sintaxis es $t :: \tau$ como en $m + (n::nat)$. Las anotaciones explícitas de tipos son especialmente necesarias para desambiguar términos que incluyen funciones sobrecargadas como $+$.
 
 Finalmente nos encontramos con el cuantificador universal $\bigvee$ y la implicación $\Longrightarrow$. Estos son parte del framework Isabelle, no de HOL.\@
 
@@ -1531,7 +1531,8 @@ La totalidad de las pruebas de Marlowe en Isabelle se encuentran en~\cite{marlow
 Algunas de las propiedades probadas para la semántica de Marlowe pueden verse a continuación.
 
 \subsection{Prueba de Terminación (\textit{Termination proof})}
-Isabelle prueba la terminación de forma automática para la mayoría de las funciones.Sin embargo, este no es el caso de \texttt{reductionLoop}.
+
+Isabelle prueba la terminación de forma automática para la mayoría de las funciones. Sin embargo, este no es el caso de \texttt{reductionLoop}.
 
 Esta función llama repetidamente a \texttt{reduceContractStep}, hasta que la misma retorna \textit{NotReduced}, por lo tanto la terminación global requiere una prueba de que \texttt{reduceContractStep} va a retornarlo eventualmente. Para probar esto, se define una medida para un par \texttt{(Contract $\times$ State)}:
 
@@ -1551,7 +1552,7 @@ Hay algunos valores para \texttt{State} que están permitidos por su tipo pero q
 
 \begin{enumerate}
     \item Las listas representan mapas, por lo tanto no deberían tener claves repetidas.
-    \item Es deseable que dos mapas iguales sean representados de la misma forma, entonces se forzó a las claves a estar en orden ascendiente.
+    \item Es deseable que dos mapas iguales sean representados de la misma forma, entonces se forzó a las claves a estar en orden ascendente.
     \item Solo se requiere almacenar las cuentas con una valor positivo.
 \end{enumerate}
 
@@ -2045,7 +2046,7 @@ El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_
 Según su descripción en~\cite{ACTUS_Dictionary}:
 
 \begin{quote} 
-    \textit{``Este contrato no es de tipo financiero en el sentido estricto. Sin embargo, realiza el seguimiento de los movimientos de commodities como el petroleo, gas o incluso viviendas. Dichas commodities pueden servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.''}
+    \textit{``Este contrato no es de tipo financiero en el sentido estricto. Sin embargo, realiza el seguimiento de los movimientos de commodities como el petróleo, gas o incluso viviendas. Dichas commodities pueden servir como garantía subyacente de futuros en materias primas, garantías o simplemente posiciones de activos.''}
 \end{quote}
 
 \subsubsection{Especificación técnica}
@@ -2390,14 +2391,14 @@ definition contract :: Contract where
               )"
 \end{code}
 
-El contrato traducido toma tokens de \textit{ada} desde una parte y tokens de dolar desde la otra y los intercambia atómicamente.
+El contrato traducido toma tokens de \textit{ada} desde una parte y tokens de dólar desde la otra y los intercambia atómicamente.
 
 
 \section{Probando una propiedad en un contrato COM y PAM}
 
 En esta sección comenzaremos por escribir contratos COM y PAM en Marlowe, luego los traduciremos a Isabelle para poder realizar ejecuciones y pruebas formales sobre ellos.
 
-\subsection{Generación de codigo Marlowe de algunos contratos COM y PAM}
+\subsection{Generación de código Marlowe de algunos contratos COM y PAM}
 Para poder obtener los contratos en Marlowe, es necesario modificar levemente el código del generador. En este caso, generamos algunos contratos COM y un contrato PAM a partir de los test cases propuestos por ACTUS~\cite{ACTUS_Tests}.
 
 Por ejemplo, agregando la siguiente función al archivo\\ \texttt{marlowe-actus/test/Spec/Marlowe/ACTUS/Examples.hs}, dentro del repositorio de \textit{marlowe}:
@@ -2456,7 +2457,7 @@ De la misma forma, se generó un contrato PAM con los términos del primer contr
 
 \subsubsection{Traducción del contrato a Isabelle}
 
-Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@ Esto obligo a que se debieran traducir manualmente los contratos generados:
+Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@ Esto obligó a que se debieran traducir manualmente los contratos generados:
 
 \begin{code}[title=Teoría COM.]{Isabelle}
 theory COM 
@@ -2533,7 +2534,7 @@ definition COM4 :: Contract where
 
 \subsection{Algunas ejecuciones de prueba}
 
-A continuación mostramos algunas ejecuciones de usando \textit{computeTransaction}, mostramos en color rojo la salida producida.
+A continuación mostramos algunas ejecuciones usando \textit{computeTransaction}, mostramos en color rojo la salida producida.
 
 
 \begin{code}[title=Algunas ejecuciones al contrato COM.]{Isabelle}
@@ -2549,7 +2550,7 @@ definition COMDepositTransaction :: "Transaction" where
 
 value "computeTransaction COMDepositTransaction (emptyState 0) COM1"
 
-(* Se genero el siguiente TransactionOutput:
+(* Se generó el siguiente TransactionOutput:
 
 "TransactionOutput
   (| txOutWarnings = [], 
@@ -2626,7 +2627,7 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
 
 En el mismo se pueden ver distintas técnicas de prueba, algunas ya mencionadas, como \textit{auto}; otras, como \textit{cases}, que permiten separar la prueba según casos en alguna variable (en este caso \texttt{inputList}).
 
-También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{ssec:Sledgehammer}) para completar la prueba, quien sugirió utilizar la ultima linea de la misma.
+También se hizo uso de \textit{Sledgehammer} (detallado en~\ref{ssec:Sledgehammer}) para completar la prueba, quien sugirió utilizar la última linea de la misma.
 
 El estado de prueba en el que se invocó a \textit{Sledgehammer} (el cual se puede visualizar colocando el cursor sobre el segundo \textit{auto}) es el siguiente:
 
@@ -2653,7 +2654,7 @@ goal (1 subgoal):
 
 \subsection{Prueba de \textit{minSlot} no decreciente en PAM}
 
-En el caso del contrato PAM, una vez que se incluye el módulo \textit{ValidState} y se pone a un estado valido como precondición de la prueba, se logra la siguiente prueba:
+En el caso del contrato PAM, una vez que se incluye el módulo \textit{ValidState} y se pone a un estado válido como precondición de la prueba, se logra la siguiente prueba:
 
 \begin{code}[title=Prueba del lema de \textit{minSlot} para el contrato PAM]{Isabelle}
 lemma applyAllLoopDoesNotDecreaseMinSlot :
@@ -2808,7 +2809,7 @@ La defición consta del constructor \textit{function}, seguido por las firmas de
 
 Al utilizar \textit{function}, las obligaciones de la definición se deben probar manualmente.
 
-Para eliminar las dependencias mutuas, Isabelle crea internamente una sola función, operando en el tipo \textit{suma}: \textit{nat + nat}\footnote{La documentación de funciones en Isabelle se pueden encontrar en \url{https://isabelle.in.tum.de/library/Doc/Functions/Functions.html}}. Luego \textit{Functions.even} y \textit{Functions.odd} son definidas como proyecciones. Consecuentemente, la terminación tiene que se probada simultáneamente para ambas funciones, especificando una medida en el tipo especifico:
+Para eliminar las dependencias mutuas, Isabelle crea internamente una sola función, operando en el tipo \textit{suma}: \textit{nat + nat}\footnote{La documentación de funciones en Isabelle se pueden encontrar en \url{https://isabelle.in.tum.de/library/Doc/Functions/Functions.html}}. Luego \textit{Functions.even} y \textit{Functions.odd} son definidas como proyecciones. Consecuentemente, la terminación tiene que se probada simultáneamente para ambas funciones, especificando una medida en el tipo específico:
 
 \begin{code}[title=Prueba de terminación de las funciones \textit{odd} y \textit{even}.]{Isabelle}
 termination
@@ -2914,13 +2915,13 @@ La terminación no solo es una propiedad deseable en los contratos, sino que tam
 
 \subsubsection{Probando terminación mediante el uso de \textit{relation}}
 
-Como se menciona en la sección 4 de~\cite{termination-isabelle}, el metodo \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellas, podemos especificar la relación de terminación manualmente.
+Como se menciona en la sección 4 de~\cite{termination-isabelle}, el método \textit{lexicographic\_order} es el más popular en las pruebas de terminación. Puede probar la terminación de una cierta clase de funciones buscando una combinación lexicográfica adecuada de \textit{medidas de tamaño}. Por supuesto, no todas las funciones tienen un argumento de terminación tan simple. Para ellas, podemos especificar la relación de terminación manualmente.
 
 El método \textit{lexicographic\_order} falla en el \textit{loop} del contrato \textit{Auction}, porque ninguno de los argumentos disminuye en la llamada recursiva con respecto al ordenamiento de tamaño estándar. Para probar la terminación manualmente, debemos proporcionar una relación fundamentada personalizada.
 
 Además, como las funciones fueron definidas mediante \textit{recursión mutua}~\ref{sssec:recursion_mutua}, se debe probar la terminación para las funciones \textit{contractLoop}, \textit{handleDeposit} y \textit{handleChoose} en forma conjunta.
 
-Debemos entonces encontrar una medida que sea decreciente (similar a \textit{evalBound} en~\ref{lst:evalBound}), para cada ejecución de nuestras funciones. Teniendo en cuenta los requerimientos, se utilizaron las siguientes propiedades del contrato para la funcion \textit{evalBoundAuction}.
+Debemos entonces encontrar una medida que sea decreciente (similar a \textit{evalBound} en~\ref{lst:evalBound}), para cada ejecución de nuestras funciones. Teniendo en cuenta los requerimientos, se utilizaron las siguientes propiedades del contrato para la función \textit{evalBoundAuction}.
 
 \begin{itemize}
     \item Las funciones auxiliares (por ejemplo \textit{settle}, \textit{choice} y \textit{remove}) terminan trivialmente.
@@ -2935,7 +2936,7 @@ Teniendo en cuenta la sintaxis de recursión mutua definimos los tipos necesario
 
 Como Isabelle transforma nuestra definición triple en una función de tipo \textit{suma de tres funciones}, el mismo será de la forma $\tau_1 + (\tau_2 + \tau_3)$ (para más funciones, los tipos de las nuevas definiciones se anidan a derecha). 
 
-Para compactar la sintaxis, definimos los tipos especificos para nuestras funciones:
+Para compactar la sintaxis, definimos los tipos específicos para nuestras funciones:
 
 \begin{code}[title=Tipos de datos recibidos por la funciones mutuamente recursivas.]{Isabelle}
 type_synonym contractLoopType = "AuctionWinner $\times$ Party list $\times$ Party list $\times$ AuctionTerms"
@@ -3012,7 +3013,7 @@ goal (8 subgoals):
 \end{code}
 
 
-Todos los subgoals se solucionan observando que la funcion \textit{filter} cumple con las siguientes propiedades:
+Todos los subgoals se solucionan observando que la función \textit{filter} cumple con las siguientes propiedades:
 
 \begin{itemize}
     \item Si $p \in ps$, entonces \texttt{(filter (($\neq$) p) ps)} tiene menor longitud que \texttt{ps}. 
@@ -3126,7 +3127,7 @@ Actualmente, el único contrato que posee dicha prueba para \textit{computeTrans
 theorem closeIsSafe : "computeTransaction tra sta Close = TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
 \end{code}
 
-A lo largo de la prueba, se pueden ver multiples lemas auxiliares, por ejemplo para las funciones \textit{applyAllInputs}, \textit{reductionLoop}, \textit{reduceContractStep}, entre otras. 
+A lo largo de la prueba, se pueden ver múltiples lemas auxiliares, por ejemplo para las funciones \textit{applyAllInputs}, \textit{reductionLoop}, \textit{reduceContractStep}, entre otras. 
 
 Las mismas ayudan a separar la dificultad del teorema principal. La detección y extracción, en forma de lemas, de las propiedades relevantes debe hacerse manualmente.
 
