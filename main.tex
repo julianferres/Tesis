@@ -2907,6 +2907,206 @@ where
 
 Se omitieron las definiciones necesarias para las distintas pruebas, así como tambien las pruebas de exclusión mútua, completitud y terminación en \textit{function}.
 
+\subsubsection{Contratos generados por la Implementación}
+
+Es posible generar contratos en código Marlowe utilizando la función \textit{auction} de la implementación en Isabelle o la función \textit{contract} de la implementación original en Haskell.
+
+En este caso, mostramos los contratos generados para uno y dos \textit{bidders}:
+
+\begin{code}[title=Llamado a la función \textit{auction} para un solo \textit{bidder}.]{Isabelle}
+definition role_own :: Party where
+"role_own = Role [10]"
+
+definition role1 :: Party where
+"role1 = Role [11]"
+
+value "auction role_own 37 39 [role1] 1057"
+\end{code}
+
+Esto generará el contrato con un solo participante \textit{role1}, dueño \textit{role\_own}, oferta mínima 37, oferta máxima 39 y \textit{deadline} 1057. El código de salida es el siguiente:
+
+\begin{code}[title=Contracto \textit{Auction} en Marlowe con un solo \textit{bidder}.]{Haskell-cardano}
+When
+  [Case (Choice (ChoiceId [1] (Role [11])) [(37, 39)])
+    (Contract.Let (ValueId [11]) (ChoiceValue (ChoiceId [1] (Role [11])))
+      (When
+        [Case
+          (Deposit (Role [11]) (Role [11]) (Token [] [])
+            (UseValue (ValueId [11])))
+          (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+            (UseValue (ValueId [11])) Close)]
+        1057 Close))]
+  1057 Close
+\end{code}
+
+Se pueden observar solo dos flujos posibles en el desarrollo de la subasta:
+
+\begin{itemize}
+    \item El único participante realiza un \textit{Choice} que se encuentra entre los límites de ofertas y del \textit{deadline}. En tal caso, como es el único participante, dicha elección se termina procesando como depósito y por ser la primera (y única) gana la subasta. En este caso se efectúa el pago al dueño y el contrato termina.
+    \item Los casos restantes (se supera el \textit{deadline} o no se hace una oferta válida) implican un \textit{settle} sin ganador (que equivale a un \textit{Close}), por lo que se cierra el contrato sin ganador ni pago.
+\end{itemize}
+
+
+La complejidad del contrato aumenta sustancialmente cuando se agrega un segundo \textit{bidder}, debido a que se tienen que cotemplar todos los casos y ordenes de ofertas posibles. Solo agregando un participante \textit{role\_2}:
+
+\begin{code}{Isabelle}
+definition role_own :: Party where
+"role_own = Role [10]"
+
+definition role1 :: Party where
+"role1 = Role [11]"
+
+definition role2 :: Party where
+"role2 = Role [12]"
+
+value "auction role_own 37 39 [role1, role2] 1057"
+\end{code}
+
+Obtenemos el siguiente contrato de Marlowe:
+
+\begin{code}[title=Contracto \textit{Auction} en Marlowe con para dos \textit{bidders}.]{Haskell-cardano}
+When
+  [Case (Choice (ChoiceId [1] (Role [11])) [(37, 39)])
+    (Contract.Let (ValueId [11]) (ChoiceValue (ChoiceId [1] (Role [11])))
+      (When
+        [Case (Choice (ChoiceId [1] (Role [12])) [(37, 39)])
+          (Contract.Let (ValueId [12])
+            (ChoiceValue (ChoiceId [1] (Role [12])))
+            (When
+              [Case
+                (Deposit (Role [12]) (Role [12]) (Token [] [])
+                  (UseValue (ValueId [12])))
+                (When
+                  [Case
+                    (Deposit (Role [11]) (Role [11]) (Token [] [])
+                      (UseValue (ValueId [11])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [11]))
+                        (UseValue (ValueId [12])))
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close)
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close))]
+                  1057
+                  (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [12])) Close)),
+               Case
+                (Deposit (Role [11]) (Role [11]) (Token [] [])
+                  (UseValue (ValueId [11])))
+                (When
+                  [Case
+                    (Deposit (Role [12]) (Role [12]) (Token [] [])
+                      (UseValue (ValueId [12])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [12]))
+                        (UseValue (ValueId [11])))
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close)
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close))]
+                  1057
+                  (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [11])) Close))]
+              1057 Close)),
+         Case
+          (Deposit (Role [11]) (Role [11]) (Token [] [])
+            (UseValue (ValueId [11])))
+          (When
+            [Case (Choice (ChoiceId [1] (Role [12])) [(37, 39)])
+              (Contract.Let (ValueId [12])
+                (ChoiceValue (ChoiceId [1] (Role [12])))
+                (When
+                  [Case
+                    (Deposit (Role [12]) (Role [12]) (Token [] [])
+                      (UseValue (ValueId [12])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [12]))
+                        (UseValue (ValueId [11])))
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close)
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close))]
+                  1057
+                  (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [11])) Close)))]
+            1057
+            (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+              (UseValue (ValueId [11])) Close))]
+        1057 Close)),
+   Case (Choice (ChoiceId [1] (Role [12])) [(37, 39)])
+    (Contract.Let (ValueId [12]) (ChoiceValue (ChoiceId [1] (Role [12])))
+      (When
+        [Case (Choice (ChoiceId [1] (Role [11])) [(37, 39)])
+          (Contract.Let (ValueId [11])
+            (ChoiceValue (ChoiceId [1] (Role [11])))
+            (When
+              [Case
+                (Deposit (Role [11]) (Role [11]) (Token [] [])
+                  (UseValue (ValueId [11])))
+                (When
+                  [Case
+                    (Deposit (Role [12]) (Role [12]) (Token [] [])
+                      (UseValue (ValueId [12])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [12]))
+                        (UseValue (ValueId [11])))
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close)
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close))]
+                  1057
+                  (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [11])) Close)),
+               Case
+                (Deposit (Role [12]) (Role [12]) (Token [] [])
+                  (UseValue (ValueId [12])))
+                (When
+                  [Case
+                    (Deposit (Role [11]) (Role [11]) (Token [] [])
+                      (UseValue (ValueId [11])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [11]))
+                        (UseValue (ValueId [12])))
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close)
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close))]
+                  1057
+                  (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [12])) Close))]
+              1057 Close)),
+         Case
+          (Deposit (Role [12]) (Role [12]) (Token [] [])
+            (UseValue (ValueId [12])))
+          (When
+            [Case (Choice (ChoiceId [1] (Role [11])) [(37, 39)])
+              (Contract.Let (ValueId [11])
+                (ChoiceValue (ChoiceId [1] (Role [11])))
+                (When
+                  [Case
+                    (Deposit (Role [11]) (Role [11]) (Token [] [])
+                      (UseValue (ValueId [11])))
+                    (Contract.If
+                      (ValueGT (UseValue (ValueId [11]))
+                        (UseValue (ValueId [12])))
+                      (Pay (Role [11]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [11])) Close)
+                      (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                        (UseValue (ValueId [12])) Close))]
+                  1057
+                  (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+                    (UseValue (ValueId [12])) Close)))]
+            1057
+            (Pay (Role [12]) (Party (Role [10])) (Token [] [])
+              (UseValue (ValueId [12])) Close))]
+        1057 Close))]
+  1057 Close
+\end{code}
+
+Como se puede apreciar, la cantidad de constructores en el contrato de Marlowe aumenta significativamente. Un ejemplo claro son los trece constructores \textit{When} que posee el mismo.
+
+Esto es una de las razones por las cuales Marlowe puede utilizarse de forma embebida en Haskell. Haskell posee la expresividad necesaria para comprimir, modularizar y reutilizar componentes repetitivas del código en Marlowe, brindando al usuario un contrato mas legible y significativo.
+
 \subsection{Probando la terminación del contrato}
 
 Dado que HOL es una lógica de funciones totales\footnote{Una función se dice total cuando está definida para todos los valores posibles de entrada.}, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
@@ -3398,6 +3598,7 @@ Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han
 En cuanto a la verificación de programas, es posible tomar algunos contratos (por ejemplo entre los ejemplos del \textit{Playground}) en los que no se esperan warnings y verificarlos mediante Isabelle. Dichas verificaciones podrán beneficiarse de los lemas probados previamente para el contrato \textit{Auction} y el contrato \textit{Close}.
 
 Una última linea de trabajo podría abarcar la traducción automática de algunas sentencias de código fuente Haskell a Isabelle. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
+
 
 
 %##########################
