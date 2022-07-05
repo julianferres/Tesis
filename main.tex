@@ -2966,46 +2966,46 @@ Luego de aplicar la función de medida y un \textit{auto} para simplicar (entre 
 proof (prove)
 goal (8 subgoals):
  1. $\bigwedge$qs p.
-       p $\in$ set qs $\Rightarrow$
+       p $\in$ set qs $\Longrightarrow$
        3 +
        4 *
        length (filter (($\neq$) p) qs)
        < 4 * length qs
  2. $\bigwedge$qs p.
-       p $\notin$ set qs $\Rightarrow$
+       p $\notin$ set qs $\Longrightarrow$
        4 *
        length (filter (($\neq$) p) qs)
        < 5 + 4 * length qs
  3. $\bigwedge$ps p.
-       p $\in$ set ps $\Rightarrow$
+       p $\in$ set ps $\Longrightarrow$
        Suc (2 *
             length
              (filter (($\neq$) p) ps))
        < 2 * length ps
  4. $\bigwedge$ps p.
-       p $\notin$ set ps $\Rightarrow$
+       p $\notin$ set ps $\Longrightarrow$
        2 *
        length (filter (($\neq$) p) ps)
        < 7 + 2 * length ps
  5. $\bigwedge$ps p.
-       p $\in$ set ps $\Rightarrow$
+       p $\in$ set ps $\Longrightarrow$
        Suc (2 *
             length
              (filter (($\neq$) p) ps))
        < 2 * length ps
  6. $\bigwedge$ps p.
-       p $\notin$ set ps $\Rightarrow$
+       p $\notin$ set ps $\Longrightarrow$
        2 *
        length (filter (($\neq$) p) ps)
        < 7 + 2 * length ps
  7. $\bigwedge$ps p.
-       p $\in$ set ps $\Rightarrow$
+       p $\in$ set ps $\Longrightarrow$
        Suc (2 *
             length
              (filter (($\neq$) p) ps))
        < 2 * length ps
  8. $\bigwedge$ps p.
-       p $\notin$ set ps $\Rightarrow$
+       p $\notin$ set ps $\Longrightarrow$
        2 *
        length (filter (($\neq$) p) ps)
        < 7 + 2 * length ps
@@ -3023,11 +3023,11 @@ Probamos dichos \textit{lemmas} de forma auxiliar:
 
 \begin{code}[title=Lemas auxiliares sobre \textit{filter} utilizados para la prueba de terminación.]{Isabelle}
 lemma removePresentElementReducesSize :
-    "p $\in$ set ls $\Rightarrow$ length (filter (($\neq$) p) ls) < length ls"
+    "p $\in$ set ls $\Longrightarrow$ length (filter (($\neq$) p) ls) < length ls"
   by (simp add: length_filter_less)
 
 lemma removeAbsentElementMantainsSize : 
-    "p $\notin$ set ls $\Rightarrow$ length (filter (($\neq$) p) ls) = length ls"
+    "p $\notin$ set ls $\Longrightarrow$ length (filter (($\neq$) p) ls) = length ls"
   by (metis (mono_tags, lifting) filter_True)
 \end{code}
 
@@ -3050,7 +3050,7 @@ termination
 
 Todo lo referido a mi implementación y pruebas en el contrato \textit{Auction} puede encontrarse en \url{https://github.com/julianferres/marlowe/blob/master/isabelle/Auction.thy} (visto por última vez el \today).
 
-\subsection{Modelo de reducciones de Marlowe}
+\subsection{Modelo de reducciones de Marlowe}\label{ssec:Reducciones_marlowe}
 
 Para poder comprender las pruebas realizadas, es necesario conocer en detalle las diferentes funciones de reducción que son parte de la semántica de Marlowe. Las funciones que mencionamos en esta sección se encuentran traducidas completamente a Marlowe en el archivo \textit{Semantics.thy} de~\cite{marlowe-isabelle-repo}.
 
@@ -3164,11 +3164,11 @@ Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción 
 Para comenzar se utilizará inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
 
 \begin{code}[title=Ausencia de \textit{warnings} durante \textit{applyInput}.]{Isabelle}
-lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyInput env curState head (contractLoop m ps qs terms) = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+lemma applyInputContractLoopNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Longrightarrow$ ($\bigwedge$ applyWarn newState cont. applyInput env curState head (contractLoop m ps qs terms) = Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning)"
 
-  and applyInputHandleChooseNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ x $\in$ set qs $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleChoose m ps qs terms x ] = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+  and applyInputHandleChooseNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Longrightarrow$ x $\in$ set qs $\Longrightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleChoose m ps qs terms x ] = Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning)"
 
- and applyInputHandleDepositNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Rightarrow$ x $\in$ set ps $\Rightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleDeposit m ps qs terms x ] = Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+ and applyInputHandleDepositNoWarnings : "invariantHoldsForAuction terms m ps qs curState $\Longrightarrow$ x $\in$ set ps $\Longrightarrow$ ($\bigwedge$ applyWarn newState cont. applyCases env curState head [ handleDeposit m ps qs terms x ] = Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning)"
 
     apply (induction m ps qs terms and m ps qs terms x and m ps qs terms x rule:"contractLoop_handleChoose_handleDeposit.induct" )
   subgoal
@@ -3196,11 +3196,11 @@ Luego de realizar las simplificaciones correspondientes y aplicar los casos nece
 
 \begin{code}[title=Lemas auxiliares para la prueba sobre \textit{applyInput}.]{Isabelle}
 lemma applyCasesOfMap : 
-    "($\bigwedge$ p applyWarn newState cont2. p $\in$ set ps $\Rightarrow$ applyCases env curState head [f p] =
-                Applied applyWarn newState cont2 $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+    "($\bigwedge$ p applyWarn newState cont2. p $\in$ set ps $\Longrightarrow$ applyCases env curState head [f p] =
+                Applied applyWarn newState cont2 $\Longrightarrow$ applyWarn = ApplyNoWarning) $\Longrightarrow$ 
 
      (applyCases env curState head (map f ps) =
-                Applied applyWarn newState cont2 $\Rightarrow$ applyWarn = ApplyNoWarning)"
+                Applied applyWarn newState cont2 $\Longrightarrow$ applyWarn = ApplyNoWarning)"
 
   apply (induction ps)
     apply simp
@@ -3213,12 +3213,12 @@ lemma applyCasesOfMap :
 
 lemma applyCasesDistributiveAgainstAppend : 
     "($\bigwedge$ applyWarn newState cont . applyCases env curState head l1 =
-                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+                 Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning) $\Longrightarrow$ 
      ($\bigwedge$ applyWarn newState cont . applyCases env curState head l2 =
-                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning) $\Rightarrow$ 
+                 Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning) $\Longrightarrow$ 
 
      (applyCases env curState head (l1 @ l2) =
-                 Applied applyWarn newState cont $\Rightarrow$ applyWarn = ApplyNoWarning)"
+                 Applied applyWarn newState cont $\Longrightarrow$ applyWarn = ApplyNoWarning)"
   apply (induction l1)
    apply simp
   apply (elim applyCases.elims)
@@ -3228,7 +3228,132 @@ lemma applyCasesDistributiveAgainstAppend :
   by metis
 \end{code}
 
-% TODO: WIP
+
+\subsubsection{Ausencia de \textit{warnings} en \textit{reduceContractUntilQuiescent}}
+
+Como se mencionó en la sección~\ref{ssec:Reducciones_marlowe}, entre cada procesamiento de un \textit{input} se realiza una reducción hasta que el contrato esta inactivo (con ayuda de la función \textit{reduceContractUntilQuiescent}).
+
+La función \textit{reduceContractUntilQuiescent} actua como un \textit{wrapper} de \textit{reductionLoop}, que es la que se ocupa de llamar sucesivamente a \textit{reduceContractStep} hasta que la misma retorne \textit{NotReduced}.
+
+Por otro lado, \textit{reduceContractStep} maneja cada tipo de constructor. La demostración del lema se basa en las siguientes propiedades del contrato \textit{Auction}.
+
+En este caso, la observación se basa en que hay una cantidad reducida de casos en los que \textit{reduceContractStep} devuelva \textit{Reduced}:
+
+\begin{itemize}
+    \item Si \textit{ps} y \textit{qs} son la lista vacía, \textit{contractLoop} es equivalente a \texttt{settle m terms} (que eventualemnte se reducira a un \textit{Pay} o \textit{Close}, dependiendo de \texttt{m}.
+    \item En caso contrario, la definición del contrato coloca un constructor \textit{When}. El contrato ya estará inactivo a menos que se provoque un \textit{timeout} y nuvamente \texttt{contractLoop m ps qs terms} se reducirá a \texttt{settle m terms}. Además, en este caso, se mantiene el estado luego de una reducción (por definición del contrato \textit{Auction}). 
+\end{itemize}
+
+Con los casos posibles detallados, hay que demostrar que \texttt{settle m terms} no produce warnings si satisface el invariante (el posible \textit{Pay} al que se reduce \texttt{settle m terms} es la única fuente posible de \textit{warnings} en este caso).
+
+Además, hay que demostrar que las propiedades que hemos listado son verdaderas (y por lo tanto siempre se llega al \textit{settlement} de alguna forma). Dichas pruebas se incluyen a continuación:
+
+\begin{code}[title=Lemas auxiliares para probar la ausencia de \textit{warnings} en \textit{reductionLoop}.]{Isabelle}
+lemma reduceContractStepPay_preservesCont : 
+    "reduceContractStep env fixSta (Pay accId payee token val cont) = Reduced wa ef sta cont2 $\Longrightarrow$
+     cont2 = cont"
+  apply auto
+  by (smt (verit, best) ReduceStepResult.inject giveMoney.simps old.prod.case)
+
+lemma auctionSettlementSafe_reduceContractStepEmpty : 
+    "invariantHoldsForAuction terms m [] [] fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m [] [] terms) = Reduced wa ef sta cont $\Longrightarrow$
+     cont = Close"
+  apply (auto)
+  apply (cases m)
+   apply (simp add: closeIdemp_reduceContractStep)
+  apply (auto simp del:reduceContractStep.simps)
+  by (meson reduceContractStepPay_preservesCont)
+
+lemma contractLoopReducedEqualsSettlement : 
+    "ps $\neq$ [] $\vee$ qs $\neq$ [] $\Longrightarrow$
+     invariantHoldsForAuction terms m ps qs fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m ps qs terms) = Reduced wa ef sta cont $\Longrightarrow$ 
+     (cont = settle m terms $\wedge$ fixSta = sta)"
+  by (smt (verit, ccfv_SIG) ReduceStepResult.distinct(1) ReduceStepResult.distinct(3) ReduceStepResult.inject case_prod_conv contractLoop.elims old.prod.exhaust reduceContractStep.simps(4))
+
+lemma contractLoopReducedSatisfyInvariant :
+    "ps $\neq$ [] $\vee$ qs $\neq$ [] $\Longrightarrow$
+     invariantHoldsForAuction terms m ps qs fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m ps qs terms) = Reduced wa ef sta cont $\Longrightarrow$
+     cont = settle m terms $\Longrightarrow$ 
+     invariantHoldsForAuction terms m [] [] sta"
+  by (smt (verit, best) contractLoopReducedEqualsSettlement in_set_member invariantHoldsForAuction_def member_rec(2))
+
+
+lemma auctionSettlementSafe_reduceContractStep :
+    "invariantHoldsForAuction terms m ps qs fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m ps qs terms) = Reduced wa ef sta cont $\Longrightarrow$ 
+     cont = Close $\vee$ (cont = settle m terms $\wedge$ invariantHoldsForAuction terms m [] [] sta)"
+  by (metis auctionSettlementSafe_reduceContractStepEmpty contractLoopReducedEqualsSettlement contractLoopReducedSatisfyInvariant)
+
+
+\end{code}
+
+Luego, probamos el caso en el contrato recibe las listas vacías y equivale a \texttt{settle m terms}:
+
+\begin{code}[title=Prueba de ausencia de \textit{warnings} en \textit{reduceContractStep} para el caso \textit{settle}.]{Isabelle}
+lemma auctionIsSafe_reduceContractStepEmpty : 
+    "invariantHoldsForAuction terms m [] [] fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m [] [] terms) = Reduced wa ef newSta cont $\Longrightarrow$
+     wa = ReduceNoWarning"
+  apply (simp only:contractLoop.simps)
+  apply (cases m)
+   apply (simp add: closeIsSafe_reduceContractStep)
+  apply (auto simp only:invariantHoldsForAuction_def settle.simps reduceContractStep.simps Let_def refl
+              split:if_split_asm prod.splits)
+   apply simp
+  by simp
+\end{code}
+
+Para finalmente probarlo en el caso general del \textit{contractLoop}:
+
+\begin{code}[title=Prueba de ausencia de \textit{warnings} en \textit{reduceContractStep} para el caso general.]{Isabelle}
+lemma auctionIsSafe_reduceContractStep : 
+    "invariantHoldsForAuction terms m ps qs fixSta $\Longrightarrow$
+     reduceContractStep env fixSta (contractLoop m ps qs terms) = Reduced wa ef newSta cont $\Longrightarrow$
+     wa = ReduceNoWarning"
+  apply (cases ps)
+   apply (cases qs)
+    apply (meson auctionIsSafe_reduceContractStepEmpty)
+   apply (simp only:contractLoop.simps)
+  subgoal for a list
+    by (auto simp only:settle.simps reduceContractStep.simps Let_def split:if_split_asm prod.splits)
+  apply (cases qs)
+   by (auto simp only:settle.simps contractLoop.simps reduceContractStep.simps Let_def split:if_split_asm prod.splits)
+\end{code}
+
+Para probar que varias reducciones consecutivas no producen \textit{warnings}, preparamos los sugoals para poder utilizar los lemmas previos utilizados. Una vez probado \textit{reductionLoop}, es sencillo probar \textit{reduceContractUntilQuiescent} debido a que es simplemente un \textit{wrapper}:
+
+\begin{code}[title=Prueba de ausencia de \textit{warnings} en \textit{reductionLoop} y \textit{reduceContractUntilQuiescent}.]{Isabelle}
+lemma auctionIsSafe_reductionLoop : 
+  "wa = [] $\Longrightarrow$ invariantHoldsForAuction terms m ps qs curState $\Longrightarrow$
+  reductionLoop reducedBefore env curState (contractLoop m ps qs terms) wa ef = ContractQuiescent reducedAfter reduceWarns pays newState cont $\Longrightarrow$
+  reduceWarns = []"
+  apply (auto simp only:reductionLoop.simps[of reducedBefore env curState "(contractLoop m ps qs terms)" "[]" ef] Let_def split:ReduceStepResult.splits if_split_asm ReduceEffect.splits)
+  apply (simp only:reductionLoop.simps)
+  apply (simp only:Let_def)
+     apply (auto simp only:reductionLoop.simps[of reducedBefore env curState "(contractLoop m ps qs terms)" "[]" ef] Let_def split:ReduceStepResult.splits if_split_asm ReduceEffect.splits)
+  apply (metis auctionSettlementSafe_reduceContractStep auctionSettlementSafe_reduceContractStepEmpty closeIdemp_reduceContractStep closeIsSafe_reductionLoop contractLoop.simps(1))
+       apply (metis auctionSettlementSafe_reduceContractStep auctionSettlementSafe_reduceContractStepEmpty closeIdemp_reduceContractStep closeIsSafe_reductionLoop contractLoop.simps(1))
+      apply (metis auctionIsSafe_reduceContractStep auctionSettlementSafe_reduceContractStep closeIsSafe_reduceContractStep contractLoop.simps(1))
+     apply (metis auctionIsSafe_reduceContractStepEmpty auctionSettlementSafe_reduceContractStep closeIsSafe_reduceContractStep contractLoop.simps(1))
+  apply (simp only:reductionLoop.simps)
+    apply (auto simp only:reductionLoop.simps[of reducedBefore env curState "(contractLoop m ps qs terms)" "[]" ef] Let_def split:ReduceStepResult.splits if_split_asm ReduceEffect.splits)
+       apply (metis auctionSettlementSafe_reduceContractStep auctionSettlementSafe_reduceContractStepEmpty closeIdemp_reduceContractStep closeIsSafe_reductionLoop contractLoop.simps(1))
+      apply (metis auctionSettlementSafe_reduceContractStep auctionSettlementSafe_reduceContractStepEmpty closeIdemp_reduceContractStep closeIsSafe_reductionLoop contractLoop.simps(1))
+     apply (metis auctionIsSafe_reduceContractStepEmpty auctionSettlementSafe_reduceContractStep closeIsSafe_reduceContractStep contractLoop.simps(1))
+    apply (metis auctionIsSafe_reduceContractStep auctionSettlementSafe_reduceContractStep closeIsSafe_reduceContractStep contractLoop.simps(1))
+   apply (simp add: auctionIsSafe_reduceContractStep)
+  by (simp add: auctionIsSafe_reduceContractStep)
+
+lemma auctionIsSafe_reduceContractUntilQuiescent : 
+    "invariantHoldsForAuction terms m ps qs fixSta $\Longrightarrow$
+     reduceContractUntilQuiescent env fixSta (contractLoop m ps qs terms) = ContractQuiescent reduced reduceWarns pays curState cont $\Longrightarrow$
+     reduceWarns = []"
+  by (metis auctionIsSafe_reductionLoop reduceContractUntilQuiescent.simps)
+\end{code}
+
 
 
 %##########################
