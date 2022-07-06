@@ -372,7 +372,7 @@ Dado que no existe una forma real de gastar parte de un \textit{unspent output},
 
 Cabe destacar que este modelo contable hace que sea conveniente distribuir el flujo de efectivo de varios contribuyentes a varios destinatarios haciendo que el mismo fluya hacia un fondo común, en este caso, la transacción, antes de enviarse a los beneficiarios finales. Esto representa, en un sentido muy general, el objetivo de los \textit{smart contracts} o contratos inteligentes.
 
-Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@Para el modelo de transacciones básico que analizaremos, podemos referirnos a las siguientes definiciones:
+Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO.\@ Para el modelo de transacciones básico que analizaremos, podemos referirnos a las siguientes definiciones:
 
 \textbf{Datos primitivos}:
 
@@ -523,7 +523,7 @@ Una cadena de bloques basada en UTXO~\ref{sec:UTXO} contiene una colección de t
 
 Los mecanismos por los cuales se generan estos bloques, y por quién, no son relevantes para el alcance de este documento. Los contratos se expresarán en términos de números de \textit{slot}, contados desde el bloque de inicio (``génesis'') de la cadena de bloques.
 
-Actualmente, se utilizan números de \textit{slot} en la simulación en el Marlowe Playground~\cite{marlowe_playground}, pero en la blockchain usaremos el tiempo, adoptando el estándar de tiempo \textit{Posix}.
+Actualmente, se utilizan números de \textit{slot} en la simulación en el \\Marlowe Playground~\cite{marlowe_playground}, pero en la blockchain usaremos el tiempo, adoptando el estándar de tiempo \textit{Posix}.
 
 \subsubsection{UTXO, billeteras y la aplicación Marlowe Run}
 El dinero dentro de la blockchain reside en los UTXO, que están protegidos criptográficamente por una clave privada en poder del propietario. Estas claves se pueden usar para canjear la salida y usarlas como entradas para nuevas transacciones. Los usuarios suelen realizar un seguimiento de sus claves privadas y los valores adjuntos a ellas en una billetera (o \textit{wallet}) criptográficamente segura.
@@ -577,7 +577,7 @@ En la simulación omnisciente disponible en el \textit{Playground}, podemos abst
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{Transaccion.png}
-    \caption[Diagrama de ejemplo de una transacción.]{Diagrama de ejemplo de una transacción. Extraído de \url{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}.}\label{fig:Transaccion}
+    \caption[Diagrama de ejemplo de una transacción.]{Diagrama de ejemplo de una transacción. Extraído de \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}{la documentación oficial del Modelo de Marlowe}.}\label{fig:Transaccion}
 \end{figure}
 
 
@@ -2691,7 +2691,7 @@ Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado p
 Con el fin de mantener la claridad del diagrama no se muestran casos donde las ofertas son menores a \textit{minBid} o mayores a \textit{maxBid}, las cuales deben ser rechazadas. Tampoco casos en los que se oferta menos del valor actual del líder, en los cuales se devuelve el depósito automáticamente y se mantiene el líder y valor actual.
 
 
-Con respecto a la implementación de IOHK, la misma se encuentra escrita en Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
+Con respecto a la implementación de IOHK, la misma se encuentra escrita en \\Haskell~\cite{auction_haskell}, y forma parte de los ejemplos del \textit{Playground}:
 
 \begin{code}[title=Contrato \textit{Auction} escrito en Marlowe]{Haskell-Cardano}
 {-# LANGUAGE OverloadedStrings #-}
