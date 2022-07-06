@@ -754,7 +754,7 @@ En la descripción del contrato, hemos utilizado variables como \texttt{agreemen
 
 Las funciones restantes pueden ser escritas en Haskell de la siguiente manera:
 
-\begin{code}[title=Funciones \texttt{agreement} y \texttt{arbitrate}.]{Haskell-Cardano}
+\begin{code}[title=Funciones \textit{agreement} y \textit{arbitrate}.]{Haskell-Cardano}
 agreement :: Contract
 agreement =
   If
@@ -772,7 +772,7 @@ arbitrate =
 
 Dentro de los contratos podemos usar abreviaciones como:
 
-\begin{code}[title=Función \texttt{price}.]{Haskell-Cardano}
+\begin{code}[title=Función \textit{price}.]{Haskell-Cardano}
 price :: Value
 price = Constant 450
 \end{code}
@@ -2550,7 +2550,7 @@ definition COMDepositTransaction :: "Transaction" where
 
 value "computeTransaction COMDepositTransaction (emptyState 0) COM1"
 
-(* Se generó el siguiente TransactionOutput:
+(* Se genero el siguiente TransactionOutput:
 
 "TransactionOutput
   (| txOutWarnings = [], 
@@ -3441,7 +3441,7 @@ Por otro lado, \textit{reduceContractStep} maneja cada tipo de constructor. La d
 En este caso, la observación se basa en que hay una cantidad reducida de casos en los que \textit{reduceContractStep} devuelva \textit{Reduced}:
 
 \begin{itemize}
-    \item Si \textit{ps} y \textit{qs} son la lista vacía, \textit{contractLoop} es equivalente a \texttt{settle m terms} (que eventualemnte se reducira a un \textit{Pay} o \textit{Close}, dependiendo de \texttt{m}.
+    \item Si \textit{ps} y \textit{qs} son la lista vacía, \textit{contractLoop} es equivalente a \texttt{settle m terms} (que eventualemnte se reducira a un \textit{Pay} o \textit{Close}, dependiendo de \texttt{m}).
     \item En caso contrario, la definición del contrato coloca un constructor \textit{When}. El contrato ya estará inactivo a menos que se provoque un \textit{timeout} y nuvamente \texttt{contractLoop m ps qs terms} se reducirá a \texttt{settle m terms}. Además, en este caso, se mantiene el estado luego de una reducción (por definición del contrato \textit{Auction}). 
 \end{itemize}
 
@@ -3598,7 +3598,6 @@ Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han
 En cuanto a la verificación de programas, es posible tomar algunos contratos (por ejemplo entre los ejemplos del \textit{Playground}) en los que no se esperan warnings y verificarlos mediante Isabelle. Dichas verificaciones podrán beneficiarse de los lemas probados previamente para el contrato \textit{Auction} y el contrato \textit{Close}.
 
 Una última linea de trabajo podría abarcar la traducción automática de algunas sentencias de código fuente Haskell a Isabelle. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
-
 
 
 %##########################
