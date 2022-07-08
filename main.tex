@@ -187,14 +187,14 @@ Luego de este capítulo, el lector contará con las herramientas necesarias para
 \section{Cadena de bloques o Blockchain}
 Las cadenas de bloques, conocidas en inglés como \textit{blockchains}, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
 
-Con esta organización relativa, y con ayuda de técnicas criptográficas, la información de un bloque solo puede ser alterada modificando todos los bloques posteriores.
+Con esta organización relativa, y con ayuda de técnicas criptográficas, la información de un bloque solo puede ser alterada modificando todos los bloques anteriores.
 
 Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar una base de datos pública no relacional, que contenga un registro histórico irrefutable de información.
 
 En la práctica esta técnica ha permitido la implementación de un registro contable o \textit{ledger} distribuido que soporta y garantiza la seguridad de transacciones y dinero digital.
 El concepto de cadena de bloque fue aplicado por primera vez en 2009 como parte central de Bitcoin~\cite{nakamoto2008bitcoin}. En este trabajo, nos concentraremos en la cadena de bloques conocida como Cardano~\cite{cardano_website,cardano_utxo_ledger}.
 
-Con respecto a como se implementa en sistemas reales, una blockchain es un tipo de base de datos o libro mayor (\textit{ledger}) que se duplica y distribuye a todos los participantes dentro de la red de esa blockchain. Está formada por un conjunto de nodos interconectados que almacenan datos o elementos de valor en bloques. Estos bloques se verifican mediante transacciones y se vinculan entre sí mediante un orden cronológico en la cadena. Los detalles de estas transacciones están escritos de forma permanentemente en el bloque y no pueden modificarse.
+Con respecto a como se implementa en sistemas reales, una blockchain es un tipo de base de datos o libro mayor (\textit{ledger}) que se duplica y distribuye a todos los participantes dentro de la red de esa blockchain. Está formada por un conjunto de nodos interconectados que almacenan datos o elementos de valor en bloques. Estos bloques se vinculan entre sí mediante un orden cronológico en la cadena. Los detalles de estas transacciones están escritos de forma permanentemente en el bloque y no pueden modificarse.
 
 Como una cadena de bloques almacena datos de manera descentralizada, es independiente de entidades de control centralizadas o intermediarios. Esto proporciona una mayor transparencia del almacenamiento de datos y su gestión. Una característica importante de blockchain es que almacena registros de forma inmutable, lo que significa que no se pueden cambiar, falsificar ni eliminar, ya que esto rompería la cadena de registros.
 
