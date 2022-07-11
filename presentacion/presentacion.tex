@@ -1,0 +1,124 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Rochester}
+  %\useoutertheme{infolines}
+  %\usecolortheme[RGB={125,173,51}]{structure}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+\usepackage{multicol}
+\usepackage{verbatim} 
+\usepackage{lipsum}  
+\usepackage{fancyvrb}
+\usepackage{listings}
+\graphicspath{{images/}}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+
+\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
+{Verificación de smart contracts en Marlowe para la blockchain Cardano}
+
+\author[Julián Ferres] % (optional, use only with lots of authors)
+{~Julián Ferres}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+\institute[FIUBA] % (optional, but mostly needed)
+{
+  %\inst{1}
+  Facultad de Ingeniería\\
+  Universidad de Buenos Aires
+}
+%\date[\today] % (optional, should be abbreviation of conference name)
+%{\today}
+\date{}
+
+% Acá se puede insertar el logo de la UBA
+ \pgfdeclareimage[height=0.75cm]{university-logo}{images/FIUBA_Logo.png}
+ \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+\AtBeginSection[]
+{
+  \begin{frame}{Contenidos}
+  \footnotesize
+%  \begin{multicols}{2} 
+    \tableofcontents[currentsection, currentsubsection]
+%  \end{multicols}
+  \end{frame}
+}
+%
+%\DeclareMathOperator*{\mimin}{min}
+%\DeclareMathOperator*{\mimax}{max}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame} 
+	\footnotesize
+	\frametitle{Contenidos}
+	%\begin{multicols}{2} 
+	\tableofcontents
+	%\end{multicols}
+\end{frame}
+
+%\begin{frame}
+%    \textbf{Advertencia:} Estas diapos no son autocontenidas. Les faltan todos los dibujos (pizarrón), y explicaciones clave.
+%\end{frame}
+
+\section{Sección1}
+\begin{frame}{Algun título para el frame1}
+	
+	\lipsum[1]
+	
+\end{frame}
+
+\section{Sección2}
+\begin{frame}{Algun título para el frame2}
+	
+	\lipsum[1]
+	
+\end{frame}
+
+
+\section{Bibliografía}
+
+\begin{frame}{Bibliografía}
+	
+	\begin{itemize}
+		\item Bibliografía1 % No estoy seguro si es necesario
+	\end{itemize}
+	
+\end{frame}
+
+\end{document}
