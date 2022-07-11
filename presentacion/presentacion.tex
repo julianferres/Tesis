@@ -42,25 +42,28 @@
 \institute[FIUBA] % (optional, but mostly needed)
 {
   %\inst{1}
-  Facultad de Ingeniería\\
-  Universidad de Buenos Aires
+  Facultad de Ingeniería, Universidad de Buenos Aires.
 }
 %\date[\today] % (optional, should be abbreviation of conference name)
 %{\today}
-\date{}
+\date{\today}
 
 % Acá se puede insertar el logo de la UBA
  \pgfdeclareimage[height=0.75cm]{university-logo}{images/FIUBA_Logo.png}
  \logo{\pgfuseimage{university-logo}}
 
 
+% Tamaño de fuente en la primer página
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{institute}{size=\scriptsize}
+\setbeamerfont{date}{size=\scriptsize}
 
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
 %\AtBeginSubsection[]
 \AtBeginSection[]
 {
-  \begin{frame}{Contenidos}
+  \begin{frame}{Índice de contenidos}
   \footnotesize
 %  \begin{multicols}{2} 
     \tableofcontents[currentsection, currentsubsection]
