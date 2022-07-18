@@ -10,20 +10,29 @@
   % or whatever (possibly just delete it)
 }
 
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
 \usepackage{multicol}
 \usepackage{verbatim} 
-\usepackage{lipsum}  
 \usepackage{fancyvrb}
-\usepackage{listings}
 \graphicspath{{images/}}
+\usepackage{listings}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
 \usetikzlibrary{shapes}
 \tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[breakable,listings,skins,hooks]{tcolorbox}
+\hypersetup{
+  colorlinks,
+  allcolors=.,
+  urlcolor=blue,
+}
 
-\usepackage[spanish]{babel}
-
-\usepackage{times}
+\usefonttheme[onlymath]{serif}
+%\input{languages.tex}
 
 \title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
 {Verificación de smart contracts en Marlowe para la blockchain Cardano}
@@ -53,7 +62,7 @@
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
 %\AtBeginSubsection[]
-\AtBeginSection[]
+\AtBeginSubsection[]
 {
   \begin{frame}{Índice de contenidos}
   \footnotesize
@@ -62,57 +71,99 @@
 %  \end{multicols}
   \end{frame}
 }
-%
-%\DeclareMathOperator*{\mimin}{min}
-%\DeclareMathOperator*{\mimax}{max}
-
-% If you wish to uncover everything in a step-wise fashion, uncomment
-% the following command: 
-
-%\beamerdefaultoverlayspecification{<+->}
 
 
 \begin{document}
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
+
 \begin{frame}
 	\titlepage
 \end{frame}
 
+
 \begin{frame} 
 	\footnotesize
-	\frametitle{Índice de contenidos}
+	\frametitle{Índice de Contenidos}
 	%\begin{multicols}{2} 
 	\tableofcontents
 	%\end{multicols}
 \end{frame}
 
-%\begin{frame}
-%    \textbf{Advertencia:} Estas diapos no son autocontenidas. Les faltan todos los dibujos (pizarrón), y explicaciones clave.
-%\end{frame}
+%# Esquema de temas para la presentación
+%
+%- Introducción
+%    - Similar a lo contado en el primer capítulo del documento. Una breve descripción de que son, por que son importantes y las opciones de IOHK para:
+%        - Blockchains
+%        - Criptomonedas
+%        - Smart contracts
+%
+%    - Un poco de introducción a ACTUS, mencionar porque es importante y útil dicho estandar (mencionando que Cardano planea implementar todos los contratos en el fúturo)
+%        - Describir un poco el módelo que se utiliza (Scheduling, estado, inicialización de variables de estado, POFs y STFs) y mostrar algún fragmento de la tabla.
+%
+%    - Introducción a pruebas:
+%        - Por qué es importante verificar contratos
+%        - Algunas variantes y porque se utilizó Isabelle en Particular
+%        - Un poco de descripción breve de Isabelle
+%
+%- Mostrar la escritura de contratos
+%    - En esta sección me enfocaría más en describir lo necesario para escribir un contrato en Cardano, y quizas agregue algún snippet corto de alguna parte de los contratos que implementé. Esto es porque realmente es requerimiento entender el módelo del generador para empezar a ver como programar un nuevo contrato.
+%
+%
+%- Mostrar y describir algunas de las pruebas:
+%    - Va a ser necesario al menos una mención al modelo de Marlowe y las funciones más importantes implementadas en Isabelle, sino no se va a saber la utilidad de las funciones en las que estamos probando propiedades.
+%    - Depende de las pruebas que decidamos mostrar, quizás mencionar un poco la motivación y técnicas de prueba que fui usando. 
+%
+%
+%- Conclusión y cierre, hacer un breve comentario de los temas abordados y posibles fuentes de desarrollo que se desprenden de la tesis.
 
-\section{Sección1}
-\begin{frame}{Algun título para el frame1}
+\section{Introducción}
 
-Hola	
+\subsection{Blockchains, Criptomonedas y Smart contracts}
+
+\begin{frame}
 
 \end{frame}
 
-\section{Sección2}
-\begin{frame}{Algún título para el frame2}
-	
-Gola
+\subsection{ACTUS}
+
+\begin{frame}
 
 \end{frame}
+
+\subsection{Verificación formal}
+
+\begin{frame}
+
+\end{frame}
+
+\section{Escribiendo contratos ACTUS en Cardano}
+
+\subsection{Contratos en Cardano}
+
+\begin{frame}
+
+\end{frame}
+
+\section{Verificando propiedades en contratos en Marlowe}
+
+\subsection{El modelo de Marlowe}
+
+\subsection{Pruebas sencillas sobre contratos específicos}
+
+\subsection{Warnings en Auction}
+
+\section{Conclusión}
+
+\subsection{Resumen}
+
+\subsection{Posibles temas de desarrollo futuro}
+
 
 
 \section{Bibliografía}
 
 \begin{frame}{Bibliografía}
-	
-	\begin{itemize}
-		\item Bibliografía1 % No estoy seguro si es necesario
-	\end{itemize}
 	
 \end{frame}
 
