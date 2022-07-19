@@ -333,7 +333,7 @@ Al final del mismo, el lector estará familiarizado con la notación correspondi
 Para entender la estructura de los contratos en Cardano, es importante tener comprensión de como se lleva a cabo la contabilidad en la misma.
 Tradicionalmente, pensamos en las transferencias de dinero entre dos cuentas bancarias, o quizás direcciones de Internet en el caso de la moneda digital.
 
-La plataforma Cardano, asi como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (\textit{Unspent transaction output}, o `Salidas de transacción no utilizadas').
+La plataforma Cardano, así como otras plataformas de criptomonedas como Bitcoin, utilizan en su lugar un enfoque contable conocido como UTXO~\cite{cardano_utxo_ledger} (\textit{Unspent transaction output}, o `Salidas de transacción no utilizadas').
 
 El modelo UTXO~\cite{Translating_and_Unifying_UTXO-based, UTxO_Lars} documenta el flujo de dinero no de cuenta a cuenta, sino de \textbf{transacción a transacción}. Cada transacción tiene entradas (de dónde proviene el dinero que se gasta) y salidas (hacia donde se dirige este dinero).
 
@@ -417,18 +417,18 @@ Veamos más formalmente lo que sucede durante una transacción en el modelo UTXO
 \end{center}
 
 
-Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \textit{UTXO}. Este registro es un map finito, donde la key o clave is un par formado por el id de la transacción de la cual se toma el dinero y un indice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
+Antes de analizar la estructura de las transacciones, haremos un pequeño repaso sobre como la contabilidad se lleva a cabo en el `libro mayor' o \textit{ledger}. El registro que contiene la información sobre el \textit{ledger} es llamado \textit{UTXO}. Este registro es un map finito, donde la key o clave es un par formado por el id de la transacción de la cual se toma el dinero y un índice, \texttt{TxIn = TxId * Ix}. El id de la transacción puede ser calculado en base a una transacción completada para procesar, y es un identificador único de la transacción.
 
 El índice \texttt{Ix} es necesario debido a que puede haber mas de un output en dicha transacción, y cada uno de los mismos tiene que tener un identificador único dentro de el conjunto de \textit{outputs} dentro de una transacción.
 
 Los valores o \textit{values} en el mapa son pares formados por un \textit{coin value} y una dirección, y el tipo de los mismos es \texttt{TxOut = Addr * Coin}. Cabe destacar que las direcciones de los usuarios son siempre claves públicas, y los fondos en ellas pertenecen a la entidad que puede probar que posee la clave privada correspondiente. Las direcciones de \textit{script} (smart contract o contrato inteligente) se comportan de manera ligeramente distinta, debido a que no tienen un dueño directo.
 
 Para poder comprender la estructura de la transacción en sí, analicemos primero los \textit{outputs}. Una transacción puede distribuir el dinero que está gastando a varias direcciones diferentes. Los \textit{outputs}, (valores de tipo \texttt{TxOut}) se almacenan en una transacción como valores en un mapa finito.
-Las claves del mapa son indices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho indice identifica de forma global a dicho output.
+Las claves del mapa son índices únicos dentro del contexto del mapa, de manera tal que la combinación del id de la transacción y dicho índice identifica de forma global a dicho output.
 En el modelo UTXO, se relaciona a los valores de salida con las entradas de las cuales provienen, por medio de este identificador global compuesto.
 
 
-Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@ el dinero que se gasta solo referencia a los outputs no gastados de transacciones previamente procesadas en el \textit{ledger} que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un indice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
+Los inputs, cuyo orden no es relevante, son un conjunto y no una lista. Los elementos de este conjunto no contienen ni el valor de la moneda a gastar, ni la dirección de donde proviene el dinero. Esta es la principal distinción entre el modelo contable tradicional y el UTXO:\@ el dinero que se gasta solo referencia a los outputs no gastados de transacciones previamente procesadas en el \textit{ledger} que reside actualmente en la blockchain. Cada elemento del mencionado set de inputs es un par formado por el id de la transacción y un índice que, como se explicó anteriormente, identifica de forma única el output no gastado en la UTXO.\@
 
 Procesar una transacción implica actualizar el \texttt{UTXO} en el ledger de manera tal que los fondos gastados por la transacción que se está procesando estén disponibles para que los gasten los propietarios de las direcciones de las salidas de la transacción. Es decir, todas las entradas correspondientes a inputs de la transacción procesada se eliminan del ledger \texttt{UTXO}.
 
@@ -620,7 +620,7 @@ Se generarán \textit{warnings} si el valor \texttt{val} no es positivo, o si no
 Un contrato \texttt{Close} prevé que el contrato sea cerrado (o rescindido). La única acción que realiza es reembolsar a los titulares de cuentas que contienen un saldo positivo. Esto se realiza de a una cuenta a la vez, pero todas las cuentas se reembolsarán en una sola transacción.
 
 \subsubsection{If}
-El conditional \texttt{If obs cont1 cont2} continuará en \texttt{cont1} o \texttt{cont2}, dependiendo de la observación \texttt{obs} cuando el mismo es ejecutado.
+El condicional \texttt{If obs cont1 cont2} continuará en \texttt{cont1} o \texttt{cont2}, dependiendo de la observación \texttt{obs} cuando el mismo es ejecutado.
 
 \subsubsection{When}
 Es el constructor de contratos mas complejo, con la forma \texttt{When cases timeout cont}. El mismo es activado por acciones, que pueden o no ocurrir en un \textit{slot} en particular. Como continúa el mismo tras una acción se declara en la sintaxis de \texttt{cases} del contrato.
@@ -1309,7 +1309,7 @@ end
 
 donde $T_1 \ldots T_n$ son los nombres de teorías existentes en las que $T$ está basado. Se dice que $T_i$ son las teorías padre de $T$. Todo lo definido en los padres de $T$ (y los padres de sus padres, recursivamente) es visible automáticamente. Cada teoría $T$ debe estar guardada en un archivo llamado \texttt{T.thy}.
 
-Ademas de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\url{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\url{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
+Además de las teorías que incluye por defecto la distribución de Isabelle/HOL\footnote{\url{https://isabelle.in.tum.de/library/HOL}}, se encuentra disponible un archivo de pruebas formales (\url{https://isa-afp.org}), el cual está en constante crecimiento y en el que cualquier persona puede contribuir.
 
 
 \paragraph{Comillas:}
@@ -1374,7 +1374,7 @@ Y a continuación vemos una prueba de \texttt{add m 0 = m}:
   done
 \end{code}
 
-La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre, por ejemplo `\texttt{add\_02}'. Las propiedades definidas recursivamente suelen ser probadas por inducción en la mayoría de las ocasiones. El commando \texttt{apply (induction m)} le indica a Isabelle que debe comenzar una prueba por inducción, en la variable \texttt{m}. Como respuesta, va a mostrar el siguiente `estado de prueba':
+La palabra reservada \texttt{lemma} comienza la prueba y le da al lema un nombre, por ejemplo `\texttt{add\_02}'. Las propiedades definidas recursivamente suelen ser probadas por inducción en la mayoría de las ocasiones. El comando \texttt{apply (induction m)} le indica a Isabelle que debe comenzar una prueba por inducción, en la variable \texttt{m}. Como respuesta, va a mostrar el siguiente `estado de prueba':
 
 \begin{code}[title=Subgoals para la prueba de neutralidad del cero luego de aplicar inducción estructural.] {Isabelle}
 	1. add 0 0 = 0
@@ -1494,7 +1494,7 @@ Las pruebas generadas usualmente requieren una edición a posteriori para volver
 
 Con respecto a SMT, las pruebas que no involucran razonamiento aritmético generalmente pueden ser reproducidas por Metis; de lo contrario, se admite la reproducción de la prueba, paso a paso, para Z3. Mientras que CVC3 e Yices se pueden invocar como oráculos. La repetición de la prueba Z3 se basa en gran medida en los procedimientos de decisión aritmética, simplificador y probador de tipo tableau de Isabelle.
 
-\subsubsection{Minizando la prueba}
+\subsubsection{Minimizando la prueba}
 
 Los probadores externos usualmente usan muchos más hechos de los necesarios. La herramienta de minimización de Sledgehammer toma el conjunto de hechos usados retornados por un prover e invoca repetidamente al mismo con subconjuntos de los hechos para encontrar un conjunto mínimo.
 
@@ -2038,7 +2038,7 @@ contractFromFile :: FilePath -> IO (Either String ContractTerms)
 contractFromFile f = eitherDecode <$> B.readFile f
 \end{code}
 
-El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets corresponientes sean consistentes.
+El mismo se ocupa de tomar los términos del contrato de un archivo \texttt{ex\_com1.json} (de sintaxis similar a los de ACTUS) y ejecutar el generador. Luego valida que las transacciones computadas sean las esperadas, así como también que los balances en las wallets correspondientes sean consistentes.
 
 % Contrato COM
 \subsection{Contrato COM (\textit{Commodity})}\label{ssec:contrato_com}
@@ -2085,7 +2085,7 @@ A continuación adjunto la especificación técnica del contrato COM~\cite{ACTUS
 \end{functions}
 \endgroup
 
-El contrato COM tiene una implementación similar al contrato STK (Stock), debido a que comparte alguna de las funciones de cambio de estado. Los detalles de la implementación, junto con la de los demas contratos, se encuentran disponibles en la rama\newline\texttt{fiuba-collaboration-writing-actus-contracts}\footnote{Disponible en el \href{https://github.com/input-output-hk/marlowe-cardano/tree/fiuba-collaboration-writing-actus-contracts}{repositorio marlowe-cardano de input-output-hk}}.
+El contrato COM tiene una implementación similar al contrato STK (Stock), debido a que comparte alguna de las funciones de cambio de estado. Los detalles de la implementación, junto con la de los demás contratos, se encuentran disponibles en la rama\newline\texttt{fiuba-collaboration-writing-actus-contracts}\footnote{Disponible en el \href{https://github.com/input-output-hk/marlowe-cardano/tree/fiuba-collaboration-writing-actus-contracts}{repositorio marlowe-cardano de input-output-hk}}.
 
 
 
@@ -2457,7 +2457,7 @@ De la misma forma, se generó un contrato PAM con los términos del primer contr
 
 \subsubsection{Traducción del contrato a Isabelle}
 
-Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningun tipo de traductor de Haskell a Isabelle/HOL.\@ Esto obligó a que se debieran traducir manualmente los contratos generados:
+Como se menciono en~\ref{sec:Semantica_marlowe_isabelle}, no se ha desarrollado aún ningún tipo de traductor de Haskell a Isabelle/HOL.\@ Esto obligó a que se debieran traducir manualmente los contratos generados:
 
 \begin{code}[title=Teoría COM.]{Isabelle}
 theory COM 
@@ -2764,7 +2764,7 @@ where
     .
 \end{code}
 
-Al expandir la \textit{fun} al commando más detallado \textit{function}, estas obligaciones de prueba se vuelven visibles y se pueden analizar o resolver manualmente. La notación de \textit{function} es la siguiente:
+Al expandir la \textit{fun} al comando más detallado \textit{function}, estas obligaciones de prueba se vuelven visibles y se pueden analizar o resolver manualmente. La notación de \textit{function} es la siguiente:
 
 \begin{code}[title=Definición de una función mediante \textit{function}]{Isabelle}
 function (sequential) f :: $\tau$
@@ -2805,7 +2805,7 @@ by pat_completeness auto
 
 En este caso, las funciones \textit{even} y \textit{odd} (que reciben un número natural y retornan si es par o impar respectivamente) hacen uso de la recursión mutua.
 
-La defición consta del constructor \textit{function}, seguido por las firmas de ambas funciones (separadas por \textit{and}) y luego por la definición de todas las funciones, para todos los parámetros de entrada posibles.
+La definición consta del constructor \textit{function}, seguido por las firmas de ambas funciones (separadas por \textit{and}) y luego por la definición de todas las funciones, para todos los parámetros de entrada posibles.
 
 Al utilizar \textit{function}, las obligaciones de la definición se deben probar manualmente.
 
@@ -2905,7 +2905,7 @@ where
   [...]
 \end{code}
 
-Se omitieron las definiciones necesarias para las distintas pruebas, así como tambien las pruebas de exclusión mútua, completitud y terminación en \textit{function}.
+Se omitieron las definiciones necesarias para las distintas pruebas, así como también las pruebas de exclusión mutua, completitud y terminación en \textit{function}.
 
 \subsubsection{Contratos generados por la Implementación}
 
@@ -2947,7 +2947,7 @@ Se pueden observar solo dos flujos posibles en el desarrollo de la subasta:
 \end{itemize}
 
 
-La complejidad del contrato aumenta sustancialmente cuando se agrega un segundo \textit{bidder}, debido a que se tienen que cotemplar todos los casos y ordenes de ofertas posibles. Solo agregando un participante \textit{role\_2}:
+La complejidad del contrato aumenta sustancialmente cuando se agrega un segundo \textit{bidder}, debido a que se tienen que contemplar todos los casos y ordenes de ofertas posibles. Solo agregando un participante \textit{role\_2}:
 
 \begin{code}{Isabelle}
 definition role_own :: Party where
@@ -3158,9 +3158,9 @@ fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositTy
         2 * length ps + 4 * length qs + (if p $\in$ set ps then 0 else 8)"
 \end{code}
 
-Como se puede apreciar, utilizamos \texttt{Inl} y \texttt{Inr}\footnote{Definidos, junto con otras funciones para el manejo de estos tipos, en \url{https://isabelle.in.tum.de/library/HOL/HOL/Sum_Type.html}} para extraer las diferentes funciones durante el pattern matching. Según el orden en el que las definimos, \texttt{(Inl)} correponde a \textit{contractLoop}, \texttt{(Inr (Inl))} a \textit{handleChoose} y \texttt{(Inr (Inr))} a \textit{handleDeposit}.
+Como se puede apreciar, utilizamos \texttt{Inl} y \texttt{Inr}\footnote{Definidos, junto con otras funciones para el manejo de estos tipos, en \url{https://isabelle.in.tum.de/library/HOL/HOL/Sum_Type.html}} para extraer las diferentes funciones durante el pattern matching. Según el orden en el que las definimos, \texttt{(Inl)} corresponde a \textit{contractLoop}, \texttt{(Inr (Inl))} a \textit{handleChoose} y \texttt{(Inr (Inr))} a \textit{handleDeposit}.
 
-Luego de aplicar la función de medida y un \textit{auto} para simplicar (entre otras cosas), nos encontramos con los siguientes \textit{subgoals}:
+Luego de aplicar la función de medida y un \textit{auto} para simplificar (entre otras cosas), nos encontramos con los siguientes \textit{subgoals}:
 
 \newpage
 \begin{code}[title=Subgoals parciales en la prueba de terminación de \textit{contractLoop} y sus funciones auxiliares.]{Isabelle}
@@ -3270,7 +3270,7 @@ Este proceso del tipo `\textit{reducir hasta inactivo + aplicar la siguiente ent
 
 Para reducir el contrato hasta inactivo se deben realizar sucesivas reducciones. Esto es posible ya que \textit{reduceContractUntilQuiescent} utiliza el ciclo de \textit{reductionLoop} para dicha tarea. La función \textit{reductionLoop} llama en cada paso a \textit{reduceContractStep}, hasta que el mismo es irreducible. Distintos constructores, como \textit{When}, \textit{Pay} o \textit{Close} obedecen distintas reglas de reducción.
 
-Por otro, cada \textit{input} se procesa en \textit{applyInput}, quien se encarga de invocar a \textit{applyCases}. Apply cases se ocupa de recibir una lista de \textit{Cases} (del tipo \textit{Choice}, \textit{Deposit} o \textit{Notify}) y ver si el input (del tipo \textit{IChoice}, \textit{IDeposit} o \textit{INotify}) coincide con su repectivo \textit{Case}. En caso de que haya una coincidencia, se realizan las modificaciones correspondientes (según el caso) al estado del contrato.
+Por otro, cada \textit{input} se procesa en \textit{applyInput}, quien se encarga de invocar a \textit{applyCases}. Apply cases se ocupa de recibir una lista de \textit{Cases} (del tipo \textit{Choice}, \textit{Deposit} o \textit{Notify}) y ver si el input (del tipo \textit{IChoice}, \textit{IDeposit} o \textit{INotify}) coincide con su respectivo \textit{Case}. En caso de que haya una coincidencia, se realizan las modificaciones correspondientes (según el caso) al estado del contrato.
 
 El manejo de errores y \textit{warnings} y errores se realiza mediante tipos de datos específicos, que modelan los resultados de cada función. Por ejemplo, para la función \textit{reduceContractStep}, se introducen dos tipos de datos que ayudan a expresar su salida:
 
@@ -3333,7 +3333,7 @@ Las mismas ayudan a separar la dificultad del teorema principal. La detección y
 
 \subsubsection{Invariante para la ausencia de \textit{warnings}}
 
-Las acciones de los usuarios son imprevesibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos en este contrato podrían ser: intentar ofertar un valor fuera del rango esperado, que se oferte una cantidad negativa, que en la cuenta no haya dinero suficiente para la oferta, entre otras.
+Las acciones de los usuarios son imprevisibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos en este contrato podrían ser: intentar ofertar un valor fuera del rango esperado, que se oferte una cantidad negativa, que en la cuenta no haya dinero suficiente para la oferta, entre otras.
 
 Es por eso que se formularon una serie de precondiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}:
 
@@ -3360,7 +3360,7 @@ Esta invariante garantiza la presencia de las siguientes propiedades, que genera
 
 \subsubsection{Ausencia de \textit{warnings} en \textit{applyInput}}
 
-Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción se procesan sucesivamente los \textit{inptus} de la misma, y luego de cada uno se realizan \textit{reductionSteps} hasta que el contrato se encuentra en estado \textit{inactivo} (\textit{quiescent}). Probaremos que al aplicar un \textit{input} no se generan \textit{warnings}. Una vez que se definió el invariante, se procede a verificar la prueba para \textit{applyInput}. 
+Como se mencionó en~\ref{ssec:Modelo_de_marlowe}, al ejecutar una transacción se procesan sucesivamente los \textit{inputs} de la misma, y luego de cada uno se realizan \textit{reductionSteps} hasta que el contrato se encuentra en estado \textit{inactivo} (\textit{quiescent}). Probaremos que al aplicar un \textit{input} no se generan \textit{warnings}. Una vez que se definió el invariante, se procede a verificar la prueba para \textit{applyInput}. 
 
 Para comenzar se utilizará inducción estructural en las funciones mutuamente recursivas. El paso inductivo debe de producir una parte del contrato, ya que en caso contrario no podemos avanzar en las funciones de la semántica, que son las que potencialmente podrían producir \textit{warnings}. Es por eso que la inducción se realizará sobre \textit{contractLoop}, \textit{handleChoose} y \textit{handleDeposit} en forma conjunta.
 
@@ -3434,15 +3434,15 @@ lemma applyCasesDistributiveAgainstAppend :
 
 Como se mencionó en la sección~\ref{ssec:Reducciones_marlowe}, entre cada procesamiento de un \textit{input} se realiza una reducción hasta que el contrato esta inactivo (con ayuda de la función \textit{reduceContractUntilQuiescent}).
 
-La función \textit{reduceContractUntilQuiescent} actua como un \textit{wrapper} de \textit{reductionLoop}, que es la que se ocupa de llamar sucesivamente a \textit{reduceContractStep} hasta que la misma retorne \textit{NotReduced}.
+La función \textit{reduceContractUntilQuiescent} actúa como un \textit{wrapper} de \textit{reductionLoop}, que es la que se ocupa de llamar sucesivamente a \textit{reduceContractStep} hasta que la misma retorne \textit{NotReduced}.
 
 Por otro lado, \textit{reduceContractStep} maneja cada tipo de constructor. La demostración del lema se basa en las siguientes propiedades del contrato \textit{Auction}.
 
 En este caso, la observación se basa en que hay una cantidad reducida de casos en los que \textit{reduceContractStep} devuelva \textit{Reduced}:
 
 \begin{itemize}
-    \item Si \textit{ps} y \textit{qs} son la lista vacía, \textit{contractLoop} es equivalente a \texttt{settle m terms} (que eventualemnte se reducira a un \textit{Pay} o \textit{Close}, dependiendo de \texttt{m}).
-    \item En caso contrario, la definición del contrato coloca un constructor \textit{When}. El contrato ya estará inactivo a menos que se provoque un \textit{timeout} y nuvamente \texttt{contractLoop m ps qs terms} se reducirá a \texttt{settle m terms}. Además, en este caso, se mantiene el estado luego de una reducción (por definición del contrato \textit{Auction}). 
+    \item Si \textit{ps} y \textit{qs} son la lista vacía, \textit{contractLoop} es equivalente a \texttt{settle m terms} (que eventualmente se reducirá a un \textit{Pay} o \textit{Close}, dependiendo de \texttt{m}).
+    \item En caso contrario, la definición del contrato coloca un constructor \textit{When}. El contrato ya estará inactivo a menos que se provoque un \textit{timeout} y nuevamente \texttt{contractLoop m ps qs terms} se reducirá a \texttt{settle m terms}. Además, en este caso, se mantiene el estado luego de una reducción (por definición del contrato \textit{Auction}). 
 \end{itemize}
 
 Con los casos posibles detallados, hay que demostrar que \texttt{settle m terms} no produce warnings si satisface el invariante (el posible \textit{Pay} al que se reduce \texttt{settle m terms} es la única fuente posible de \textit{warnings} en este caso).
