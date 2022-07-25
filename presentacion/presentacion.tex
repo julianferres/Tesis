@@ -17,6 +17,7 @@
 \usepackage{multicol}
 \usepackage{verbatim} 
 \usepackage{fancyvrb}
+\usepackage{graphicx}
 \graphicspath{{images/}}
 \usepackage{listings}
 \usepackage{tikz}
@@ -33,6 +34,7 @@
 }
 
 \usefonttheme[onlymath]{serif}
+
 %\input{languages.tex}
 
 \title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
@@ -142,6 +144,18 @@ En la práctica esta técnica ha permitido la implementación de un registro con
 
 \end{frame}
 
+
+\begin{frame}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{Bloques.png}
+    \caption[Representación simplificada de los datos en un bloque de la cadena.]{Representación simplificada de los datos en un bloque de la cadena. Extraída de~\cite{plutus-smart-contracts}.}\label{fig:Bloques}
+\end{figure}
+
+
+\end{frame}
+
 \begin{frame}{Criptomonedas}
 Las criptomonedas son activos digitales que se almacenan en el ledger y están diseñadas para servir como medio de intercambio de bienes o servicios. 
 \smallskip
@@ -217,6 +231,30 @@ La misma combina las propiedades de las generaciones anteriores y ofrece las sig
 \end{frame}
 
 
+\begin{frame}{Ada como criptomoneda de Cardano}
+Cada ledger de blockchain tiene su criptomoneda subyacente o moneda nativa. Ada es la moneda
+nativa o principal en Cardano. Esto significa que ada es la principal unidad de pago en Cardano.
+
+\pause
+\medskip
+
+Cardano también admite la creación de \textbf{tokens nativos}: activos digitales que se crean para fines
+específicos. 
+
+\medskip
+\pause
+
+Por lo tanto los usuarios, desarrolladores y empresas pueden usar la cadena de bloques de Cardano para crear tokens que representen una huella de valor.
+
+\pause
+\medskip
+
+Un token puede ser \textbf{fungible} (intercambiable) o \textbf{no fungible} (único) y actuar como unidad de pago, recompensa, activo
+comercial o contenedor de información.
+
+\end{frame}
+
+
 \subsection{ACTUS}
 
 \begin{frame}{Contratos Financieros}
@@ -272,17 +310,35 @@ Los beneficios de representar contratos financieros de esta forma son múltiples
 \end{frame}
 
 
+\subsection{Verificación formal}
 
+\begin{frame}{Concepto general, herramientas y metodologías}
+Los asistentes de pruebas formales son herramientas de software diseñadas para ayudar a sus usuarios a realizar pruebas, especialmente en cálculo lógico.
 
+\medskip
 
-\begin{frame}
+Por lo general, los llamamos asistentes de demostración o demostradores interactivos de teoremas.
+
+\medskip
+\pause
+
+La principal fortaleza de los asistentes de prueba es que ayudan a desarrollar pruebas altamente confiables e inequívocas de enunciados matemáticos, usando lógica precisa. Se pueden usar para probar resultados arbitrariamente avanzados, y no solo ejemplos simples.
 
 \end{frame}
 
-\subsection{Verificación formal}
+\begin{frame}{Algunos asistentes de pruebas}
 
-\begin{frame}
+Hay una gran cantidad de asistentes de prueba en desarrollo o uso alrededor del mundo. A
+continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
+\medskip
+\pause
 
+\begin{itemize}
+    \item \textbf{Teoría de conjuntos}: Isabelle/ZF, Metamath, Mizar
+    \item \textbf{Teoría simple de tipos}: HOL4, HOL Light, Isabelle/HOL
+    \item \textbf{Teoría dependiente de tipos}: Agda, Coq, Lean, Matita, PVS
+    \item \textbf{Lógica de primer orden, de tipo Lisp}: ACL2
+\end{itemize}
 \end{frame}
 
 \section{Escribiendo contratos ACTUS en Cardano}
@@ -307,5 +363,11 @@ Los beneficios de representar contratos financieros de esta forma son múltiples
 
 \subsection{Posibles temas de desarrollo futuro}
 
+
+\section{Bibliografía}
+\begin{frame}[allowframebreaks]{Bibliografía}
+    \bibliographystyle{apalike}
+    \bibliography{../bibliografia.bib}
+\end{frame}
 
 \end{document}
