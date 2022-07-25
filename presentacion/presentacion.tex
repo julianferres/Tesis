@@ -2,8 +2,9 @@
 
 \mode<presentation>
 {
-  \usetheme{Rochester}
-  %\useoutertheme{infolines}
+  \usetheme{Luebeck} % Berlin,
+  \usecolortheme{seahorse}
+  \useoutertheme{infolines}
   %\usecolortheme[RGB={125,173,51}]{structure}
   % or ...
   %\setbeamercovered{transparent}
@@ -50,7 +51,7 @@
 \date{\today}
 
 % Acá se puede insertar el logo de la UBA
-\pgfdeclareimage[height=0.75cm]{fiuba}{images/FIUBA_Logo.png}
+\pgfdeclareimage[height=0.6cm]{fiuba}{images/FIUBA_Logo.png}
 \logo{\pgfuseimage{fiuba}}
 
 
@@ -66,9 +67,9 @@
 {
   \begin{frame}{Índice de contenidos}
   \footnotesize
-%  \begin{multicols}{2} 
+    %\begin{multicols}{2} 
     \tableofcontents[currentsection, currentsubsection]
-%  \end{multicols}
+    %\end{multicols}
   \end{frame}
 }
 
@@ -121,11 +122,158 @@
 
 \subsection{Blockchains, Criptomonedas y Smart contracts}
 
-\begin{frame}
+\begin{frame}{Cadenas de bloques o \textit{Blockchains}}
+Las cadenas de bloques, conocidas en inglés como blockchains, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
+\smallskip
+
+\pause
+
+Con esta organización relativa, y con ayuda de técnicas criptográficas, la información de un bloque solo puede ser alterada modificando todos los bloques anteriores.
+\smallskip
+
+\pause
+
+Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar una base de datos pública no relacional, que contenga un registro histórico irrefutable de información.
+\smallskip
+
+\pause
+
+En la práctica esta técnica ha permitido la implementación de un registro contable o ledger distribuido que soporta y garantiza la seguridad de transacciones y dinero digital. 
 
 \end{frame}
 
+\begin{frame}{Criptomonedas}
+Las criptomonedas son activos digitales que se almacenan en el ledger y están diseñadas para servir como medio de intercambio de bienes o servicios. 
+\smallskip
+
+\pause
+
+Los ledgers de blockchain son utilizados como tecnología subyacente para la creación de criptomonedas en un entorno descentralizado. 
+\smallskip
+
+\pause
+
+Los protocolos de blockchain utilizan técnicas criptográficas rigurosas para permitir la creación de criptomonedas, asegurar y verificar la propiedad de las mismas y los registros de movimiento de fondos. 
+\smallskip
+
+\pause
+
+El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada. Se define por su valor, la correlación con las cifras del mundo real y está impulsado por la oferta y la demanda del mercado. 
+
+\end{frame}
+
+\begin{frame}{\textit{Smart contracts}}
+    Un contrato inteligente o \textit{smart contract} es un \underline{acuerdo digital automatizado}.
+    \smallskip
+
+\pause
+
+    Los mismos están escritos en código, rastrean, verifican y ejecutan las transacciones de un contrato entre varias partes.
+    \smallskip
+
+\pause
+
+Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa cuyas entradas y salidas son acciones en una cadena de bloques.
+\smallskip
+
+\pause
+
+Los smart contracts son auto-ejecutables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye en la \textit{blockchain}, lo que lo hace transparente e irreversible.
+
+\end{frame}
+
+\subsection{Cardano}
+
+\begin{frame}
+Cardano es una plataforma blockchain descentralizada de tercera generación, cuya criptomoneda es llamada \textit{ada}. 
+
+\pause
+
+\begin{itemize}
+    \item \textbf{La primera generación} de blockchains (con Bitcoin como gran representante) ofrece ledgers descentralizados para la transferencia segura de criptomonedas. \pause Sin embargo, tales \textit{blockchains} no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (dApps). 
+    \pause
+
+    \item \textbf{La segunda generación} (cuyo ejemplo más conocido es Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. \pause Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cardano como \textit{blockchain} de 3ra generación}
+
+Cardano se concibe como la cadena de bloques de tercera generación.
+
+La misma combina las propiedades de las generaciones anteriores y ofrece las siguientes propiedades:
+\pause
+
+\begin{itemize}
+    \item \textbf{Seguridad}
+        \pause
+    \item \textbf{Escalabilidad}: Rendimiento de transacciones, escala de datos, ancho de banda de la red.
+        \pause
+    \item \textbf{Funcionalidad}: Además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales. 
+        \pause
+    \item \textbf{Desarrollo e Intregración}: Es importante asegurarse que la blockchain esté en constante desarrollo en términos de sostenibilidad y sea interoperable con otras blockchains e instituciones financieras.
+\end{itemize} 
+
+\end{frame}
+
+
 \subsection{ACTUS}
+
+\begin{frame}{Contratos Financieros}
+Los contratos financieros son acuerdos legales entre dos (o más) partes sobre el futuro intercambio de dinero. Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual.
+
+\pause
+\vfill
+
+Como resultado, los mismos pueden describirse matemáticamente y representarse mediante algoritmos.
+
+\end{frame}
+
+\begin{frame}
+Los beneficios de representar contratos financieros de esta forma son múltiples:
+
+\begin{itemize}
+    \pause
+
+    \item Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos.
+
+    \pause
+
+    \item El análisis financiero se basa en la disponibilidad de representaciones computables de estos acuerdos, donde a menudo se utilizan aproximaciones analíticas. \pause Recientemente, el auge de las blockchain, de contabilidad distribuida y los diversos casos de uso de los contratos inteligentes han abierto nuevas posibilidades para los contratos financieros digitales.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    En general, el intercambio de flujos de efectivo entre partes sigue ciertos patrones. \pause
+
+    Un patrón típico es un contrato de préstamo de tipo \textit{bullet}: \pause
+
+    \medskip
+
+    \begin{quote}
+        ``Se entrega un monto de dinero inicial, a cambio de pagos de intereses cíclicos y la devolución del dinero inicial en el vencimiento del contrato.''
+    \end{quote}
+    \pause
+    \medskip
+
+    Si bien los pagos son fijos, existen muchas variantes que determinan cómo se programan y/o pagan los pagos de intereses cíclicos:
+    \begin{itemize}
+        \pause
+        \item Los pagos de intereses pueden ser mensuales, anuales, mediante períodos arbitrarios. 
+        \pause
+        \item Las tasas pueden ser de fijas o variables.
+        \pause
+        \item Pueden usarse diferentes métodos de cálculo de fracciones anuales o que no haya ningún interés.
+    \end{itemize}
+
+
+
+\end{frame}
+
+
+
+
 
 \begin{frame}
 
@@ -159,12 +307,5 @@
 
 \subsection{Posibles temas de desarrollo futuro}
 
-
-
-\section{Bibliografía}
-
-\begin{frame}{Bibliografía}
-	
-\end{frame}
 
 \end{document}
