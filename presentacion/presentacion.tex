@@ -343,6 +343,76 @@ continuación presentamos una lista de los principales, clasificados por sus fun
 
 \section{Escribiendo contratos ACTUS en Cardano}
 
+\subsection{Notación del estándar ACTUS}
+
+\begin{frame}
+Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos
+aspectos de la notación del mismo: \pause
+\medskip
+
+\begin{itemize}
+    \item \textbf{Atributos de contrato:} Representan los términos contractuales que definen el flujo de dinero en un contrato financiero.
+    \pause
+    \item \textbf{Starting date}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato están siendo representados. 
+    \pause
+    \item \textbf{Variables de estado}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. 
+
+        Algunos ejemplos de las mismas son: 
+        \pause
+            \begin{itemize}
+                \item Notional Principal.
+                \item Nominal Interest Rate.
+                \item Contract Performance.
+            \end{itemize}
+        \pause
+        En general, el ‘estado’ representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. 
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+        \item \textbf{Eventos}: Un evento de contrato $e_t^k$ se refiere a cualquier evento \textit{programado} o \textit{no programado} en un momento determinado $t$ y de un tipo determinado $k$. 
+
+        Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos de efectivo o se actualizan los estados del contrato. 
+        \pause
+
+        \item \textbf{Secuencia de eventos}: Los eventos (de diferentes tipos) de un contrato pueden ocurrir en el mismo instante de tiempo $t$.
+        Por lo tanto, se utiliza un indicador de secuencia de eventos que se puede encontrar para cada evento en el diccionario de eventos.
+    \pause
+        \item \textbf{Lifetime de contrato}: La vida útil de un contrato ACTUS es el período de tiempo de su existencia, desde la perspectiva del usuario que analiza. Se puede analizar un contrato ACTUS en términos de estado actual y flujos de efectivo futuros para cada punto del tiempo. 
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+        \item \textbf{Funciones de transición de estado}: Dichas funciones, conocidas en Inglés como \textit{'State Transition Functions'} (STF) definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. Esto provoca que el  \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
+
+  \end{itemize}
+  \pause
+  \vfill
+  Estas funciones son específicas para un tipo de evento y contrato. Las mismas son escritas de acuerdo al siguiente formato $\textbf{STF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la STF pertenece.
+  \medskip
+  \pause
+
+  Por ejemplo: La STF para un evento de tipo IP en el contrato PAM se escribe como $\text{STF\_IP\_PAM ()}$ y modifica (entre otras) a la variable $\textbf{Ipac}$ desde el pre-evento $\textbf{Ipac}_{t^-}$ al post-evento $\textbf{Ipac}_{t^+}$.
+
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+        \item \textbf{Funciones de pago}: Las funciones de pago, o \textit{Payoff Functions} (POF) definen como el flujo de dinero $c \in\mathbb{R}$ ocurre para un determinado evento $e^k_t$. El mismo es obtenido del estado actual y los términos del contrato. Si fuera necesario, el flujo de dinero puede ser indexado con el tiempo del evento: $c_t$.
+    \end{itemize}
+    \pause
+    \vfill
+    Las funciones de pago (de forma análoga a las STF), son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type] ()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la POF pertenece.
+    \medskip
+    \pause
+
+    Por ejemplo: La POF para un evento de tipo IP $e^{IP}_t$ en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
+
+\end{frame}
+
 \subsection{Contratos en Cardano}
 
 \begin{frame}
