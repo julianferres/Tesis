@@ -36,6 +36,7 @@
 \usefonttheme[onlymath]{serif}
 
 %\input{languages.tex}
+\input{dirtree.tex}
 
 \title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
 {Verificación de smart contracts en Marlowe para la blockchain Cardano}
@@ -415,9 +416,87 @@ aspectos de la notación del mismo: \pause
 
 \subsection{Contratos en Cardano}
 
-\begin{frame}
+\begin{frame}{Introducción}
+En esta sección veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, bajo la supervisión de IOHK.\@
+
+\vfill
+
+Cabe destacar que durante esta tarea tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+
 
 \end{frame}
+
+\begin{frame}[fragile]{Estructura del proyecto ACTUS en Cardano}
+A grandes rasgos, la estructura del generador de contratos ACTUS tiene las siguientes partes:
+    \vfill
+    
+\begin{itemize}
+    \item  \textbf{Domain}: El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.
+        \medskip
+
+        \pause Entre ellos se pueden destacar:
+
+        
+        \begin{tikzpicture}
+            \draw[color=black!60!white]
+                \FTdir(\FTroot,Domain,Domain){
+                    \FTfile(Domain,BusinessEvents.hs)
+                    \FTfile(Domain,ContractState.hs)
+                    \FTfile(Domain,ContractTerms.hs)
+                    \FTfile(Domain,Ops.hs)
+                    \FTfile(Domain,Schedule.hs)
+                };
+        \end{tikzpicture}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+    \item \textbf{Generator}: En este directorio se implementan los diferentes generadores y compatibilidad hacia el lenguaje
+Marlowe.
+    
+    \medskip
+
+    \pause La estructura de dicho directorio es la siguiente:
+
+    \begin{tikzpicture}
+        \draw[color=black!60!white]
+        \FTdir(\FTroot,Generator,Generator){
+            \FTfile(Generator,Analysis.hs)
+            \FTfile(Generator,Generator.hs)
+            \FTfile(Generator,GeneratorFs.hs)
+            \FTfile(Generator,GeneratorStatic.hs)
+            \FTfile(Generator,MarloweCompat.hs)
+        };
+    \end{tikzpicture}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \begin{itemize}
+        \item \textbf{Model}: En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como el \textit{scheduling}, la inicialización de variables de estado y funciones de transición de estado y de pago.
+            \pause
+
+            \begin{tikzpicture}
+                \draw[color=black!60!white]
+                    \FTdir(\FTroot,Model,Model){
+                        \FTfile(Model,Applicability.hs)
+                        \FTfile(Model,ContractSchedule.hs)
+                        \FTfile(Model,Payoff.hs)
+                        \FTfile(Model,StateInitialization.hs)
+                        \FTfile(Model,StateTransition.hs)
+                    };
+            \end{tikzpicture}
+            \pause
+        \item \textbf{Utility}: En este directorio se encuentran algunos archivos con funciones que se utilizan para aislar la lógica del cálculo de fechas, que suele tornarse complejo y repetitivo durante los contratos.
+
+
+    \end{itemize}
+\end{frame}
+
+
 
 \section{Verificando propiedades en contratos en Marlowe}
 
