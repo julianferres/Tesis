@@ -35,7 +35,6 @@
 
 \usefonttheme[onlymath]{serif}
 
-%\input{languages.tex}
 \input{dirtree.tex}
 
 \title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
@@ -80,6 +79,8 @@
 \begin{document}
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
+
+\input{languages.tex}
 
 \begin{frame}
 	\titlepage
@@ -502,9 +503,167 @@ Marlowe.
 
 \subsection{El modelo de Marlowe}
 
+\begin{frame}
+Marlowe está diseñado para soportar la ejecución de contratos financieros en la blockchain, específicamente en Cardano.
+
+\medskip
+\pause
+
+Los contratos se construyen \textit{reuniendo una pequeña cantidad de constructores} que se pueden combinar para describir muchos tipos diferentes de contratos financieros.
+
+\medskip
+\pause
+
+Antes de describir estos constructores, debemos analizar el enfoque general para modelar contratos en Marlowe, y el contexto en el que se ejecutan los mismos (la blockchain de Cardano).
+
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+    \item Contratos
+    \item Participantes y roles
+    \item Cuetas
+    \item Pasos y Estados
+    \item Blockchain
+    \item UTXO, billeteras y la aplicación Marlowe Run
+    \item Simulación omnisciente
+    \item Valores y \textit{tokens}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Ejecución de un contrato Marlowe}
+
+Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato. Si en un punto particular de ejecución, un contrato espera un depósito de \texttt{100 ada} de Alice, solo esa transacción tendrá éxito, cualquier otra será rechazada.
+
+\bigskip
+\pause
+
+Una transacción contiene una lista ordenada de \textit{entradas} o \textit{acciones}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. Primero, evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar ninguna entrada, una condición que se llama \textit{quiescent} (o inactiva). En esta etapa, avanza a través cualquier \texttt{When} con tiempos de espera que hayan pasado, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
+
+\end{frame}
+
+\begin{frame}
+A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
+
+bigskip
+
+Tal \textit{transacción}, como se muestra en el diagrama a continuación, se agrega a la cadena de bloques. 
+
+\end{frame}
+
+\begin{frame}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Transaccion.png}
+    \caption[Diagrama de ejemplo de una transacción.]{Diagrama de ejemplo de una transacción. Extraído de \href{https://play.marlowe-finance.io/doc/marlowe/tutorials/marlowe-model.html}{la documentación oficial del Modelo de Marlowe}.}\label{fig:Transaccion}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Funciones utilizadas en el modelo}
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=0.8\textheight]{Dependencias_semantica_marlowe.png}
+\end{figure}
+
+\end{frame}
+
+
+
+
 \subsection{Pruebas sencillas sobre contratos específicos}
 
+\begin{frame}{Prueba de minSlot no decreciente en COM}
+\begin{quote} 
+``Evaluar \textit{applyAllInputs} en el contrato COM4, para cualquier \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
+\end{quote}
+
+\vfill
+
+Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podrían llevar a caminos de ejecución no deseados.
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\begin{code}[title=Prueba del lema de \textit{minSlot} para un contrato COM.]{Isabelle}
+lemma applyAllInputsDoesNotDecreaseMinSlot :
+"applyAllInputs env sta COM4 inputList = 
+    ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
+    reduceContractStep env sta COM4 = NotReduced $\Longrightarrow$
+  (minSlot sta) $\leq$ (minSlot newstate)"
+  apply auto
+  apply (cases inputList)
+  apply auto 
+  by (smt (z3) ApplyAllResult.distinct(1) (* propuesto por Sledgehammer *)
+                  ApplyResult.case(1)
+                  ApplyResult.case(2)
+                  ApplyResult.exhaust
+                  COM4_def
+                  applyAllLoop_preserves_minSlot
+                  applyCases_preserves_minSlot applyInput.simps(1))
+  done
+\end{code}
+
+\end{frame}
+
 \subsection{Warnings en Auction}
+
+\begin{frame}{El contrato Auction}
+Una subasta o remate (\textit{Auction}) es una venta organizada basada en la competencia directa, es decir, a aquel comprador (postor) que pague la mayor cantidad de dinero o de bienes a cambio del producto. El bien subastado se adjudica al postor que más dinero haya ofrecido por él.
+
+\medskip
+\pause
+
+Tradicionalmente en la teoría se reconocen dos grandes tipos: la subasta en sobre cerrado (que pueden ser de primer precio o de segundo precio) y la subasta dinámica, que puede ser subasta ascendente (inglesa), descendente (holandesa), o de `todos pagan' (subasta americana). En este caso se modela una subasta dinámica de tipo ascendente.
+
+\medskip
+\pause
+
+En una subasta basada en una \textit{blockchain}, cada postor debe declarar el dinero primero para convertirse en el mejor postor. Los mismos recuperan su dinero cuando se los supera.
+
+\end{frame}
+
+\begin{frame}
+
+Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado por la subasta:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.8\textheight]{Auction.png}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Probando terminación del contrato \textit{Auction}}
+Dado que HOL es una lógica de funciones totales, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
+
+\bigskip
+\pause
+
+La terminación no solo es una propiedad deseable en los contratos, sino que también le permite a Isabelle utilizar teoremas adicionales, como por ejemplo el de inducción. Esto es de gran importancia a la hora de probar teoremas que puedan utilizar las funciones.
+
+\end{frame}
+
+\begin{frame}[fragile]{Metrica para la terminación}
+\begin{code}{Isabelle}
+fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
+
+"evalBoundAuction (Inl (_, ps, qs, _)) =
+        2 * length ps + 4 * length qs + 1" |
+"evalBoundAuction (Inr (Inl (_, ps, qs, _, p))) =
+        2 * length ps + 4 * length qs + (if p $\in$ set qs then 0 else 8)" |
+"evalBoundAuction (Inr (Inr (_, ps, qs, _, p))) =
+        2 * length ps + 4 * length qs + (if p $\in$ set ps then 0 else 8)"
+\end{code}
+
+
+\end{frame}
+
+
 
 \section{Conclusión}
 

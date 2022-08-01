@@ -1,0 +1,87 @@
+\lstdefinelanguage{Marlowe}{%
+  language     = Haskell,
+  morekeywords = {Close, Pay, Assert, If, When, Let, Case, Constant, Value, Contract, ValueEQ},
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{Haskell-cardano}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,
+    breakatwhitespace=false,         
+    language=Marlowe,
+    breaklines=true,                 
+    upquote=true,
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=none,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\definecolor{isarblue}{HTML}{006699}
+\definecolor{isargreen}{HTML}{009966}
+\definecolor{isarred}{HTML}{cc0000}
+\definecolor{isarpurple}{HTML}{9966ff}
+\definecolor{isarlightred}{HTML}{ff5050}
+\lstdefinelanguage{isabelle}{
+    keywords=[1]{abbreviation,by,contractLoop,corollary,datatype,definition,done,env,evalBoudnAuction,fun,function,goal,handleChoose,handleDeposit,inputList,lemma,newstate,m,ps,qs,terms,payments,proof,record,reduce,reduced,sta,termination,theorem,theory,tra,trec,type_synonym,using,warnings,fixSta,reduceWarns,pays,curState,cont},
+    morecomment=[s]{(*}{*)}, % chktex 9
+    keywordstyle=[1]\bfseries\color{isarblue},
+    keywords=[2]{a,and,applyWarn,assumes,begin,cont,end,imports,newState,p,shows,where},
+    keywordstyle=[2]\bfseries\color{isargreen},
+    keywords=[3]{O,SOME,else,if,in,let,of,then},
+    keywordstyle=[3]\color{isarblue},
+    keywords=[4]{add,del,only},
+    keywordstyle=[4]\color{isarpurple},
+    keywords=[5]{apply},
+    keywordstyle=[5]\color{isarlightred},
+    commentstyle=\color{isarred}
+}
+\lstdefinestyle{Isabelle}{
+  language=isabelle,
+  escapeinside={&}{&},
+  columns=fixed,
+  extendedchars,
+  captionpos=b,                    
+  breaklines=true,
+  backgroundcolor=\color{backcolour},   
+  basewidth={0.5em,0.45em},
+  basicstyle=\ttfamily\scriptsize,
+  mathescape,
+}
+
+\newtcblisting[blend into = listings]{code}[2][]{%
+ breakable,
+ colback=backcolour,
+ boxrule=0.75pt,
+ listing options={ style={#2} },
+ listing only,
+ enhanced,
+ listing remove caption=false,
+ attach boxed title to bottom center={yshift=-8pt},
+ before skip=15pt plus 2pt,after skip=15pt plus 2pt,
+ boxed title style={empty, colback=white, sharp corners, boxrule=0cm},
+ coltitle=black,
+ overlay first app={%
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west); % chktex 8
+  },
+ overlay middle app={%
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west); % chktex 8
+   \draw[dashed,line width=0.75pt,xshift=0.75pt] (frame.south east) -- (frame.south west); % chktex 8
+  },
+ overlay last app={%
+   \draw[dashed,line width=0.75pt,xshift=-0.75pt] (frame.north east) -- (frame.north west); % chktex 8
+  },
+  #1
+}
