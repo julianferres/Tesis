@@ -34,6 +34,7 @@
 }
 
 \usefonttheme[onlymath]{serif}
+\renewcommand{\lstlistingname}{Código} % Cambio 'Listing 4.1:' por 'Código 4.1:'
 
 \input{dirtree.tex}
 
@@ -65,6 +66,16 @@
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
 %\AtBeginSubsection[]
+\AtBeginSection[]
+{
+  \begin{frame}{Índice de contenidos}
+  \footnotesize
+    %\begin{multicols}{2} 
+    \tableofcontents[currentsection, currentsubsection]
+    %\end{multicols}
+  \end{frame}
+}
+
 \AtBeginSubsection[]
 {
   \begin{frame}{Índice de contenidos}
@@ -227,7 +238,7 @@ La misma combina las propiedades de las generaciones anteriores y ofrece las sig
         \pause
     \item \textbf{Funcionalidad}: Además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales. 
         \pause
-    \item \textbf{Desarrollo e Intregración}: Es importante asegurarse que la blockchain esté en constante desarrollo en términos de sostenibilidad y sea interoperable con otras blockchains e instituciones financieras.
+    \item \textbf{Desarrollo e Integración}: Es importante asegurarse que la blockchain esté en constante desarrollo en términos de mantenibilidad y sea interoperable con otras blockchains e instituciones financieras.
 \end{itemize} 
 
 \end{frame}
@@ -422,7 +433,7 @@ En esta sección veremos como se desarrolló la escritura de tres contratos ACTU
 
 \vfill
 
-Cabe destacar que durante esta tarea tuve la colaboración de Yves Hauser\footnote{\url{https://iohk.io/en/team/yves-hauser}}, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+Cabe destacar que durante esta tarea tuve la colaboración de Yves Hauser, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
 
 
 \end{frame}
@@ -522,7 +533,7 @@ Antes de describir estos constructores, debemos analizar el enfoque general para
 \begin{itemize}
     \item Contratos
     \item Participantes y roles
-    \item Cuetas
+    \item Cuentas
     \item Pasos y Estados
     \item Blockchain
     \item UTXO, billeteras y la aplicación Marlowe Run
@@ -648,7 +659,7 @@ La terminación no solo es una propiedad deseable en los contratos, sino que tam
 
 \end{frame}
 
-\begin{frame}[fragile]{Metrica para la terminación}
+\begin{frame}[fragile]{Métrica para la terminación}
 \begin{code}{Isabelle}
 fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositType)) $\Rightarrow$ nat" where
 
@@ -660,16 +671,95 @@ fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositTy
         2 * length ps + 4 * length qs + (if p $\in$ set ps then 0 else 8)"
 \end{code}
 
-
 \end{frame}
 
 
+\begin{frame}{Invariante para la ausencia de warnings}
 
-\section{Conclusión}
+Las acciones de los usuarios son imprevisibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos para este contrato podrían ser:
+\medskip
 
-\subsection{Resumen}
+   \begin{itemize}
+           \pause
+       \item Ofertar un valor fuera del rango esperado
+           \pause
+       \item Ofertar una cantidad negativa
+           \pause
+       \item Dinero insuficiente en la cuenta para la oferta realizada.
+           \pause
+   \end{itemize} 
 
-\subsection{Posibles temas de desarrollo futuro}
+\medskip
+
+Es por eso que se formularon una serie de pre-condiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}.
+
+\end{frame}
+
+\begin{frame}
+Esta invariante garantiza la presencia de las siguientes propiedades, que generarían la ausencia de \textit{warnings} al aplicar un \textit{input}:
+
+\bigskip
+
+\begin{itemize}
+    \pause
+    \item Que el identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
+    \pause
+    \item Que la cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
+    \pause
+    \item Que la cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
+    \pause
+    \item Que \textit{minBid} sea positivo, sino se producirán \textit{warnings} durante las reducciones.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Definición en Isabelle de la invariante}
+\begin{code}[title=Invariante para el contrato \textit{Auction}.]{Isabelle}
+definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ State $\Rightarrow$ bool" where
+
+"invariantHoldsForAuction terms m ps qs curState =
+       (($\forall$ x . x $\in$ set qs $\longrightarrow$
+                $\neg$ member (partyToValueId x) (boundValues curState))
+     $\land$ ($\forall$ x . x $\in$ set ps $\longrightarrow$ 
+                findWithDefault 0 (partyToValueId x) (boundValues curState) > 0)
+     $\land$ ($\forall$ x y . m = Some (x, y) $\longrightarrow$ 
+              ((lookup (y, token_ada) (accounts curState) = 
+                lookup (partyToValueId y) (boundValues curState))
+             $\land$ (findWithDefault 0 (partyToValueId y) (boundValues curState) > 0) 
+             $\land$ (UseValue (partyToValueId y)) = x))
+     $\land$ (minBid terms > 0))"
+\end{code}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Ausencia de warnings en Isabelle}
+\begin{code}[title=Lemma de ausencia de warnings en computeTransaction.]{Isabelle}
+lemma auctionIsSafe_computeTransaction :
+    "invariantHoldsForAuction terms m ps qs sta $\Longrightarrow$
+     computeTransaction tra sta (contractLoop m ps qs terms) =
+       TransactionOutput trec $\Longrightarrow$ txOutWarnings trec = []"
+
+  using fixingIntervalPreservesInvariant auctionIsSafe_computeTransactionFixSta
+  by (smt (verit, ccfv_SIG) IntervalResult.simps(6) closeIsSafe computeTransaction.simps fixInterval.elims)
+\end{code}
+
+\end{frame}
+
+\section{Posibles temas de desarrollo futuro}
+
+\begin{frame}{Posibles trabajos futuros relacionados con esta tesis}
+    \begin{itemize}
+        \item Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han terminado de escribir todos los contratos especificados por el estándar.
+            \pause
+
+        \item En cuanto a la verificación de programas, es posible tomar algunos contratos (por ejemplo entre los ejemplos del \textit{Playground}) en los que no se esperan warnings y verificarlos mediante Isabelle. Dichas verificaciones podrán beneficiarse de los lemas probados previamente para el contrato \textit{Auction} y el contrato \textit{Close}.
+            \pause
+
+        \item Una última linea de trabajo podría abarcar la traducción automática de algunas sentencias de código fuente Haskell a Isabelle. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
+    \end{itemize}
+\end{frame}
 
 
 \section{Bibliografía}
