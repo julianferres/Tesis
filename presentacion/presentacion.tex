@@ -56,6 +56,7 @@
 % Acá se puede insertar el logo de la UBA
 \pgfdeclareimage[height=0.6cm]{fiuba}{images/FIUBA_Logo.png}
 \logo{\pgfuseimage{fiuba}}
+\newcommand{\nologo}{\setbeamertemplate{logo}{}} % command to set the logo to nothing
 
 
 % Tamaño de fuente en la primer página
@@ -232,8 +233,6 @@ La misma combina las propiedades de las generaciones anteriores y ofrece las sig
 \pause
 
 \begin{itemize}
-    \item \textbf{Seguridad}
-        \pause
     \item \textbf{Escalabilidad}: Rendimiento de transacciones, escala de datos, ancho de banda de la red.
         \pause
     \item \textbf{Funcionalidad}: Además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales. 
@@ -266,6 +265,15 @@ Un token puede ser \textbf{fungible} (intercambiable) o \textbf{no fungible} (ú
 comercial o contenedor de información.
 
 \end{frame}
+
+\begin{frame}{El lenguaje Marlowe}
+Marlowe es un lenguaje de dominio específico creado por IOHK. El mismo posee pocas sentencias soportadas que describen el comportamiento de un conjunto fijo y finito de roles en un contrato.
+
+\vfill
+
+Marlowe está diseñado para crear bloques para contratos financieros: pagos o depósitos de las partes, elecciones e información del mundo real.
+\end{frame}
+
 
 
 \subsection{ACTUS}
@@ -367,6 +375,7 @@ continuación presentamos una lista de los principales, clasificados por sus fun
 
 \subsection{Notación del estándar ACTUS}
 
+{\nologo
 \begin{frame}
 Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos
 aspectos de la notación del mismo: \pause
@@ -384,13 +393,12 @@ aspectos de la notación del mismo: \pause
             \begin{itemize}
                 \item Notional Principal.
                 \item Nominal Interest Rate.
-                \item Contract Performance.
             \end{itemize}
         \pause
         En general, el ‘estado’ representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. 
 \end{itemize}
-
 \end{frame}
+}
 
 \begin{frame}
     \begin{itemize}
@@ -398,9 +406,6 @@ aspectos de la notación del mismo: \pause
 
         Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos de efectivo o se actualizan los estados del contrato. 
         \pause
-
-        \item \textbf{Secuencia de eventos}: Los eventos (de diferentes tipos) de un contrato pueden ocurrir en el mismo instante de tiempo $t$.
-        Por lo tanto, se utiliza un indicador de secuencia de eventos que se puede encontrar para cada evento en el diccionario de eventos.
     \pause
         \item \textbf{Lifetime de contrato}: La vida útil de un contrato ACTUS es el período de tiempo de su existencia, desde la perspectiva del usuario que analiza. Se puede analizar un contrato ACTUS en términos de estado actual y flujos de efectivo futuros para cada punto del tiempo. 
     \end{itemize}
@@ -538,12 +543,13 @@ Antes de describir estos constructores, debemos analizar el enfoque general para
 
 \end{frame}
 
+{\nologo
 \begin{frame}[fragile]
 \begin{itemize}
     \item Contratos
         \pause
 
-\begin{code}[title=Tipos de contratos en Marlowe.]{Haskell-Cardano}
+\begin{code}{Haskell-Cardano}
 data Contract = Close
               | Pay party payee token value contract
               | If observation contract1 contract2
@@ -563,27 +569,50 @@ data Contract = Close
     \item Simulación omnisciente (\textit{Marlowe Playground})
 
 \end{itemize}
+\end{frame}
+}
+
+\begin{frame}[fragile]{Breve ejemplo de un contrato de Intercambio}
+\begin{code}{Haskell-Cardano}
+When [Case (Deposit "alice" "alice" ada price)   
+        (When [ Case aliceChoice
+                  (When [ Case bobChoice
+                            (If (aliceChosen `ValueEQ` bobChosen)
+                                 agreement
+                                 arbitrate) 
+                        ]
+                        60
+                        arbitrate)
+              ]
+              40
+              Close)
+     ]
+     10       
+     Close    
+\end{code}
 
 \end{frame}
 
 \begin{frame}{Ejecución de un contrato Marlowe}
 
-Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato. Si en un punto particular de ejecución, un contrato espera un depósito de \texttt{100 ada} de Alice, solo esa transacción tendrá éxito, cualquier otra será rechazada.
-
+Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato.
 \bigskip
 \pause
 
-Una transacción contiene una lista ordenada de \textit{entradas} o \textit{acciones}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. Primero, evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar ninguna entrada, una condición que se llama \textit{quiescent} (o inactiva). En esta etapa, avanza a través cualquier \texttt{When} con tiempos de espera que hayan pasado, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
+Una \textbf{transacción} contiene una \textbf{lista ordenada de \textit{entradas} o \textit{acciones}}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. 
 
 \end{frame}
 
-\begin{frame}
-A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
+\begin{frame}{Procesando una transacción}
+\begin{itemize}
+    \item Primero, se evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar alguna entrada, una condición que se llama \textit{quiescent} (o inactiva).
 
-\vfill
+    En esta etapa, avanza a través cualquier \texttt{When} cuyos timeouts hayan sido superados, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
+    \bigskip
 
-Tal \textit{transacción}, como se muestra en el diagrama a continuación, se agrega a la cadena de bloques. 
-
+    \pause
+    \item A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -596,13 +625,55 @@ Tal \textit{transacción}, como se muestra en el diagrama a continuación, se ag
 
 \end{frame}
 
-\begin{frame}{Funciones utilizadas en el modelo}
-\begin{figure}[H]
-	\centering
-	\includegraphics[height=0.8\textheight]{Dependencias_semantica_marlowe.png}
-\end{figure}
+{\nologo
+\begin{frame}[fragile]{Funciones utilizadas en el modelo}
+
+\only<1>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe.png}
+    \end{figure}
+}
+\only<2>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_1.png}
+    \end{figure}
+}
+\only<3>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_2.png}
+    \end{figure}
+}
+\only<4>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_3.png}
+    \end{figure}
+}
+\only<5>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_4.png}
+    \end{figure}
+}
+\only<6>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_5.png}
+    \end{figure}
+}
+\only<7>{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.8\textheight]{Dependencias_Isabelle_Marlowe_6.png}
+    \end{figure}
+}
+
 
 \end{frame}
+}
 
 
 
@@ -610,6 +681,8 @@ Tal \textit{transacción}, como se muestra en el diagrama a continuación, se ag
 \subsection{Pruebas sencillas sobre contratos específicos}
 
 \begin{frame}{Prueba de minSlot no decreciente en COM}
+Supongamos que queremos probar la siguiente propiedad:
+\vfill
 \begin{quote} 
 ``Evaluar \textit{applyAllInputs} en el contrato COM4, para cualquier \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
 \end{quote}
@@ -626,7 +699,6 @@ Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podr
 lemma applyAllInputsDoesNotDecreaseMinSlot :
 "applyAllInputs env sta COM4 inputList = 
     ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
-    reduceContractStep env sta COM4 = NotReduced $\Longrightarrow$
   (minSlot sta) $\leq$ (minSlot newstate)"
   apply auto
   apply (cases inputList)
@@ -638,7 +710,6 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
                   COM4_def
                   applyAllLoop_preserves_minSlot
                   applyCases_preserves_minSlot applyInput.simps(1))
-  done
 \end{code}
 
 \end{frame}
@@ -648,18 +719,14 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
 \begin{frame}{El contrato Auction}
 Una subasta o remate (\textit{Auction}) es una venta organizada basada en la competencia directa, es decir, a aquel comprador (postor) que pague la mayor cantidad de dinero o de bienes a cambio del producto. El bien subastado se adjudica al postor que más dinero haya ofrecido por él.
 
-\medskip
-\pause
-
-Tradicionalmente en la teoría se reconocen dos grandes tipos: la subasta en sobre cerrado (que pueden ser de primer precio o de segundo precio) y la subasta dinámica, que puede ser subasta ascendente (inglesa), descendente (holandesa), o de `todos pagan' (subasta americana). En este caso se modela una subasta dinámica de tipo ascendente.
-
-\medskip
+\vfill
 \pause
 
 En una subasta basada en una \textit{blockchain}, cada postor debe declarar el dinero primero para convertirse en el mejor postor. Los mismos recuperan su dinero cuando se los supera.
 
 \end{frame}
 
+{\nologo
 \begin{frame}
 
 Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado por la subasta:
@@ -670,6 +737,7 @@ Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado p
 \end{figure}
 
 \end{frame}
+}
 
 \begin{frame}{Probando terminación del contrato \textit{Auction}}
 Dado que HOL es una lógica de funciones totales, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
