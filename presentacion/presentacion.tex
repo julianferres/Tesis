@@ -280,20 +280,29 @@ Como resultado, los mismos pueden describirse matemáticamente y representarse m
 
 \end{frame}
 
-\begin{frame}
-Los beneficios de representar contratos financieros de esta forma son múltiples:
-
-\begin{itemize}
-    \pause
-
-    \item Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos.
-
-    \pause
-
-    \item El análisis financiero se basa en la disponibilidad de representaciones computables de estos acuerdos, donde a menudo se utilizan aproximaciones analíticas. \pause Recientemente, el auge de las blockchain, de contabilidad distribuida y los diversos casos de uso de los contratos inteligentes han abierto nuevas posibilidades para los contratos financieros digitales.
-\end{itemize}
+\begin{frame}[fragile]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{ACTUS_Taxonomy.png}
+    \caption{Taxonomía ACTUS}
+\end{figure}
 
 \end{frame}
+
+%\begin{frame}
+%Los beneficios de representar contratos financieros de esta forma son múltiples:
+
+%\begin{itemize}
+    %\pause
+
+    %\item Tradicionalmente, el procesamiento de transacciones ha sido un campo en el que se pueden lograr mejoras de eficiencia mediante la automatización de contratos.
+
+    %\pause
+
+    %\item El análisis financiero se basa en la disponibilidad de representaciones computables de estos acuerdos, donde a menudo se utilizan aproximaciones analíticas. \pause Recientemente, el auge de las blockchain, de contabilidad distribuida y los diversos casos de uso de los contratos inteligentes han abierto nuevas posibilidades para los contratos financieros digitales.
+%\end{itemize}
+
+%\end{frame}
 
 \begin{frame}
     En general, el intercambio de flujos de efectivo entre partes sigue ciertos patrones. \pause
@@ -529,16 +538,29 @@ Antes de describir estos constructores, debemos analizar el enfoque general para
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 \begin{itemize}
     \item Contratos
+        \pause
+
+\begin{code}[title=Tipos de contratos en Marlowe.]{Haskell-Cardano}
+data Contract = Close
+              | Pay party payee token value contract
+              | If observation contract1 contract2
+              | When [Case] timeout contract
+              | Let valueId value contract
+              | Assert observation contract
+\end{code}
+        \pause
     \item Participantes y roles
-    \item Cuentas
-    \item Pasos y Estados
-    \item Blockchain
-    \item UTXO, billeteras y la aplicación Marlowe Run
-    \item Simulación omnisciente
+        \pause
     \item Valores y \textit{tokens}
+        \pause
+    \item Cuentas
+        \pause
+    \item Pasos y Estados
+        \pause
+    \item Simulación omnisciente (\textit{Marlowe Playground})
 
 \end{itemize}
 
@@ -558,7 +580,7 @@ Una transacción contiene una lista ordenada de \textit{entradas} o \textit{acci
 \begin{frame}
 A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
 
-bigskip
+\vfill
 
 Tal \textit{transacción}, como se muestra en el diagrama a continuación, se agrega a la cadena de bloques. 
 
