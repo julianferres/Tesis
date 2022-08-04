@@ -17,7 +17,6 @@
 \usepackage{multicol}
 \usepackage{verbatim} 
 \usepackage{fancyvrb}
-\usepackage{graphicx}
 \graphicspath{{images/}}
 \usepackage{listings}
 \usepackage{tikz}
@@ -34,7 +33,8 @@
 }
 
 \usefonttheme[onlymath]{serif}
-\renewcommand{\lstlistingname}{Código} % Cambio 'Listing 4.1:' por 'Código 4.1:'
+\setbeamertemplate{caption}{\insertcaption} 
+
 
 \input{dirtree.tex}
 
@@ -218,7 +218,7 @@ Cardano es una plataforma blockchain descentralizada de tercera generación, cuy
 \pause
 
 \begin{itemize}
-    \item \textbf{La primera generación} de blockchains (con Bitcoin como gran representante) ofrece ledgers descentralizados para la transferencia segura de criptomonedas. \pause Sin embargo, tales \textit{blockchains} no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (dApps). 
+    \item \textbf{La primera generación} de blockchains (por ejemplo Bitcoin) ofrece ledgers descentralizados para la transferencia segura de criptomonedas. \pause Sin embargo, tales \textit{blockchains} no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (dApps). 
     \pause
 
     \item \textbf{La segunda generación} (cuyo ejemplo más conocido es Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. \pause Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
@@ -229,7 +229,7 @@ Cardano es una plataforma blockchain descentralizada de tercera generación, cuy
 
 Cardano se concibe como la cadena de bloques de tercera generación.
 
-La misma combina las propiedades de las generaciones anteriores y ofrece las siguientes propiedades:
+Combina las propiedades de las generaciones anteriores y ofrece las siguientes propiedades:
 \pause
 
 \begin{itemize}
@@ -340,7 +340,7 @@ Como resultado, los mismos pueden describirse matemáticamente y representarse m
 \end{frame}
 
 
-\subsection{Verificación formal}
+\subsection{Verificación formal de software}
 
 \begin{frame}{Concepto general, herramientas y metodologías}
 Los asistentes de pruebas formales son herramientas de software diseñadas para ayudar a sus usuarios a realizar pruebas, especialmente en cálculo lógico.
@@ -358,8 +358,7 @@ La principal fortaleza de los asistentes de prueba es que ayudan a desarrollar p
 
 \begin{frame}{Algunos asistentes de pruebas}
 
-Hay una gran cantidad de asistentes de prueba en desarrollo o uso alrededor del mundo. A
-continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
+Hay una gran cantidad de asistentes de prueba. A continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
 \medskip
 \pause
 
@@ -376,9 +375,9 @@ continuación presentamos una lista de los principales, clasificados por sus fun
 \subsection{Notación del estándar ACTUS}
 
 {\nologo
-\begin{frame}
-Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos
-aspectos de la notación del mismo: \pause
+\begin{frame}{Notación}
+%Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos
+%aspectos de la notación del mismo: \pause
 \medskip
 
 \begin{itemize}
@@ -693,9 +692,9 @@ Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podr
 
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[fragile]{Prueba del lema de \textit{minSlot} para un contrato COM.}
 
-\begin{code}[title=Prueba del lema de \textit{minSlot} para un contrato COM.]{Isabelle}
+\begin{code}{Isabelle}
 lemma applyAllInputsDoesNotDecreaseMinSlot :
 "applyAllInputs env sta COM4 inputList = 
     ApplyAllSuccess reduced warnings payments newstate cont $\Longrightarrow$
@@ -804,8 +803,8 @@ Esta invariante garantiza la presencia de las siguientes propiedades, que genera
 
 \end{frame}
 
-\begin{frame}[fragile]{Definición en Isabelle de la invariante}
-\begin{code}[title=Invariante para el contrato \textit{Auction}.]{Isabelle}
+\begin{frame}[fragile]{Definición en Isabelle de la invariante para \textit{Auction}}
+\begin{code}{Isabelle}
 definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ State $\Rightarrow$ bool" where
 
 "invariantHoldsForAuction terms m ps qs curState =
@@ -824,8 +823,8 @@ definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner
 
 \end{frame}
 
-\begin{frame}[fragile]{Ausencia de warnings en Isabelle}
-\begin{code}[title=Lemma de ausencia de warnings en computeTransaction.]{Isabelle}
+\begin{frame}[fragile]{Ausencia de warnings en Isabelle al computar una transacción}
+\begin{code}{Isabelle}
 lemma auctionIsSafe_computeTransaction :
     "invariantHoldsForAuction terms m ps qs sta $\Longrightarrow$
      computeTransaction tra sta (contractLoop m ps qs terms) =
@@ -851,9 +850,13 @@ lemma auctionIsSafe_computeTransaction :
     \end{itemize}
 \end{frame}
 
+\begin{frame}
+\begin{center}
+    \Huge ¿Preguntas?
+\end{center}
+\end{frame}
 
-\section{Bibliografía}
-\begin{frame}[allowframebreaks]{Bibliografía}
+\begin{frame}<0>[noframenumbering]
     \bibliographystyle{apalike}
     \bibliography{bibliografia.bib}
 \end{frame}
