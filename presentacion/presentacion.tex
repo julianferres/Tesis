@@ -537,6 +537,69 @@ A grandes rasgos, la estructura del generador de contratos ACTUS tiene los sigui
     \end{itemize}
 \end{frame}
 
+{\nologo
+\begin{frame}[fragile]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{ACTUS_Taxonomy_hl.png}
+    \caption{Contratos que implementé como parte del desarrollo de mi tesis}
+\end{figure}
+
+\end{frame}
+}
+
+{\nologo
+\begin{frame}[fragile]
+Algunos fragmentos del código necesario para poder implementar el \textit{Scheduling} en el contrato CLM.
+
+\begin{code}{Haskell-cardano}
+_SCHED_IP_CLM
+  ContractTermsPoly
+    { cycleAnchorDateOfInterestPayment = Just ipanx,
+      cycleOfInterestPayment = Just ipcl,
+      maturityDate = Just md,
+      scheduleConfig
+    } = generateRecurrentSchedule ipanx ipcl {includeEndDay = True} md scheduleConfig
+
+_SCHED_IP_CLM
+  ContractTermsPoly
+    { cycleAnchorDateOfInterestPayment = Nothing,
+      cycleOfInterestPayment = Just ipcl,
+      maturityDate = Just md,
+      initialExchangeDate = Just ied,
+      scheduleConfig
+    } = generateRecurrentSchedule (ied <+> ipcl) ipcl {includeEndDay = True} md scheduleConfig
+\end{code}
+
+\end{frame}
+}
+
+\begin{frame}[fragile]
+Algunos ejemplos adicionales:
+
+\begin{code}{Haskell-cardano}
+-- Cash (CSH) Monitoring STF 
+_STF_AD_CSH :: ContractStatePoly a b -> b -> ContractStatePoly a b
+_STF_AD_CSH st@ContractStatePoly {} t =
+  st
+    { sd = t
+    }
+\end{code}
+
+\begin{code}{Haskell-cardano}
+-- Call Money (CLM) POF's
+
+_POF_IP_CLM :: ActusNum a => a -> a -> a -> a -> a -> a
+_POF_IP_CLM o_rf_curs ipac ipnr nt y_sd_t = o_rf_curs * (ipac + y_sd_t * ipnr * nt)
+
+_POF_IED_CLM :: RoleSignOps a => a -> CR -> a -> a
+_POF_IED_CLM o_rf_curs cntrl nt = _zero - o_rf_curs * _r cntrl * nt
+
+
+\end{code}
+
+\end{frame}
+
 
 
 \section{Verificando propiedades en contratos en Marlowe}
@@ -581,6 +644,7 @@ data Contract = Close
 \end{itemize}
 \end{frame}
 }
+
 {\nologo
 \begin{frame}[fragile]{Breve ejemplo de un contrato de Intercambio}
 \begin{code}{Haskell-Cardano}
