@@ -19,13 +19,19 @@
 \usepackage{fancyvrb}
 \graphicspath{{images/}}
 \usepackage{listings}
-\usepackage{tikz}
-\usetikzlibrary{arrows}
-\usetikzlibrary{shapes}
-\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage[breakable,listings,skins,hooks]{tcolorbox}
+% Highlight
+\usepackage{soul}
+\makeatletter
+\let\HL\hl
+\renewcommand\hl{%
+  \let\set@color\beamerorig@set@color
+  \let\reset@color\beamerorig@reset@color
+  \HL}
+\makeatother
+
 \hypersetup{
   colorlinks,
   allcolors=.,
@@ -35,8 +41,6 @@
 \usefonttheme[onlymath]{serif}
 \setbeamertemplate{caption}{\insertcaption} 
 
-
-\input{dirtree.tex}
 
 \title[Verificación de smart contracts en Marlowe]% (optional, use only with long paper titles)
 {Verificación de smart contracts en Marlowe para la blockchain Cardano}
@@ -139,22 +143,25 @@
 \subsection{Blockchains, Criptomonedas y Smart contracts}
 
 \begin{frame}{Cadenas de bloques o \textit{Blockchains}}
-Las cadenas de bloques, conocidas en inglés como blockchains, son estructuras de datos en las cuales la información se divide en conjuntos (bloques) que cuentan con información adicional relativa a bloques previos de la cadena.
+Las cadenas de bloques (\textit{blockchains}), son \textbf{estructuras de datos} donde la \textbf{información se divide en conjuntos (bloques)} que cuentan con información adicional relativa a bloques previos de la cadena.
 \smallskip
 
 \pause
+\vfill
 
-Con esta organización relativa, y con ayuda de técnicas criptográficas, la información de un bloque solo puede ser alterada modificando todos los bloques anteriores.
+En dichos bloques, mediante técnicas criptográficas, la información solo puede ser alterada modificando todos los bloques anteriores.
 \smallskip
 
 \pause
+\vfill
 
-Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar una base de datos pública no relacional, que contenga un registro histórico irrefutable de información.
+Esta propiedad facilita su aplicación en un entorno distribuido, de manera tal que la cadena de bloques puede modelar un \textbf{registro histórico irrefutable de información}.
 \smallskip
 
 \pause
+\vfill
 
-En la práctica esta técnica ha permitido la implementación de un registro contable o ledger distribuido que soporta y garantiza la seguridad de transacciones y dinero digital. 
+Esto ha permitido la \textbf{implementación de un registro contable} o ledger distribuido que soporta y garantiza la \textbf{seguridad de transacciones y dinero digital}. 
 
 \end{frame}
 
@@ -171,107 +178,126 @@ En la práctica esta técnica ha permitido la implementación de un registro con
 \end{frame}
 
 \begin{frame}{Criptomonedas}
-Las criptomonedas son activos digitales que se almacenan en el ledger y están diseñadas para servir como medio de intercambio de bienes o servicios. 
-\smallskip
+Las \underline{criptomonedas} son \textbf{activos digitales que se almacenan en el ledger} y están diseñadas para servir como medio de intercambio de bienes o servicios. 
 
 \pause
+\vfill
 
-Los ledgers de blockchain son utilizados como tecnología subyacente para la creación de criptomonedas en un entorno descentralizado. 
-\smallskip
-
-\pause
-
-Los protocolos de blockchain utilizan técnicas criptográficas rigurosas para permitir la creación de criptomonedas, asegurar y verificar la propiedad de las mismas y los registros de movimiento de fondos. 
-\smallskip
+Las blockchain son utilizadas como \textbf{tecnología subyacente} para la creación de criptomonedas en un entorno descentralizado. 
 
 \pause
+\vfill
 
-El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada. Se define por su valor, la correlación con las cifras del mundo real y está impulsado por la oferta y la demanda del mercado. 
+La creación, seguridad y verificación de las criptomonedas y transacciones son propiedades que debe garantizar la blockchain correspondiente.
+
+\pause
+\vfill
+
+El precio de la criptomoneda no está controlado por un gobierno o una institución financiera centralizada.
 
 \end{frame}
 
 \begin{frame}{\textit{Smart contracts}}
-    Un contrato inteligente o \textit{smart contract} es un \underline{acuerdo digital automatizado}.
-    \smallskip
+Un contrato inteligente (\textit{smart contract}) es un \textbf{acuerdo digital automatizado}.
 
 \pause
+\vfill
 
-    Los mismos están escritos en código, rastrean, verifican y ejecutan las transacciones de un contrato entre varias partes.
-    \smallskip
-
-\pause
-
-Las transacciones del contrato se ejecutan automáticamente mediante el código del smart contract cuando se cumplen las condiciones predeterminadas. Esencialmente, un contrato inteligente es un programa cuyas entradas y salidas son acciones en una cadena de bloques.
-\smallskip
+Están escritos en código y \textbf{rastrean, verifican y ejecutan las transacciones de un contrato} entre varias partes.
 
 \pause
+\vfill
 
-Los smart contracts son auto-ejecutables y no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye en la \textit{blockchain}, lo que lo hace transparente e irreversible.
+Las transacciones del contrato se ejecutan automáticamente cuando se cumplen las condiciones predeterminadas. Esencialmente, \textbf{un contrato inteligente es un programa cuyas entradas y salidas son acciones en una cadena de bloques}.
+
+\pause
+\vfill
+
+Los smart contracts no requieren las acciones o la presencia de terceros. El código del contrato inteligente se almacena y distribuye en la \textit{blockchain}, lo que lo hace \textbf{transparente e irreversible}.
 
 \end{frame}
 
 \subsection{Cardano}
 
+{\nologo
 \begin{frame}
 Cardano es una plataforma blockchain descentralizada de tercera generación, cuya criptomoneda es llamada \textit{ada}. 
 
+\vfill
 \pause
 
 \begin{itemize}
-    \item \textbf{La primera generación} de blockchains (por ejemplo Bitcoin) ofrece ledgers descentralizados para la transferencia segura de criptomonedas. \pause Sin embargo, tales \textit{blockchains} no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (dApps). 
-    \pause
+    \item \textbf{La primera generación} de blockchains (por ejemplo Bitcoin) ofrece ledgers descentralizados para la transferencia segura de criptomonedas. 
+    \smallskip
 
-    \item \textbf{La segunda generación} (cuyo ejemplo más conocido es Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. \pause Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
+    \pause Sin embargo, tales \textit{blockchains} no proporcionaron un entorno funcional para la liquidación de acuerdos complejos.
+    \pause
+    \vfill
+
+    \item \textbf{La segunda generación} (por ejemplo Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens.
+    \smallskip
+
+    \pause Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
 \end{itemize}
 \end{frame}
+}
 
 \begin{frame}{Cardano como \textit{blockchain} de 3ra generación}
 
-Cardano se concibe como la cadena de bloques de tercera generación.
-
 Combina las propiedades de las generaciones anteriores y ofrece las siguientes propiedades:
+\vfill
 \pause
 
 \begin{itemize}
-    \item \textbf{Escalabilidad}: Rendimiento de transacciones, escala de datos, ancho de banda de la red.
+    \item \textbf{Escalabilidad}: Rendimiento de transacciones, escala de datos y ancho de banda de la red.
         \pause
-    \item \textbf{Funcionalidad}: Además del procesamiento de transacciones, la cadena de bloques debe proporcionar todos los medios para la liquidación de acuerdos comerciales. 
+    \item \textbf{Funcionalidad}: Además del procesamiento de transacciones, la cadena de bloques proporciona todos los medios para la liquidación de acuerdos comerciales. 
         \pause
-    \item \textbf{Desarrollo e Integración}: Es importante asegurarse que la blockchain esté en constante desarrollo en términos de mantenibilidad y sea interoperable con otras blockchains e instituciones financieras.
+    \item \textbf{Desarrollo e Integración}: Es sencillo integrar pagos con otras cadenas.
 \end{itemize} 
 
 \end{frame}
 
 
 \begin{frame}{Ada como criptomoneda de Cardano}
-Cada ledger de blockchain tiene su criptomoneda subyacente o moneda nativa. Ada es la moneda
-nativa o principal en Cardano. Esto significa que ada es la principal unidad de pago en Cardano.
+Ada es la moneda nativa o principal en Cardano. Esto significa que ada es la principal unidad de pago.
 
 \pause
-\medskip
+\vfill
 
-Cardano también admite la creación de \textbf{tokens nativos}: activos digitales que se crean para fines
+Sin embargo, también admite la creación de \textbf{tokens nativos}: activos digitales que se crean para fines
 específicos. 
 
-\medskip
+\vfill
 \pause
 
-Por lo tanto los usuarios, desarrolladores y empresas pueden usar la cadena de bloques de Cardano para crear tokens que representen una huella de valor.
+Esto permite a los usuarios, desarrolladores y empresas usar a Cardano para crear tokens que representen valor.
 
 \pause
-\medskip
+\vfill
 
-Un token puede ser \textbf{fungible} (intercambiable) o \textbf{no fungible} (único) y actuar como unidad de pago, recompensa, activo
-comercial o contenedor de información.
+Un token puede ser \textbf{fungible} (intercambiable) o \textbf{no fungible} (único) y actuar como unidad de pago, recompensa, activo comercial o contenedor de información.
 
 \end{frame}
 
 \begin{frame}{El lenguaje Marlowe}
-Marlowe es un lenguaje de dominio específico creado por IOHK. El mismo posee pocas sentencias soportadas que describen el comportamiento de un conjunto fijo y finito de roles en un contrato.
+    Marlowe es un lenguaje de dominio específico creado por IOHK. El mismo posee \textbf{pocas sentencias que describen el comportamiento de un conjunto fijo y finito de roles en un contrato}.
 
 \vfill
+Los contratos se pueden construir reuniendo una pequeña cantidad de estas sentencias que se pueden usar para \textbf{describir y modelar contratos financieros}. 
+\vfill
 
-Marlowe está diseñado para crear bloques para contratos financieros: pagos o depósitos de las partes, elecciones e información del mundo real.
+\pause
+Algunos ejemplos incluyen:
+\begin{itemize}
+    \item Un contrato que puede realizar un pago a un rol o a una clave pública
+    \item Un contrato que puede esperar una acción por parte de uno de los roles:
+        \begin{itemize}
+            \item Un depósito de moneda.
+            \item Una elección entre un conjunto de opciones.
+        \end{itemize}
+\end{itemize}
+
 \end{frame}
 
 
@@ -279,21 +305,16 @@ Marlowe está diseñado para crear bloques para contratos financieros: pagos o d
 \subsection{ACTUS}
 
 \begin{frame}{Contratos Financieros}
-Los contratos financieros son acuerdos legales entre dos (o más) partes sobre el futuro intercambio de dinero. Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual.
+Los contratos financieros son \textbf{acuerdos legales entre dos (o más) partes} sobre el \textbf{futuro intercambio de dinero}. 
+
+\vfill
+
+Dichos acuerdos legales se definen sin ambigüedades por medio de un conjunto de términos y lógica contractual.
 
 \pause
 \vfill
 
 Como resultado, los mismos pueden describirse matemáticamente y representarse mediante algoritmos.
-
-\end{frame}
-
-\begin{frame}[fragile]
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{ACTUS_Taxonomy.png}
-    \caption{Taxonomía ACTUS}
-\end{figure}
 
 \end{frame}
 
@@ -313,19 +334,20 @@ Como resultado, los mismos pueden describirse matemáticamente y representarse m
 %\end{frame}
 
 \begin{frame}
-    En general, el intercambio de flujos de efectivo entre partes sigue ciertos patrones. \pause
+    En general, \textbf{el intercambio de flujos de efectivo} entre partes \textbf{sigue ciertos patrones}. \pause
+    \vfill
 
-    Un patrón típico es un contrato de préstamo de tipo \textit{bullet}: \pause
+    Un patrón típico es un contrato de préstamo: \pause
 
-    \medskip
+    \vfill
 
     \begin{quote}
         ``Se entrega un monto de dinero inicial, a cambio de pagos de intereses cíclicos y la devolución del dinero inicial en el vencimiento del contrato.''
     \end{quote}
     \pause
-    \medskip
+    \vfill
 
-    Si bien los pagos son fijos, existen muchas variantes que determinan cómo se programan y/o pagan los pagos de intereses cíclicos:
+    Si bien los pagos son fijos, \textbf{existen muchas variantes} que determinan cómo se programan y/o pagan los pagos de intereses cíclicos:
     \begin{itemize}
         \pause
         \item Los pagos de intereses pueden ser mensuales, anuales, mediante períodos arbitrarios. 
@@ -335,9 +357,17 @@ Como resultado, los mismos pueden describirse matemáticamente y representarse m
         \item Pueden usarse diferentes métodos de cálculo de fracciones anuales o que no haya ningún interés.
     \end{itemize}
 
+\end{frame}
 
+\begin{frame}[fragile]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{ACTUS_Taxonomy.png}
+    \caption{Taxonomía ACTUS}
+\end{figure}
 
 \end{frame}
+
 
 
 \subsection{Verificación formal de software}
@@ -345,26 +375,30 @@ Como resultado, los mismos pueden describirse matemáticamente y representarse m
 \begin{frame}{Concepto general, herramientas y metodologías}
 Los asistentes de pruebas formales son herramientas de software diseñadas para ayudar a sus usuarios a realizar pruebas, especialmente en cálculo lógico.
 
-\medskip
-
-Por lo general, los llamamos asistentes de demostración o demostradores interactivos de teoremas.
-
-\medskip
+\vfill
 \pause
 
-La principal fortaleza de los asistentes de prueba es que ayudan a desarrollar pruebas altamente confiables e inequívocas de enunciados matemáticos, usando lógica precisa. Se pueden usar para probar resultados arbitrariamente avanzados, y no solo ejemplos simples.
+A diferencia de los tests convencionales, durante una verificación \textbf{no se ejecuta el programa a analizar}, es por eso que este tipo de análisis es denominado \textbf{estático}.
 
+\vfill
+
+Cuando un teorema es escrito y probado, el mismo debe será verdadero para cualquier combinación de las variables de entrada.
+
+\vfill
+\pause
+
+La principal fortaleza de los asistentes es que ayudan a desarrollar \textbf{pruebas altamente confiables e inequívocas} de enunciados matemáticos y algoritmos, usando lógica precisa.
 \end{frame}
 
 \begin{frame}{Algunos asistentes de pruebas}
 
-Hay una gran cantidad de asistentes de prueba. A continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
-\medskip
+A continuación presentamos una lista de los principales, clasificados por sus fundamentos lógicos:
+\vfill
 \pause
 
 \begin{itemize}
     \item \textbf{Teoría de conjuntos}: Isabelle/ZF, Metamath, Mizar
-    \item \textbf{Teoría simple de tipos}: HOL4, HOL Light, Isabelle/HOL
+    \item \textbf{Teoría simple de tipos}: HOL4, HOL Light, \only<2>{Isabelle/HOL}\only<3>{\hl{Isabelle/HOL}}
     \item \textbf{Teoría dependiente de tipos}: Agda, Coq, Lean, Matita, PVS
     \item \textbf{Lógica de primer orden, de tipo Lisp}: ACL2
 \end{itemize}
@@ -376,10 +410,6 @@ Hay una gran cantidad de asistentes de prueba. A continuación presentamos una l
 
 {\nologo
 \begin{frame}{Notación}
-%Antes de adentrarnos en la especificación de un contrato, es necesario poder entender algunos
-%aspectos de la notación del mismo: \pause
-\medskip
-
 \begin{itemize}
     \item \textbf{Atributos de contrato:} Representan los términos contractuales que definen el flujo de dinero en un contrato financiero.
     \pause
@@ -402,23 +432,23 @@ Hay una gran cantidad de asistentes de prueba. A continuación presentamos una l
 \begin{frame}
     \begin{itemize}
         \item \textbf{Eventos}: Un evento de contrato $e_t^k$ se refiere a cualquier evento \textit{programado} o \textit{no programado} en un momento determinado $t$ y de un tipo determinado $k$. 
+        \vfill
 
-        Los eventos del contrato marcan puntos específicos en el tiempo (durante la ejecución del mismo) en el que se intercambian flujos de efectivo o se actualizan los estados del contrato. 
-        \pause
-    \pause
-        \item \textbf{Lifetime de contrato}: La vida útil de un contrato ACTUS es el período de tiempo de su existencia, desde la perspectiva del usuario que analiza. Se puede analizar un contrato ACTUS en términos de estado actual y flujos de efectivo futuros para cada punto del tiempo. 
+        Los eventos del contrato \textbf{marcan puntos específicos} en el tiempo en el que se \textbf{intercambian flujos de efectivo} o se \textbf{actualiza el estado del contrato}. 
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \begin{itemize}
-        \item \textbf{Funciones de transición de estado}: Dichas funciones, conocidas en Inglés como \textit{'State Transition Functions'} (STF) definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. Esto provoca que el  \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
+        \item \textbf{Funciones de transición de estado} (\textit{State Transition Functions} o STF): definen la transición de las variables de estado desde el \textit{pre-evento} hacia el \textit{post-evento}, cuando un cierto evento $e^k_t$ ocurre. 
+
+            Esto provoca que el \textit{pre-evento} y \textit{post-evento} reciban la notación de $t^-$ y $t^+$ respectivamente.
 
   \end{itemize}
   \pause
   \vfill
-  Estas funciones son específicas para un tipo de evento y contrato. Las mismas son escritas de acuerdo al siguiente formato $\textbf{STF\_[event type]\_[contract type]()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la STF pertenece.
-  \medskip
+  Estas funciones son específicas para un tipo de evento y contrato. Su notación es de la forma $\textbf{STF\_[event type]\_[contract type]()}$.
+  \vfill
   \pause
 
   Por ejemplo: La STF para un evento de tipo IP en el contrato PAM se escribe como $\text{STF\_IP\_PAM ()}$ y modifica (entre otras) a la variable $\textbf{Ipac}$ desde el pre-evento $\textbf{Ipac}_{t^-}$ al post-evento $\textbf{Ipac}_{t^+}$.
@@ -427,97 +457,83 @@ Hay una gran cantidad de asistentes de prueba. A continuación presentamos una l
 
 \begin{frame}
     \begin{itemize}
-        \item \textbf{Funciones de pago}: Las funciones de pago, o \textit{Payoff Functions} (POF) definen como el flujo de dinero $c \in\mathbb{R}$ ocurre para un determinado evento $e^k_t$. El mismo es obtenido del estado actual y los términos del contrato. Si fuera necesario, el flujo de dinero puede ser indexado con el tiempo del evento: $c_t$.
+        \item \textbf{Funciones de pago} (\textit{Payoff Functions} o POF): definen como el flujo de dinero $c \in\mathbb{R}$ ocurre para un determinado evento $e^k_t$. 
+
+            El mismo es obtenido del estado actual y los términos del contrato. Si fuera necesario, el flujo de dinero puede ser indexado con el tiempo del evento: $c_t$.
     \end{itemize}
     \pause
     \vfill
-    Las funciones de pago (de forma análoga a las STF), son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type] ()}$, donde $\text{[event type]}$ y $\text{[contract type]}$ hacen alusión al tipo de evento y contrato al cual la POF pertenece.
-    \medskip
+    Las funciones de pago son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type] ()}$.
+    \vfill
     \pause
 
-    Por ejemplo: La POF para un evento de tipo IP $e^{IP}_t$ en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
+    Por ejemplo: La POF para un evento de tipo IP en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
 
 \end{frame}
 
 \subsection{Contratos en Cardano}
 
+{\nologo
 \begin{frame}{Introducción}
-En esta sección veremos como se desarrolló la escritura de tres contratos ACTUS para la blockchain Cardano, bajo la supervisión de IOHK.\@
+En esta sección describiré la estructura de 3 contratos ACTUS que escribí para la blockchain Cardano, bajo la supervisión de IOHK.\@
 
 \vfill
+\pause
 
-Cabe destacar que durante esta tarea tuve la colaboración de Yves Hauser, con quien conversamos sobre decisiones de diseño e implementación de los contratos correspondientes. Yves fue el responsable de integrar mis cambios a la rama \textit{master} del repositorio de \texttt{marlowe-cardano} \cite{marlowe-cardano-github}. %chktex 2
+Agregar contratos ACTUS en la blockchain Cardano implica agregar, para cada contrato:
 
+\begin{itemize}
+        \pause
+    \item Scheduling.
+        \pause
+    \item Inicialización de variables de estado.
+        \pause
+    \item Funciones de transición de estado y de pago, para cada evento relevante.
+        \pause
+    \item Validación mediante los tests propuestos por el estándar ACTUS.
+\end{itemize}
 
+\pause
+\vfill
+
+Dicho código fue incorporado en la rama principal del repositorio de \href{https://github.com/input-output-hk/marlowe-cardano}{marlowe-cardano}. Por lo que usuarios podrán utilizar dichos contratos en el futuro.
 \end{frame}
+}
 
 \begin{frame}[fragile]{Estructura del proyecto ACTUS en Cardano}
-A grandes rasgos, la estructura del generador de contratos ACTUS tiene las siguientes partes:
+A grandes rasgos, la estructura del generador de contratos ACTUS tiene los siguientes módulos:
     \vfill
     
 \begin{itemize}
-    \item  \textbf{Domain}: El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.
+    \item  \textbf{\underline{Domain}}: El mismo está conformado por los archivos que modelan el dominio de los contratos ACTUS.
+
         \medskip
 
-        \pause Entre ellos se pueden destacar:
+        En este módulo podemos encontrar los tipos de \textbf{eventos}, \textbf{términos} y el \textbf{Estado} del contrato, entre otros.
+        \pause
+        \vfill
 
-        
-        \begin{tikzpicture}
-            \draw[color=black!60!white]
-                \FTdir(\FTroot,Domain,Domain){
-                    \FTfile(Domain,BusinessEvents.hs)
-                    \FTfile(Domain,ContractState.hs)
-                    \FTfile(Domain,ContractTerms.hs)
-                    \FTfile(Domain,Ops.hs)
-                    \FTfile(Domain,Schedule.hs)
-                };
-        \end{tikzpicture}
+    \item \textbf{\underline{Generator}}: Se implementan los diferentes generadores y compatibilidad hacia el lenguaje Marlowe. 
 
+        \medskip
+
+        Dichos generadores se utilizan para obtener código en Marlowe, Javascript, Haskell o Blockly, y pueden generar contratos estáticos (sin riesgos o eventos externos).
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
-\begin{itemize}
-    \item \textbf{Generator}: En este directorio se implementan los diferentes generadores y compatibilidad hacia el lenguaje
-Marlowe.
-    
-    \medskip
 
-    \pause La estructura de dicho directorio es la siguiente:
-
-    \begin{tikzpicture}
-        \draw[color=black!60!white]
-        \FTdir(\FTroot,Generator,Generator){
-            \FTfile(Generator,Analysis.hs)
-            \FTfile(Generator,Generator.hs)
-            \FTfile(Generator,GeneratorFs.hs)
-            \FTfile(Generator,GeneratorStatic.hs)
-            \FTfile(Generator,MarloweCompat.hs)
-        };
-    \end{tikzpicture}
-
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
+\begin{frame}
     \begin{itemize}
-        \item \textbf{Model}: En este directorio se encuentran los archivos que modelan la lógica expuesta por el estándar ACTUS, tales como el \textit{scheduling}, la inicialización de variables de estado y funciones de transición de estado y de pago.
+        \item \textbf{\underline{Model}}: Se encuentra la lógica expuesta por el estándar ACTUS. 
+
+            \medskip
+
+            Este módulo es responsable del \textbf{scheduling}, la \textbf{inicialización de variables de estado} y \textbf{funciones de transición de estado y de pago}.
+
+            \vfill
             \pause
 
-            \begin{tikzpicture}
-                \draw[color=black!60!white]
-                    \FTdir(\FTroot,Model,Model){
-                        \FTfile(Model,Applicability.hs)
-                        \FTfile(Model,ContractSchedule.hs)
-                        \FTfile(Model,Payoff.hs)
-                        \FTfile(Model,StateInitialization.hs)
-                        \FTfile(Model,StateTransition.hs)
-                    };
-            \end{tikzpicture}
-            \pause
-        \item \textbf{Utility}: En este directorio se encuentran algunos archivos con funciones que se utilizan para aislar la lógica del cálculo de fechas, que suele tornarse complejo y repetitivo durante los contratos.
-
-
+        \item \textbf{\underline{Utility}}: Se encuentran algunos módulos con funciones que se utilizan para aislar la lógica del \textbf{cálculo y convenciones de fechas}, que suele tornarse complejo y repetitivo durante los contratos.
     \end{itemize}
 \end{frame}
 
@@ -527,18 +543,13 @@ Marlowe.
 
 \subsection{El modelo de Marlowe}
 
-\begin{frame}
+\begin{frame}{El modelo de Marlowe}
 Marlowe está diseñado para soportar la ejecución de contratos financieros en la blockchain, específicamente en Cardano.
 
-\medskip
+\vfill
 \pause
 
-Los contratos se construyen \textit{reuniendo una pequeña cantidad de constructores} que se pueden combinar para describir muchos tipos diferentes de contratos financieros.
-
-\medskip
-\pause
-
-Antes de describir estos constructores, debemos analizar el enfoque general para modelar contratos en Marlowe, y el contexto en el que se ejecutan los mismos (la blockchain de Cardano).
+Antes de describir estos constructores, debemos analizar el enfoque general para \textbf{modelar contratos en Marlowe}, el contexto y las partes involucradas cuando se ejecutan los mismos.
 
 \end{frame}
 
@@ -570,7 +581,7 @@ data Contract = Close
 \end{itemize}
 \end{frame}
 }
-
+{\nologo
 \begin{frame}[fragile]{Breve ejemplo de un contrato de Intercambio}
 \begin{code}{Haskell-Cardano}
 When [Case (Deposit "alice" "alice" ada price)   
@@ -580,22 +591,25 @@ When [Case (Deposit "alice" "alice" ada price)
                                  agreement
                                  arbitrate) 
                         ]
-                        60
+                        60 -- Slot limite para la eleccion de Bob
                         arbitrate)
               ]
-              40
+              40  -- Slot limite para la eleccion de Alice
               Close)
      ]
-     10       
+     10   -- Slot limite para el Deposito
      Close    
+
+-- agreement y arbitrate son contratos auxiliares que realizan los pagos o devoluciones correspondientes
 \end{code}
 
 \end{frame}
+}
 
 \begin{frame}{Ejecución de un contrato Marlowe}
 
 Ejecutar un contrato de Marlowe en la cadena de bloques de Cardano significa restringir las transacciones generadas por el usuario a la lógica del contrato.
-\bigskip
+\vfill
 \pause
 
 Una \textbf{transacción} contiene una \textbf{lista ordenada de \textit{entradas} o \textit{acciones}}. El intérprete de Marlowe se ejecuta durante la validación de transacciones. 
@@ -603,15 +617,20 @@ Una \textbf{transacción} contiene una \textbf{lista ordenada de \textit{entrada
 \end{frame}
 
 \begin{frame}{Procesando una transacción}
-\begin{itemize}
-    \item Primero, se evalúa el contrato \textit{paso} a \textit{paso} hasta que no se puede cambiar más sin procesar alguna entrada, una condición que se llama \textit{quiescent} (o inactiva).
+\begin{enumerate}
+    \item Se evalúa (o reduce) el contrato \textit{paso} a \textit{paso} hasta que \textbf{no se puede cambiar más sin procesar alguna entrada}, una condición que se llama \textit{quiescent} (o inactiva).
 
-    En esta etapa, avanza a través cualquier \texttt{When} cuyos timeouts hayan sido superados, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}, sin procesar ninguna entrada.
-    \bigskip
+    \medskip
+    Esto implica reducir los \texttt{When} cuyos timeouts hayan sido superados, y todos los constructores \texttt{If}, \texttt{Let}, \texttt{Pay} y \texttt{Close}.
 
+    \vfill
     \pause
-    \item A continuación, se procesa la primera entrada, y luego el contrato se vuelve a procesar hasta la inactividad. Este proceso se repite hasta que se procesan todas las entradas. En cada paso, el contacto actual y el estado cambiarán, es posible que se procesen algunas entradas y se realicen pagos.
-\end{itemize}
+
+    \item Se procesa (o aplica) la primera entrada y luego el contrato se vuelve a procesar hasta la inactividad. 
+\end{enumerate}
+\vfill
+\pause
+Este proceso se repite \textbf{hasta que se procesan todas las entradas}. En cada paso, \textbf{el contacto actual y el estado cambiarán} y es posible que se realicen pagos.
 \end{frame}
 
 \begin{frame}
@@ -679,11 +698,11 @@ Una \textbf{transacción} contiene una \textbf{lista ordenada de \textit{entrada
 
 \subsection{Pruebas sencillas sobre contratos específicos}
 
-\begin{frame}{Prueba de minSlot no decreciente en COM}
+\begin{frame}{Prueba de \textit{slot} no decreciente en COM}
 Supongamos que queremos probar la siguiente propiedad:
 \vfill
 \begin{quote} 
-``Evaluar \textit{applyAllInputs} en el contrato COM4, para cualquier \textit{environment} y \textit{state} dado, produce un estado con \textit{minSlot} mayor al actual.''
+``\textbf{Evaluar \textit{applyAllInputs} en el contrato COM4}, para cualquier \textit{environment} y \textit{state} dado, \textbf{produce un nuevo estado con \textit{slot} mayor al actual}.''
 \end{quote}
 
 \vfill
@@ -692,7 +711,9 @@ Este tipo de prueba evita la `vuelta al pasado' por parte del contrato, que podr
 
 \end{frame}
 
-\begin{frame}[fragile]{Prueba del lema de \textit{minSlot} para un contrato COM.}
+\begin{frame}[fragile]{Prueba del lema de \textit{slot} para un contrato COM.}
+
+Un ejemplo de una propiedad que probé es la siguiente:
 
 \begin{code}{Isabelle}
 lemma applyAllInputsDoesNotDecreaseMinSlot :
@@ -702,7 +723,7 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
   apply auto
   apply (cases inputList)
   apply auto 
-  by (smt (z3) ApplyAllResult.distinct(1) (* propuesto por Sledgehammer *)
+  by (smt (z3) ApplyAllResult.distinct(1)
                   ApplyResult.case(1)
                   ApplyResult.case(2)
                   ApplyResult.exhaust
@@ -716,12 +737,13 @@ lemma applyAllInputsDoesNotDecreaseMinSlot :
 \subsection{Warnings en Auction}
 
 \begin{frame}{El contrato Auction}
-Una subasta o remate (\textit{Auction}) es una venta organizada basada en la competencia directa, es decir, a aquel comprador (postor) que pague la mayor cantidad de dinero o de bienes a cambio del producto. El bien subastado se adjudica al postor que más dinero haya ofrecido por él.
+Una subasta (\textit{Auction}) es una venta organizada en la cual el comprador (postor) que pague la mayor cantidad de dinero o de bienes a cambio del producto es el ganador de la misma.
 
 \vfill
 \pause
 
-En una subasta basada en una \textit{blockchain}, cada postor debe declarar el dinero primero para convertirse en el mejor postor. Los mismos recuperan su dinero cuando se los supera.
+En particular, en una subasta basada en una \textit{blockchain}, cada postor debe declarar el dinero primero para convertirse en el mejor postor. Los mismos recuperan su dinero cuando otro postor los supera.
+
 
 \end{frame}
 
@@ -738,13 +760,38 @@ Se puede ver en el siguiente diagrama de secuencia, el comportamiento esperado p
 \end{frame}
 }
 
-\begin{frame}{Probando terminación del contrato \textit{Auction}}
-Dado que HOL es una lógica de funciones totales, la terminación es un requerimiento fundamental. Isabelle intenta probar la terminación automáticamente cuando se realiza la definición. Pero en algunas circunstancias es posible que falle, y la misma tiene que ser probada manualmente.
+\begin{frame}{Pruebas sobre el contrato \textit{Auction}}
+Durante parte del desarrollo de mi tesis, probé que \textbf{cualquier contrato Auction no genera advertencias}.
 
-\bigskip
+\vfill
 \pause
 
-La terminación no solo es una propiedad deseable en los contratos, sino que también le permite a Isabelle utilizar teoremas adicionales, como por ejemplo el de inducción. Esto es de gran importancia a la hora de probar teoremas que puedan utilizar las funciones.
+Esto implicó:
+
+\begin{itemize}
+    \item \textbf{Traducción} del contrato Auction en Haskell a Isabelle.
+        \pause
+    \item Prueba de la \textbf{terminación del generador} de contratos Auction.
+        \pause
+    \item Determinación de una \textbf{invariante} a partir de la cual ningún tipo de \textit{warning} puede ocurrir.
+        \pause
+    \item Prueba de \textbf{ausencia de Warnings} para todas las funciones involucradas en procesar una transacción.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Probando terminación del contrato \textit{Auction}}
+Dado que Isabelle/HOL sigue una lógica de funciones totales, la terminación es un requerimiento fundamental. 
+
+\vfill
+
+\textbf{Isabelle intenta probar la terminación automáticamente} cuando se realiza la definición. Pero en algunas circunstancias \textbf{es posible que falle}, y la misma tiene que ser probada manualmente.
+
+\vfill
+\pause
+
+La terminación no solo es una propiedad deseable en los contratos, sino que también le \textbf{permite a Isabelle y al usuario utilizar teoremas adicionales}, como por ejemplo el de inducción.
 
 \end{frame}
 
@@ -766,44 +813,48 @@ fun evalBoundAuction :: "(contractLoopType + (handleChooseType + handleDepositTy
 \begin{frame}{Invariante para la ausencia de warnings}
 
 Las acciones de los usuarios son imprevisibles y pueden generar \textit{warnings} independientes a la semántica. Algunos ejemplos para este contrato podrían ser:
-\medskip
+\vfill
 
    \begin{itemize}
            \pause
-       \item Ofertar un valor fuera del rango esperado
+       \item Realizar más de una vez una elección (\textcolor{red}{\textit{ReduceShadowing}}).
            \pause
-       \item Ofertar una cantidad negativa
+       \item Ofertar una cantidad negativa (\textcolor{red}{\textit{NonPositiveDeposit}}).
            \pause
-       \item Dinero insuficiente en la cuenta para la oferta realizada.
+       \item Dinero insuficiente en la cuenta para la oferta realizada (\textcolor{red}{\textit{PartialPay}}).
            \pause
+       \item Cantidad en el \textit{Pay} no sea positiva o las cuentas tengan suficiente dinero (\textcolor{red}{\textit{NonPositivePay}} y \textcolor{red}{\textit{PartialPay}}).
+           \pause
+       \item Que el \textit{minBid} del contrato sea positivo, sino se producirá alguna combinación de los \textit{warnings} anteriores.
    \end{itemize} 
 
-\medskip
-
-Es por eso que se formularon una serie de pre-condiciones que deben ser satisfechas para poder asegurar que el contrato no genera \textit{warnings}.
-
 \end{frame}
 
-\begin{frame}
-Esta invariante garantiza la presencia de las siguientes propiedades, que generarían la ausencia de \textit{warnings} al aplicar un \textit{input}:
+%\begin{frame}
+%Esta invariante garantiza la presencia de las siguientes propiedades, que generarían la ausencia de \textit{warnings} al aplicar un \textit{input}:
 
-\bigskip
+%\bigskip
 
-\begin{itemize}
-    \pause
-    \item Que el identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
-    \pause
-    \item Que la cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
-    \pause
-    \item Que la cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
-    \pause
-    \item Que \textit{minBid} sea positivo, sino se producirán \textit{warnings} durante las reducciones.
-\end{itemize}
+%\begin{itemize}
+    %\pause
+    %\item Que el identificador del \texttt{Let} no exista en el momento en el que se crea (si no se producirá un warning de tipo \textit{ReduceShadowing})
+    %\pause
+    %\item Que la cantidad en el depósito sea positiva (si no producirá un warning de tipo \textit{NonPositiveDeposit})
+    %\pause
+    %\item Que la cantidad en el \textit{Pay} sea positiva y además las cuentas tengan suficiente dinero (si no se producirán warnings de \textit{NonPositivePay} y \textit{PartialPay} respectivamente).
+    %\pause
+    %\item Que \textit{minBid} sea positivo, sino se producirán \textit{warnings} durante las reducciones.
+%\end{itemize}
 
 
-\end{frame}
+%\end{frame}
 
+{\nologo
 \begin{frame}[fragile]{Definición en Isabelle de la invariante para \textit{Auction}}
+Es por eso que se formularon una serie de \textbf{pre-condiciones o invariantes que deben ser satisfechas} para poder asegurar que el contrato no genera \textit{warnings}.
+
+\vfill
+
 \begin{code}{Isabelle}
 definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner $\Rightarrow$ Party list $\Rightarrow$ Party list $\Rightarrow$ State $\Rightarrow$ bool" where
 
@@ -820,9 +871,10 @@ definition invariantHoldsForAuction :: "AuctionTerms $\Rightarrow$ AuctionWinner
      $\land$ (minBid terms > 0))"
 \end{code}
 
-
 \end{frame}
+}
 
+{\nologo
 \begin{frame}[fragile]{Ausencia de warnings en Isabelle al computar una transacción}
 \begin{code}{Isabelle}
 lemma auctionIsSafe_computeTransaction :
@@ -834,21 +886,36 @@ lemma auctionIsSafe_computeTransaction :
   by (smt (verit, ccfv_SIG) IntervalResult.simps(6) closeIsSafe computeTransaction.simps fixInterval.elims)
 \end{code}
 
+\vfill
+
+Esta prueba depende de las demostraciones previas sobre todas las funciones en las que depende (\textit{ApplyAllInputs}, \textit{ReductionLoop}, \textit{ReduceContractStep}, \textit{ApplyInput}, etc.)
+
 \end{frame}
+}
 
 \section{Posibles temas de desarrollo futuro}
 
-\begin{frame}{Posibles trabajos futuros relacionados con esta tesis}
+{\nologo
+\begin{frame}{Posibles temas de desarrollo e investigación}
     \begin{itemize}
-        \item Con respecto a la escritura de contratos ACTUS en Cardano, actualmente no se han terminado de escribir todos los contratos especificados por el estándar.
-            \pause
+        \item Con respecto a la escritura de contratos ACTUS en Cardano, actualmente \textbf{no se han terminado de escribir todos los contratos especificados por el estándar}.
 
-        \item En cuanto a la verificación de programas, es posible tomar algunos contratos (por ejemplo entre los ejemplos del \textit{Playground}) en los que no se esperan warnings y verificarlos mediante Isabelle. Dichas verificaciones podrán beneficiarse de los lemas probados previamente para el contrato \textit{Auction} y el contrato \textit{Close}.
             \pause
+            \vfill
 
-        \item Una última linea de trabajo podría abarcar la traducción automática de algunas sentencias de código fuente Haskell a Isabelle. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
+        \item En cuanto a la verificación de programas, es posible \textbf{tomar algunos contratos} (por ejemplo entre los ejemplos del \textit{Playground}) \textbf{en los que no se esperan warnings y verificarlos} mediante Isabelle. 
+
+            \medskip
+            
+            Dichas verificaciones podrán beneficiarse de los lemas y técnicas utilizadas para los contratos \textit{Auction} y \textit{Close}.
+
+            \pause
+            \vfill
+
+        \item La \textbf{traducción automática de algunas sentencias de código Haskell a Isabelle}. Parte de esta idea es abarcada en~\cite{translating-haskell-to-isabelle}, aunque manteniendo la traducción manual.
     \end{itemize}
 \end{frame}
+}
 
 \begin{frame}
 \begin{center}
