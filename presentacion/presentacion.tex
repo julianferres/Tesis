@@ -411,30 +411,44 @@ A continuación presentamos una lista de los principales, clasificados por sus f
 {\nologo
 \begin{frame}{Notación}
 \begin{itemize}
-    \item \textbf{Atributos de contrato:} Representan los términos contractuales que definen el flujo de dinero en un contrato financiero.
+    \item \textbf{\underline{Atributos de contrato}}: Representan los términos contractuales que definen el flujo de dinero en un contrato financiero.
     \pause
-    \item \textbf{Starting date}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato están siendo representados. 
+\item \textbf{\underline{Starting date}}: $t_0$ representa la fecha de comienzo del contrato, y marca el instante en el cual las condiciones y estado del contrato están siendo representados. 
     \pause
-    \item \textbf{Variables de estado}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. 
+    \item \textbf{\underline{Variables de estado}}: Las variables de estado describen el estado de un contrato, para un tiempo determinado de su ciclo de vida. 
 
         Algunos ejemplos de las mismas son: 
         \pause
             \begin{itemize}
-                \item Notional Principal.
-                \item Nominal Interest Rate.
+                \item \textbf{Accrued Interest (IPAC)}: Interés acumulado en `\textit{Status date}' (SD).
+                \item \textbf{Performance (PRF)}: Estado actual del contrato (\textit{performant}, \textit{delayed}, \textit{terminated}, etc.)
             \end{itemize}
         \pause
-        En general, el ‘estado’ representa ciertos términos de un contrato que pueden cambiar a lo largo de su ciclo de ejecución, de acuerdo a eventos programados o no programados. 
+        En general, el ‘estado’ representa ciertos atributos que pueden cambiar durante su ciclo de ejecución, de acuerdo a eventos programados o no programados. 
 \end{itemize}
 \end{frame}
 }
 
 \begin{frame}
     \begin{itemize}
-        \item \textbf{Eventos}: Un evento de contrato $e_t^k$ se refiere a cualquier evento \textit{programado} o \textit{no programado} en un momento determinado $t$ y de un tipo determinado $k$. 
+        \item \textbf{\underline{Eventos}}: Un evento de contrato $e_t^k$ se refiere a cualquier evento \textit{programado} o \textit{no programado} en un momento determinado $t$ y de un tipo determinado $k$. 
         \vfill
 
         Los eventos del contrato \textbf{marcan puntos específicos} en el tiempo en el que se \textbf{intercambian flujos de efectivo} o se \textbf{actualiza el estado del contrato}. 
+
+        \vfill
+        \pause
+
+        Algunos tipos de eventos:
+
+        \begin{itemize}
+            \item \textbf{AD}: Monitoreo del contrato.
+            \item \textbf{IP}: Pago de interés programado.
+            \item \textbf{IPCI}: Capitalización de interés programada.
+            \item \textbf{PRD}: Compra de un contrato.
+            \item \textbf{TD}: Terminación de un contrato.
+
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -455,7 +469,8 @@ A continuación presentamos una lista de los principales, clasificados por sus f
 
 \end{frame}
 
-\begin{frame}
+{\nologo
+\begin{frame}[fragile]
     \begin{itemize}
         \item \textbf{Funciones de pago} (\textit{Payoff Functions} o POF): definen como el flujo de dinero $c \in\mathbb{R}$ ocurre para un determinado evento $e^k_t$. 
 
@@ -463,13 +478,18 @@ A continuación presentamos una lista de los principales, clasificados por sus f
     \end{itemize}
     \pause
     \vfill
+
     Las funciones de pago son específicas para un tipo de evento y contrato, y su notación es la siguiente: $\textbf{POF\_[event type]\_[contract type] ()}$.
     \vfill
     \pause
 
-    Por ejemplo: La POF para un evento de tipo IP en el contrato PAM se escribe como $\text{POF\_IP\_PAM()}$.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{POF_STF_IP_PAM.png}
+    \end{figure}
 
 \end{frame}
+}
 
 \subsection{Contratos en Cardano}
 
@@ -549,8 +569,38 @@ A grandes rasgos, la estructura del generador de contratos ACTUS tiene los sigui
 }
 
 {\nologo
+\begin{frame}[fragile]{Fragmentos de los contratos que implementé}
+
+Especificación ACTUS:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{POF_CLM.png}
+\end{figure}
+
+Implementación para Cardano:
+\begin{code}{Haskell-cardano}
+-- Call Money (CLM) POF's
+
+_POF_IP_CLM :: ActusNum a => a -> a -> a -> a -> a -> a
+_POF_IP_CLM o_rf_curs ipac ipnr nt y_sd_t = o_rf_curs * (ipac + y_sd_t * ipnr * nt)
+
+_POF_IED_CLM :: RoleSignOps a => a -> CR -> a -> a
+_POF_IED_CLM o_rf_curs cntrl nt = _zero - o_rf_curs * _r cntrl * nt
+
+
+\end{code}
+\end{frame}
+}
+
+{\nologo
 \begin{frame}[fragile]
-Algunos fragmentos del código necesario para poder implementar el \textit{Scheduling} en el contrato CLM.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Schedule_CLM.png}
+\end{figure}
+
+\vspace{-5.00mm} 
 
 \begin{code}{Haskell-cardano}
 _SCHED_IP_CLM
@@ -574,8 +624,15 @@ _SCHED_IP_CLM
 \end{frame}
 }
 
-\begin{frame}[fragile]
-Algunos ejemplos adicionales:
+{\nologo
+\begin{frame}[fragile]{STF para el contrato CSH y el evento AD (Monitoring)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{CSH_STF.png}
+\end{figure}
+
+\vfill
 
 \begin{code}{Haskell-cardano}
 -- Cash (CSH) Monitoring STF 
@@ -586,20 +643,8 @@ _STF_AD_CSH st@ContractStatePoly {} t =
     }
 \end{code}
 
-\begin{code}{Haskell-cardano}
--- Call Money (CLM) POF's
-
-_POF_IP_CLM :: ActusNum a => a -> a -> a -> a -> a -> a
-_POF_IP_CLM o_rf_curs ipac ipnr nt y_sd_t = o_rf_curs * (ipac + y_sd_t * ipnr * nt)
-
-_POF_IED_CLM :: RoleSignOps a => a -> CR -> a -> a
-_POF_IED_CLM o_rf_curs cntrl nt = _zero - o_rf_curs * _r cntrl * nt
-
-
-\end{code}
-
 \end{frame}
-
+}
 
 
 \section{Verificando propiedades en contratos en Marlowe}
