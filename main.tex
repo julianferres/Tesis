@@ -243,7 +243,7 @@ Las direcciones se utilizan al enviar pagos en criptomonedas, son identificadas 
 
 \section{Cardano}
 
-Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo \textit{proof-of-stake} (prueba de participación) descentralizada de tercera generación y el hogar de la criptomoneda \textit{ada}. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
+Cardano~\cite{cardano_docs} es una plataforma blockchain de tipo \textit{proof-of-stake} (prueba de participación, ver~\ref{subs_pos}) descentralizada de tercera generación y el hogar de la criptomoneda \textit{ada}. Es la primera plataforma de cadena de bloques que evoluciona a partir de una filosofía científica y un enfoque impulsado por la investigación.
 
 La primera generación de blockchains (con Bitcoin como gran representante) ofrecía ledgers descentralizados para la transferencia segura de criptomonedas. Sin embargo, tales cadenas de bloques no proporcionaron un entorno funcional para la liquidación de acuerdos complejos y el desarrollo de aplicaciones descentralizadas (dApps). A medida que la tecnología blockchain maduró, la segunda generación (por ejemplo Ethereum) proporcionó soluciones mejoradas para redactar y ejecutar contratos inteligentes, desarrollar aplicaciones y crear diferentes tipos de tokens. Sin embargo, la segunda generación de cadenas de bloques a menudo enfrenta problemas en términos de escalabilidad.
 
@@ -282,7 +282,7 @@ Cardano también admite la creación de tokens nativos: activos digitales que se
 
 % En este trabajo nos proponemos estudiar la verificación a bajo nivel de un grupo específico de contratos financieros definidos en el estándar ACTUS\footnote{\href{https://www.actusfrf.org/}{https://www.actusfrf.org/}}, en particular para la cadena de bloques \textit{Cardano}\footnote{\href{https://cardano.org/}{https://cardano.org/}}.
 
-\subsection{Proof of Stake}
+\subsection{\label{subs_pos}Proof of Stake}
 
 \textit{Proof of Stake} (PoS o Prueba de participación) es un tipo de protocolo de consenso que utiliza la cantidad de participación (o valor) mantenida en el sistema para determinar el consenso~\cite{PoS-PoW-pros-cons, PoS-PoW-energy, PoS-PoW-evaluation}.
 
@@ -1355,7 +1355,7 @@ Los números naturales:
 datatype nat = 0 | Suc nat
 \end{code}
 
-Todos los valores de tipo \texttt{nat} son generados por los constructores \texttt{0} y \texttt{Suc}. Por lo tanto, los valores de tipo nat son \texttt{0}, \texttt{Suc 0}, \texttt{Suc (Suc 0)}, etc. Algunas de las funciones predefinidas son: +, *, $\leq$, etc. A continuación, vemos como podríamos definir nuestra propia operación de suma:
+Todos los valores de tipo \texttt{nat} son generados por los constructores \texttt{0} y \texttt{Suc}. Por lo tanto, los valores de tipo nat son \texttt{0}, \texttt{Suc 0}, \texttt{Suc (Suc 0)}, etc. Algunas de las funciones predefinidas son: +, *, $\leq$, etc. A continuación vemos cómo podríamos definir nuestra propia operación de suma:
 
 \begin{code}[title=Definición de la suma para dos números naturales.]{Isabelle}
   fun add :: "nat $\Rightarrow$ nat $\Rightarrow$ nat" where
